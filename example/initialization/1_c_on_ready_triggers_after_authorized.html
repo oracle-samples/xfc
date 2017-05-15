@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>HealtheLife Trusted Site</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        padding-bottom: 5px;
+      }
+      html[hidden] { display: none; }
+    </style>
+    <script src="http://localhost:8080/xfc.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>1. Initialization</h1>
+      <p>c. Provider app should be hidden by XFC on initialization until authorization occurs.</p>
+      <p>i. An On Ready function triggers only when initialization is complete.</p>
+      <p id='ready'></p>
+    </div>
+    <script type="text/javascript">
+      XFC.Provider.init({
+        acls: ['*'],
+        secret: 'abc1234',
+        onReady: function() {
+          setTimeout(function() {
+            document.getElementById('ready').innerHTML = 'onReady function being executed after a 1 second delay.';
+          }, 1000);
+
+          console.log('onReady function will execute after frame being authorized.');
+        }
+      });
+    </script>
+  </body>
+</html>

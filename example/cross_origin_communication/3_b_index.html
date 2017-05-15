@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Embedded Content Consuming Site</title>
+    <meta charset="utf-8" />
+    <script src="http://localhost:8080/xfc.js"></script>
+    <style>
+      iframe {
+        width: 100%;
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+      html[hidden] { display: none; }
+      .xfc[data-status='mounted'] {
+        border: 5px dashed #000;
+      }
+      .xfc[data-status='launched'] {
+        border: 5px dashed #00F;
+      }
+      .xfc[data-status='authorized'] {
+        border: 5px dashed #0F0;
+      }
+      .grid {
+        display: flex;
+        flex-flow: row wrap;
+      }
+      .grid div {
+        padding: 20px;
+      }
+      #c1 {
+        border: 5px dashed #000;
+      }
+      #c2 {
+        border: 5px dashed #00F;
+      }
+      #c3 {
+        border: 5px dashed #0F0;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h2>The following are XFC's statuses (mounted, launched, authorized).</h2>
+    </div>
+    <div class="grid">
+      <div id="c1">
+        <h2>mounted app</h2>
+      </div>
+      <p></p>
+      <div id="c2">
+        <h2>launched app</h2>
+      </div>
+      <p></p>
+      <div id="c3">
+        <h2>authorized app</h2>
+      </div>
+    </div>
+    <p>The following example shows that provider can send http error message to consumer. You'll see a pop-up alert dialog that contains error information passed from provider.
+    </p>
+    <script>
+      XFC.Consumer.init()
+      var frame = XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/cross_origin_communication/3_b_provider_error_page.html');
+      // Fire up an alert dialog that contains error information from provider
+      frame.on('xfc.provider.httpError', function(error) {
+        var content = "Provider is experiencing an error.\n" + "error code: " + error.code + ", \n" + "error message: " + error.message;
+        alert(content);
+      });
+    </script>
+  </body>
+</html>
+
+

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>HealtheLife Trusted Site</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        padding-bottom: 2px;
+      }
+      html[hidden] { display: none; }
+    </style>
+    <script src="http://localhost:8080/xfc.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>3. Cross Origin Communication</h1>
+      <p>b. Provider can send http Error to Consumer.</p>
+    </div>
+    <div>
+      <h1>500 Error Page</h1>
+      <p>Oops, something went wrong...</p>
+    </div>
+  </body>
+  <script type="text/javascript">
+    XFC.Provider.init({ acls: ['http://localconsumer.com:8080'] });
+    XFC.Provider.httpError({code: 500, message: 'Internal Server Error'});
+  </script>
+</html>

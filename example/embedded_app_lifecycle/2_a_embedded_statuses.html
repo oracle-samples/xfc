@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>HealtheLife Trusted Site</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        padding-bottom: 5px;
+      }
+      html[hidden] { display: none; }
+    </style>
+    <script src="http://localhost:8080/xfc.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>2. Embedded App Lifecycle</h1>
+      <p>a. The embedded container can have the following statuses:</p>
+      <ul>
+        <li>Mounted</li>
+        <li>Launched</li>
+        <li>Authorized</li>
+      </ul>
+    </div>
+    
+    <script type="text/javascript">
+      XFC.Provider.init({
+        acls: ['*'],
+        secret: 'abcd1234'
+      });
+    </script>
+  </body>
+</html>

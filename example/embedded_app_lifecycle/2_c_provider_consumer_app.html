@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>HealtheLife Trusted Site</title>
+    <meta charset="utf-8" />
+    <style>
+      .xfc iframe {
+        width: 100%;
+        border: 1px solid red;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      html[hidden] { display: none; }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>2. Embedded App Lifecycle</h1>
+      <p>c. A web application can exist as both a provider and consumer.</p>
+    </div>
+    <script src="http://localhost:8080/xfc.js"></script>
+    <script type="text/javascript">
+
+      function initializeConsumer(url) {
+        XFC.Consumer.init();
+        XFC.Consumer.mount(document.body, url);
+      }
+
+      function initializeProviderOAuth() {
+        XFC.Provider.init({
+          acls: ['*'],
+          secret: function(secret) {
+            return Promise.resolve('success');
+          },
+          onReady: function () {
+            var url = window.location.href;
+            if (url.indexOf('url=') !== -1) {
+              var urlToLoad = url.substring(url.indexOf('url=') + 4, url.length);
+              if (urlToLoad) {
+                initializeConsumer(urlToLoad);
+              }
+            }
+          }
+        });
+      }
+
+      initializeProviderOAuth();
+    </script>
+  </body>
+</html>

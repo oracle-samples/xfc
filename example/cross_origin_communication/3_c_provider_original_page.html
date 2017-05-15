@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>HealtheLife Trusted Site</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        padding-bottom: 5px;
+      }
+      html[hidden] { display: none; }
+    </style>
+    <script src="http://localhost:8080/xfc.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>3. Cross Origin Communication</h1>
+      <p>a. Provider can trigger Consumer to load another provider's page from a different origin.</p>
+    </div>
+    <div>
+      <p>Current origin: http://localprovider.com:8080</p>
+      <p><strong>Three seconds later, you'll be directed to another page at http://localhost:8080.</strong></p>
+    </div>
+    <script type="text/javascript">
+      XFC.Provider.init({ acls: ['http://localconsumer.com:8080' ] });
+      setTimeout(function(){
+        XFC.Provider.loadPage('http://localhost:8080/example/cross_origin_communication/3_c_provider_redirected_page.html');
+      }, 3000);
+    </script>
+  </body>
+</html>

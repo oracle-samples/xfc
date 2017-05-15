@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>HealtheLife Trusted Site</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        padding-bottom: 5px;
+      }
+      html[hidden] { display: none; }
+    </style>
+    <script src="http://localhost:8080/xfc.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>3. Cross Origin Communication</h1>
+      <p>a. Provider can trigger Consumer to load another provider's page from a different origin.</p>
+    </div>
+    <div>
+      <p><strong>Welcome to the new origin page!</strong></p>
+      <p>Current origin: http://localhost:8080</p>
+    </div>
+    <script type="text/javascript">
+      XFC.Provider.init({ acls: ['http://localconsumer.com:8080' ] })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>HealtheLife Trusted Site</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        padding-bottom: 5px;
+      }
+      html[hidden] { display: none; }
+    </style>
+    <script src="http://localhost:8080/xfc.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>1. Initialization</h1>
+      <p>a. An embedded app can whitelist one or more domains.</p>
+    </div>
+    <script type="text/javascript">
+      XFC.Provider.init({ acls: ['http://localconsumer.com:8080' ] })
+    </script>
+  </body>
+</html>

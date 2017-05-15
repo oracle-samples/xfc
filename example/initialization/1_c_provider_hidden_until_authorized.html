@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>HealtheLife Trusted Site</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        padding-bottom: 5px;
+      }
+      html[hidden] { display: none; }
+    </style>
+    <script src="http://localhost:8080/xfc.js"></script>
+  </head>
+  <body>
+    <div>
+      <h1>1. Initialization</h1>
+      <p>c. Provider app should be hidden by XFC on initialization until authorization occurs.</p>
+    </div>
+    <script type="text/javascript">
+      XFC.Provider.init({
+        acls: ['*'],
+        secret: 'abc1234'
+      })
+    </script>
+  </body>
+</html>
