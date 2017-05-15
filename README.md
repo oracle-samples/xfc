@@ -1,5 +1,8 @@
 # XFC (Cross-Frame-Container)
 
+[![Build Status](https://travis-ci.org/cerner/xfc.svg?branch=master)](https://travis-ci.org/cerner/xfc)
+[![npm version](https://badge.fury.io/js/xfc.svg)](https://badge.fury.io/js/xfc)
+
 This project handles securely embedding web content into a 3rd party domain. Out of the box, it provides several features:
 
 * Clickjacking protection using either a trusted origin or secret
