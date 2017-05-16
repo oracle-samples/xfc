@@ -1,7 +1,7 @@
 {
   "name": "xfc",
   "version": "1.0.0",
-  "description": "== README",
+  "description": "A Cross Frame Container that handles securely embedding web content into a 3rd party domain",
   "author": "Cerner Corporation",
   "license": "Apache-2.0",
   "main": "lib/index.js",
