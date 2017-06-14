@@ -7,23 +7,28 @@ module.exports = {
     "xfc": ["babel-polyfill", "./src"],
   },
   output: {
-    path: "./dist/",
     filename: "xfc.js",
     libraryTarget: 'umd',
     library: 'XFC'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        include: /src|index\.js/,
-        loader: 'babel-loader',
-        query: {
-          presets: ["es2015"],
-        }
+        include: path.resolve(__dirname, 'src'),
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ["es2015"],
+            }
+          }
+        ]
       }
     ]
   },
-  devtool: "sourcemap",
-  debug: true
+  devServer: {
+    disableHostCheck: true
+  },
+  devtool: "cheap-eval-source-map"
 };

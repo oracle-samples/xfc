@@ -7,28 +7,34 @@ module.exports = {
     "xfc": ["./src"],
   },
   output: {
-    path: "./dist/",
+    path: path.resolve(__dirname, 'dist'),
     filename: "xfc.js",
     libraryTarget: 'umd',
     library: 'XFC'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        include: /src|index\.js/,
-        loader: 'babel-loader',
-        query: {
-          presets: ["es2015"],
-        }
+        include: path.resolve(__dirname, 'src'),
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ["es2015"],
+            }
+          }
+        ]
       }
     ]
   },
-  devtool: "sourcemap",
+  devtool: "source-map",
   plugins: [
-    new webpack.optimize.DedupePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true
     }),
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.LoaderOptionsPlugin({
+      minimize: true
+    })
   ]
 };
