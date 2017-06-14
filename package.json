@@ -13,7 +13,7 @@
     "build": "npm run test && npm run clean && npm run lint-js && npm run build-es5 && npm run build-webpack",
     "build-doc": "jsdoc  --package package.json -d doc ./src/**/*.js",
     "build-es5": "babel src --out-dir lib ",
-    "build-webpack": "webpack --progress --colors --display-error-details",
+    "build-webpack": "webpack -p --progress --colors --display-error-details",
     "clean": "rm -rf dist lib doc",
     "dev": "webpack-dev-server --host=0.0.0.0 --inline --config webpack.config.dev.js",
     "lint-js": "eslint 'src/**/*.js' --fix",

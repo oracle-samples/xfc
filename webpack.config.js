@@ -28,13 +28,5 @@ module.exports = {
       }
     ]
   },
-  devtool: "source-map",
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
-  ]
+  devtool: "source-map"
 };
