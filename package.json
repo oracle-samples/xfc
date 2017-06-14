@@ -15,7 +15,7 @@
     "build-es5": "babel src --out-dir lib ",
     "build-webpack": "webpack -p --progress --colors --display-error-details",
     "clean": "rm -rf dist lib doc",
-    "dev": "webpack-dev-server --host=0.0.0.0 --inline --config webpack.config.dev.js",
+    "dev": "webpack-dev-server --config webpack.config.dev.js",
     "lint-js": "eslint 'src/**/*.js' --fix",
     "test": "mocha --compilers js:babel-core/register --recursive"
   },
