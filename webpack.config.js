@@ -1,16 +1,16 @@
-var path = require("path"),
-    webpack = require("webpack"),
-    pkg = require("./package.json");
+const path = require('path');
+const webpack = require('webpack');
+const pkg = require('./package.json');
 
 module.exports = {
   entry: {
-    "xfc": ["./src"],
+    xfc: ['./src'],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: "xfc.js",
+    filename: 'xfc.js',
     libraryTarget: 'umd',
-    library: 'XFC'
+    library: 'XFC',
   },
   module: {
     rules: [
@@ -19,11 +19,11 @@ module.exports = {
         include: path.resolve(__dirname, 'src'),
         use: [
           {
-            loader: 'babel-loader'
-          }
-        ]
-      }
-    ]
+            loader: 'babel-loader',
+          },
+        ],
+      },
+    ],
   },
-  devtool: "source-map"
+  devtool: 'source-map',
 };
