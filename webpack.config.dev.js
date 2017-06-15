@@ -1,29 +1,32 @@
-var path = require("path"),
-    webpack = require("webpack"),
-    pkg = require("./package.json");
+const path = require('path');
+const webpack = require('webpack');
+const pkg = require('./package.json');
 
 module.exports = {
   entry: {
-    "xfc": ["babel-polyfill", "./src"],
+    xfc: ['babel-polyfill', './src'],
   },
   output: {
-    path: "./dist/",
-    filename: "xfc.js",
+    filename: 'xfc.js',
     libraryTarget: 'umd',
-    library: 'XFC'
+    library: 'XFC',
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        include: /src|index\.js/,
-        loader: 'babel-loader',
-        query: {
-          presets: ["es2015"],
-        }
-      }
-    ]
+        include: path.resolve(__dirname, 'src'),
+        use: [
+          {
+            loader: 'babel-loader',
+          },
+        ],
+      },
+    ],
   },
-  devtool: "sourcemap",
-  debug: true
+  devServer: {
+    host: '0.0.0.0',
+    disableHostCheck: true,
+  },
+  devtool: 'cheap-eval-source-map',
 };

@@ -13,9 +13,9 @@
     "build": "npm run test && npm run clean && npm run lint-js && npm run build-es5 && npm run build-webpack",
     "build-doc": "jsdoc  --package package.json -d doc ./src/**/*.js",
     "build-es5": "babel src --out-dir lib ",
-    "build-webpack": "webpack --progress --colors --display-error-details",
+    "build-webpack": "webpack -p --progress --colors --display-error-details",
     "clean": "rm -rf dist lib doc",
-    "dev": "webpack-dev-server --host=0.0.0.0 --inline --config webpack.config.dev.js",
+    "dev": "webpack-dev-server --config webpack.config.dev.js",
     "lint-js": "eslint 'src/**/*.js' --fix",
     "test": "mocha --compilers js:babel-core/register --recursive"
   },
@@ -41,8 +41,8 @@
     "matchdep": "^1.0.1",
     "mocha": "^3.1.0",
     "sinon": "^1.17.6",
-    "webpack": "^1.13.0",
-    "webpack-dev-server": "^1.14.1"
+    "webpack": "^2.5.1",
+    "webpack-dev-server": "^2.4.5"
   },
   "repository": {
     "type": "git",
