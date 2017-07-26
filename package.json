@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "jsonrpc-dispatch": "^2.0.0",
-    "mutation-observer": "^1.0.2"
+    "mutation-observer": "^1.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",
