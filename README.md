@@ -28,6 +28,11 @@ module.exports = {
 };
 ```
 
+**NOTE**: If you are not in a full ES2015+ environment, you might need to consider providing polyfills for the following features:
+  * `Promise`
+  * `Array.prototype.includes`
+  * `Object.assign`
+
 ### Setting Up A Consumer
 The consumer is the application which is embedding the 3rd party applications within it.
 
