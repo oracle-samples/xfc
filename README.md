@@ -50,6 +50,12 @@ If the embedded app does not know which domain to trust, it may require secret a
 var frame = XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/provider_b.html', {secret: 'abc123'})
 ```
 
+To remove and clean up a mounted app, simple call `unmount` method.
+
+```js
+frame.unmount()
+```
+
 #### Iframe Resizing Config
 By default, the height of iframe will automatically resize based on the height of the embedded content. This behavior can be changed by passing an extra option (`resizeConfig`) into `mount` method.
 
