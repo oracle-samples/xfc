@@ -28,11 +28,6 @@ module.exports = {
 };
 ```
 
-**NOTE**: If you are not in a full ES2015+ environment, you might need to consider providing polyfills for the following features:
-  * `Promise`
-  * `Array.prototype.includes`
-  * `Object.assign`
-
 ### Setting Up A Consumer
 The consumer is the application which is embedding the 3rd party applications within it.
 
@@ -206,6 +201,9 @@ Provider can send http errors to its frame by calling _httpError_ method. This m
 XFC.Provider.httpError({code: 500, message: 'Internal Server Error'});
 ```
 
+## Browser Support
+All supported browsers are defined in [here][1] with browserslist [queries][2].
+
 
 ## Development
 Add localconsumer.com to```/etc/hosts```.
@@ -218,3 +216,7 @@ npm run dev
 ```
 
 Navigate to http://localconsumer.com:8080/example
+
+
+[1]: ./.babelrc#L5
+[2]: https://github.com/ai/browserslist#queries
