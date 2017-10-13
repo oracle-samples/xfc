@@ -1,5 +1,10 @@
 Next Release
 -------------
+1.1.0
+------
+
+Removed the need of adding polyfills when consuming xfc.
+
 
 1.0.2
 ------
