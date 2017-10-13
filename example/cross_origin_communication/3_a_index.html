@@ -81,7 +81,7 @@
       <button class="button" id="btn-unmount">unmount</button>
     </p>
     <script>
-      XFC.Consumer.init()
+      XFC.Consumer.init();
       var frame = XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/cross_origin_communication/3_a_provider.html');
       var btn = document.getElementById('btn-unmount');
       btn.addEventListener('click', function() {
