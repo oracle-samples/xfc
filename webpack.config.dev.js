@@ -4,7 +4,7 @@ const pkg = require('./package.json');
 
 module.exports = {
   entry: {
-    xfc: ['babel-polyfill', './src'],
+    xfc: ['./src'],
   },
   output: {
     filename: 'xfc.js',
@@ -28,5 +28,5 @@ module.exports = {
     host: '0.0.0.0',
     disableHostCheck: true,
   },
-  devtool: 'cheap-eval-source-map',
+  devtool: 'source-map',
 };
