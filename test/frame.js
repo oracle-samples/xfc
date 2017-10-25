@@ -66,7 +66,14 @@ describe('Frame', () => {
       it("emits 'xfc.unmounted' event", () => {
         sinon.assert.called(emit);
       });
+    });
 
+    describe('#load()', () => {
+      it("sets the iframe's src to newURL", () => {
+        const newURL = 'http://localhost:8080/test';
+        frame.load(newURL);
+        expect(frame.iframe.src).to.equal(newURL);
+      });
     });
 
     describe('#send(message)', () => {
