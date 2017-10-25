@@ -141,6 +141,9 @@ class Frame extends EventEmitter {
     if (this.wrapper.parentNode === this.container) {
       this.container.removeChild(this.wrapper);
       this.emit('xfc.unmounted');
+      // Sets references of detached nodes to null to avoid memory leak
+      this.iframe = null;
+      this.wrapper = null;
     }
   }
 
