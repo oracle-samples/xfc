@@ -53,15 +53,20 @@ describe('Frame', () => {
 
     describe('#unmount()', () => {
       const emit = sinon.stub();
+      frame.cleanup = sinon.stub();
       frame.on('xfc.unmounted', () => emit());
       frame.unmount();
 
       it("removes the wrapper from container's child nodes", () => {
         expect(frame.wrapper.parentNode).to.not.equal(frame.container);
       });
+      it("calls method 'cleanup'", () => {
+        sinon.assert.called(frame.cleanup);
+      });
       it("emits 'xfc.unmounted' event", () => {
         sinon.assert.called(emit);
       });
+
     });
 
     describe('#send(message)', () => {
