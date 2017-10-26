@@ -18,6 +18,7 @@ class Frame extends EventEmitter {
     this.initIframeResizer = this.initIframeResizer.bind(this);
     this.send = this.send.bind(this);
     this.cleanup = this.cleanup.bind(this);
+    this.load = this.load.bind(this);
   }
 
   /**
@@ -81,10 +82,7 @@ class Frame extends EventEmitter {
         },
 
         loadPage(url) {
-          self.origin = new URI(url).origin;
-          self.source = url;
-          self.wrapper.setAttribute('data-status', 'mounted');
-          self.iframe.src = url; // Triggers the loading of new page
+          self.load(url);
           return Promise.resolve();
         },
       }
@@ -167,9 +165,10 @@ class Frame extends EventEmitter {
    * @param  {string} url - the URL of new page to load.
    */
   load(url) {
-    if (url) {
-      this.iframe.src = url;
-    }
+    this.origin = new URI(url).origin;
+    this.source = url;
+    this.wrapper.setAttribute('data-status', 'mounted');
+    this.iframe.src = url; // Triggers the loading of new page
   }
 
   /**
