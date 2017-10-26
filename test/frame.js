@@ -4,6 +4,7 @@ import JSONRPC from 'jsonrpc-dispatch';
 import sinon from 'sinon';
 
 import Frame from '../src/consumer/frame';
+import URI from '../src/lib/uri';
 
 
 describe('Frame', () => {
@@ -69,8 +70,17 @@ describe('Frame', () => {
     });
 
     describe('#load()', () => {
+      const newURL = 'http://localhost:8080/test';
+
+      it("sets the frame's origin to the origin of newURL", () => {
+        frame.load(newURL);
+        expect(frame.origin).to.equal(new URI(newURL).origin);
+      });
+      it("sets the frame's source to newURL", () => {
+        frame.load(newURL);
+        expect(frame.source).to.equal(newURL);
+      });
       it("sets the iframe's src to newURL", () => {
-        const newURL = 'http://localhost:8080/test';
         frame.load(newURL);
         expect(frame.iframe.src).to.equal(newURL);
       });
