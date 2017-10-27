@@ -10,6 +10,17 @@ import URI from '../lib/uri';
  */
 class Frame extends EventEmitter {
 
+  constructor(props) {
+    super(props);
+
+    // Binds 'this' for methods called internally
+    this.handleProviderMessage = this.handleProviderMessage.bind(this);
+    this.initIframeResizer = this.initIframeResizer.bind(this);
+    this.send = this.send.bind(this);
+    this.cleanup = this.cleanup.bind(this);
+    this.load = this.load.bind(this);
+  }
+
   /**
   * @param {object} container - The DOM node to append the application frame to.
   * @param {string} source - The url source of the application
@@ -23,12 +34,10 @@ class Frame extends EventEmitter {
     this.origin = new URI(this.source).origin;
     this.secret = secret;
     this.resizeConfig = resizeConfig;
-    this.handleProviderMessage = this.handleProviderMessage.bind(this);
-    this.initIframeResizer = this.initIframeResizer.bind(this);
 
     const self = this;
     this.JSONRPC = new JSONRPC(
-      self.send.bind(self),
+      self.send,
       {
         launch() {
           self.wrapper.setAttribute('data-status', 'launched');
@@ -73,10 +82,7 @@ class Frame extends EventEmitter {
         },
 
         loadPage(url) {
-          self.origin = new URI(url).origin;
-          self.source = url;
-          self.wrapper.setAttribute('data-status', 'mounted');
-          self.iframe.src = url; // Triggers the loading of new page
+          self.load(url);
           return Promise.resolve();
         },
       }
@@ -141,7 +147,28 @@ class Frame extends EventEmitter {
     if (this.wrapper.parentNode === this.container) {
       this.container.removeChild(this.wrapper);
       this.emit('xfc.unmounted');
+      this.cleanup();
     }
+  }
+
+  /**
+   * Cleans up references of detached nodes by setting them to null
+   * to avoid potential memory leak
+   */
+  cleanup() {
+    this.iframe = null;
+    this.wrapper = null;
+  }
+
+  /**
+   * Loads a new page within existing frame.
+   * @param  {string} url - the URL of new page to load.
+   */
+  load(url) {
+    this.origin = new URI(url).origin;
+    this.source = url;
+    this.wrapper.setAttribute('data-status', 'mounted');
+    this.iframe.src = url; // Triggers the loading of new page
   }
 
   /**

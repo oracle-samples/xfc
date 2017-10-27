@@ -4,6 +4,7 @@ import JSONRPC from 'jsonrpc-dispatch';
 import sinon from 'sinon';
 
 import Frame from '../src/consumer/frame';
+import URI from '../src/lib/uri';
 
 
 describe('Frame', () => {
@@ -53,14 +54,35 @@ describe('Frame', () => {
 
     describe('#unmount()', () => {
       const emit = sinon.stub();
+      frame.cleanup = sinon.stub();
       frame.on('xfc.unmounted', () => emit());
       frame.unmount();
 
       it("removes the wrapper from container's child nodes", () => {
         expect(frame.wrapper.parentNode).to.not.equal(frame.container);
       });
+      it("calls method 'cleanup'", () => {
+        sinon.assert.called(frame.cleanup);
+      });
       it("emits 'xfc.unmounted' event", () => {
         sinon.assert.called(emit);
+      });
+    });
+
+    describe('#load()', () => {
+      const newURL = 'http://localhost:8080/test';
+
+      it("sets the frame's origin to the origin of newURL", () => {
+        frame.load(newURL);
+        expect(frame.origin).to.equal(new URI(newURL).origin);
+      });
+      it("sets the frame's source to newURL", () => {
+        frame.load(newURL);
+        expect(frame.source).to.equal(newURL);
+      });
+      it("sets the iframe's src to newURL", () => {
+        frame.load(newURL);
+        expect(frame.iframe.src).to.equal(newURL);
       });
     });
 
