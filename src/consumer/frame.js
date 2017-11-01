@@ -176,8 +176,8 @@ class Frame extends EventEmitter {
   * @param {object} event - The emitted message event.
   */
   handleProviderMessage(event) {
-    // 1. This isn't a JSONRPC message, exit.
-    if (!event.data.jsonrpc) return;
+    // 1. This isn't a JSONRPC message or iframe is null, exit.
+    if (!event.data.jsonrpc || !this.iframe) return;
 
     // 2. Identify the app the message came from.
     if (this.iframe.contentWindow !== event.source) return;
