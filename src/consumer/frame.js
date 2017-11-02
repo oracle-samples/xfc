@@ -152,10 +152,13 @@ class Frame extends EventEmitter {
   }
 
   /**
-   * Cleans up references of detached nodes by setting them to null
-   * to avoid potential memory leak
+   * Cleans up unused message listeners and references of detached nodes
    */
   cleanup() {
+    // Remove listener for all incoming communication
+    window.removeEventListener('message', this.handleProviderMessage);
+
+    // Sets references of detached nodes to null to avoid potential memory leak
     this.iframe = null;
     this.wrapper = null;
   }
