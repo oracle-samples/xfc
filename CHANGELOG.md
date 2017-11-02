@@ -1,5 +1,10 @@
 Next Release
 -------------
+1.2.1
+------
+* Removed message event listeners when unmounting frames.
+
+
 1.2.0
 ------
 * Added `load` method to frame in consumer.
