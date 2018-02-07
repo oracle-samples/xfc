@@ -82,7 +82,7 @@
     </p>
     <script>
       XFC.Consumer.init();
-      var frame = XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/cross_origin_communication/3_a_provider.html');
+      var frame = XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/cross_origin_communication/3_a_provider.html', { 'iframeAttrs': {'allow': 'camera'}});
       var btn = document.getElementById('btn-unmount');
       btn.addEventListener('click', function() {
         frame.unmount();

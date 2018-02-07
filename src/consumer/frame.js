@@ -26,10 +26,11 @@ class Frame extends EventEmitter {
   * @param {string} source - The url source of the application
   * @param {object} options - An optional parameter that contains a set of optional configs
   */
-  init(container, source, { secret = null, resizeConfig = {} } = {}) {
+  init(container, source, { secret = null, resizeConfig = {}, iframeAttrs = {} } = {}) {
     this.source = source;
     this.container = container;
     this.iframe = null;
+    this.iframeAttrs = iframeAttrs;
     this.wrapper = null;
     this.origin = new URI(this.source).origin;
     this.secret = secret;
@@ -134,6 +135,15 @@ class Frame extends EventEmitter {
       iframe.style.overflow = 'hidden';
       iframe.scrolling = 'no';
     }
+
+    // Put custom attributes on iframe if specified
+    Object.entries(this.iframeAttrs).forEach(([key, value]) => {
+      iframe[key] = value;
+    });
+    // Object.keys(this.iframeAttrs).forEach(
+    //   attr => { iframe[attr] = this.iframeAttrs[attr]; }
+    // );
+
     this.iframe = iframe;
     this.wrapper.appendChild(iframe);
 
