@@ -140,9 +140,6 @@ class Frame extends EventEmitter {
     Object.entries(this.iframeAttrs).forEach(([key, value]) => {
       iframe[key] = value;
     });
-    // Object.keys(this.iframeAttrs).forEach(
-    //   attr => { iframe[attr] = this.iframeAttrs[attr]; }
-    // );
 
     this.iframe = iframe;
     this.wrapper.appendChild(iframe);
