@@ -23,8 +23,9 @@ describe('Consumer', () => {
 
   describe('#mount(container, source, options)', () => {
     const container = document.body;
+    const iframeAttrs = { allow: 'camera; geolocation' };
     const source = 'http://test.com:8080/test';
-    const options = { secret: 123 };
+    const options = { secret: 123, iframeAttrs };
 
     it('returns a mounted frame with given container and source', () => {
       const frame = Consumer.mount(container, source);
@@ -39,6 +40,14 @@ describe('Consumer', () => {
       const frame = Consumer.mount(container, '*', options);
 
       expect(frame.secret).to.equal(options.secret);
+    });
+
+    it('returns a frame whose iframe has given custom attributes if provided', () => {
+      const frame = Consumer.mount(container, '*', options);
+
+      Object.entries(iframeAttrs).forEach(([key, value]) => {
+        expect(frame.iframe.getAttribute(key)).to.equal(value);
+      });
     });
   });
 

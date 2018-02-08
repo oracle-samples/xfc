@@ -138,7 +138,7 @@ class Frame extends EventEmitter {
 
     // Put custom attributes on iframe if specified
     Object.entries(this.iframeAttrs).forEach(([key, value]) => {
-      iframe[key] = value;
+      iframe.setAttribute(key, value);
     });
 
     this.iframe = iframe;

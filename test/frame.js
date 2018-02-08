@@ -53,7 +53,7 @@ describe('Frame', () => {
       });
       it("sets the iframe's custom attributes", () => {
         Object.entries(iframeAttrs).forEach(([key, value]) => {
-          expect(frame.iframe[key]).to.equal(value);
+          expect(frame.iframe.getAttribute(key)).to.equal(value);
         });
       });
       it("emits 'xfc.mounted' event", () => {
