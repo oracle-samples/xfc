@@ -79,6 +79,16 @@ XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/provide
 | customCalculationMethod | function | null           | When specified, XFC will use the given method to update iframe's size when necessary (e.g. dom changes, window resized, etc.)<br><br> NOTE: context `this` is provided as iframe to this method, so in the method you can access the iframe by accessing `this` |
 
 
+### Setting Custom Attributes on Iframe
+Sometimes, it's useful for developers to add more attributes onto mounted iframes. A common use case, for instance, is adding `allow` attribute to `<iframe>` tag for cross-origin iframes in Chrome 64+ (See reference [here][3]). In those cases, we can pass an extra option called `iframeAttrs` into `mount` method as follows.
+
+```js
+XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/provider.html', { iframeAttrs: { allow: 'geolocation; camera' }});
+```
+
+Here `iframeAttrs` is an object that contains entries, each of them being an entry of attribute's name and value.
+
+
 ### Monitoring Embedded App Lifecycles
 
 Application lifecycles go through 3 stages as they load:
@@ -227,3 +237,4 @@ Navigate to http://localconsumer.com:8080/example
 
 [1]: ./.babelrc#L5
 [2]: https://github.com/ai/browserslist#queries
+[3]: https://dev.chromium.org/Home/chromium-security/deprecating-permissions-in-cross-origin-iframes
