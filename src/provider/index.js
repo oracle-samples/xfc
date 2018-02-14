@@ -3,8 +3,8 @@ import logger from '../lib/logger';
 
 const Provider = {
   init(config) {
-    // Set hidden attribute with script if not present.
-    if (window.self !== window.top && !document.documentElement.hasAttribute('hidden')) {
+    // Set hidden attribute with script if not present and the provider is not auto authorizing the consumer
+    if (!config.autoAuthorizeConsumer && window.self !== window.top && !document.documentElement.hasAttribute('hidden')) {
       document.documentElement.setAttribute('hidden', null);
 
       // WARNING: Setting hidden attribute with script can be countered by
