@@ -9,28 +9,16 @@ import MutationObserver from 'mutation-observer';
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
-  init({ acls = [], secret = null, onReady = null, autoAuthorizeConsumer = false }) {
+  init({ acls = [], secret = null, onReady = null }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.onReady = onReady;
-    this.autoAuthorizeConsumer = autoAuthorizeConsumer;
     this.resizeConfig = null;
     this.requestResize = this.requestResize.bind(this);
     this.handleConsumerMessage = this.handleConsumerMessage.bind(this);
     this.authorizeConsumer = this.authorizeConsumer.bind(this);
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
-
-    if (this.autoAuthorizeConsumer && (this.secret || this.acls.some((x) => x !== '*'))) {
-      this.autoAuthorizeConsumer = false;
-
-      logger.warn('secret and/or acls and autoAuthorizeConsumer cannot both be provided. Ignoring autoAuthorizeConsumer.');
-    }
-
-    // Set the acls to '*' when auto authorizing the consumer to allow messages to be sent and received
-    if (this.autoAuthorizeConsumer) {
-      this.acls = ['*'];
-    }
 
     // If the document referer (parent frame) origin is trusted, default that
     // to the active ACL;
@@ -133,24 +121,18 @@ class Application extends EventEmitter {
       // 2: Begin launch and authorization sequence
       this.JSONRPC.notification('launch');
 
-      if (this.autoAuthorizeConsumer) {
-        // If auto authorizing, immediately authorize content
+      // 2a. We have a specific origin to trust (excluding wildcard *),
+      // wait for response to authorize.
+      if (this.acls.some((x) => x !== '*')) {
+        this.JSONRPC.request('authorizeConsumer', [])
+          .then(this.authorizeConsumer)
+          .catch(this.emitError);
+      } else if (this.secret) { // 2b. We don't know who to trust, challenge parent for secret
+        this.JSONRPC.request('challengeConsumer', [])
+          .then(this.verifyChallenge)
+          .catch(this.emitError);
+      } else { // 2c. acl is '*' and there is no secret, immediately authorize content
         this.authorizeConsumer();
-      } else {
-        // 2a. We have a specific origin to trust (excluding wildcard *),
-        // wait for response to authorize.
-        if (this.acls.some((x) => x !== '*')) {
-          this.JSONRPC.request('authorizeConsumer', [])
-            .then(this.authorizeConsumer)
-            .catch(this.emitError);
-        }
-
-        // 2b. We don't know who to trust, challenge parent for secret
-        if (this.secret) {
-          this.JSONRPC.request('challengeConsumer', [])
-            .then(this.verifyChallenge)
-            .catch(this.emitError);
-        }
       }
 
     // If not embedded, immediately authorize content
