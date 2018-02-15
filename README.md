@@ -192,6 +192,14 @@ XFC.Provider.init({
 })
 ```
 
+If the app is using an alternate form a security and does require XFC to provide clickjacking support, a wildcard with no secret may be passed. Under these conditions, XFC will not hide the content and the consumer will automatically be authorized.
+
+```js
+XFC.Provider.init({
+  acls: ['*']
+})
+```
+
 ### Launching Fullscreen
 An application may request to launch a pagelet fullscreen within the consumer application.
 
