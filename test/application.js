@@ -10,7 +10,6 @@ describe('Application', () => {
     expect(new Application()).to.be.an.instanceof(EventEmitter);
   });
 
-
   describe('#init()', () => {
     const acls = ['http://localhost:8080'];
     const secret = '123';
@@ -90,22 +89,6 @@ describe('Application', () => {
 
         sinon.assert.calledWith(notification, 'loadPage', [url]);
       }));
-    });
-
-    describe('#launch()', () => {
-      describe('if window.self === window.top', () => {
-        it("calls this.authorizeConsumer", sinon.test(function() {
-          const authorizeConsumer = this.stub(application, 'authorizeConsumer');
-          application.launch();
-
-          sinon.assert.called(authorizeConsumer);
-        }));
-      });
-
-      // TODO: add tests for window.self !== window.top scenario.
-      // Currtently there's no tests for it because it's hard
-      // to mock window object based on current source code.
-      // See more at: http://stackoverflow.com/questions/11959746/sinon-stub-for-window-location-search#answer-11972168
     });
 
     describe('#handleConsumerMessage(event)', () => {
@@ -244,5 +227,33 @@ describe('Application', () => {
         expect(emittedError).to.equal(testErr);
       });
     });
+  });
+
+  describe('#launch()', () => {
+    describe('if window.self === window.top', () => {
+      const tests = [
+        { description: 'valid acls', args: { acls: ['http://localhost:8080'] } },
+        { description: 'valid secret', args: { secret: '124' } },
+        { description: 'acl = * and no secret', args: { acls: ['*'] } },
+      ];
+
+      tests.forEach((test) => {
+        describe(test.description, () => {
+          it('calls this.authorizeConsumer', () => {
+            const application = new Application();
+            application.init(test.args);
+            const authorizeConsumer = sinon.stub(application, 'authorizeConsumer');
+            application.launch();
+
+            sinon.assert.called(authorizeConsumer);
+          });
+        });
+      });
+    });
+
+    // TODO: add tests for window.self !== window.top scenario.
+    // Currently there's no tests for it because it's hard
+    // to mock window object based on current source code.
+    // See more at: http://stackoverflow.com/questions/11959746/sinon-stub-for-window-location-search#answer-11972168
   });
 });
