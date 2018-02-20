@@ -1,5 +1,11 @@
 Next Release
 -------------
+1.3.0
+------
+* Added the feature to pass in custom attributes for mounted iframe.
+* Added support for auto-authorizing the consumer.
+
+
 1.2.1
 ------
 * Removed message event listeners when unmounting frames.
