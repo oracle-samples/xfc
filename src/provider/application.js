@@ -127,13 +127,16 @@ class Application extends EventEmitter {
         this.JSONRPC.request('authorizeConsumer', [])
           .then(this.authorizeConsumer)
           .catch(this.emitError);
-      }
 
       // 2b. We don't know who to trust, challenge parent for secret
-      if (this.secret) {
+      } else if (this.secret) {
         this.JSONRPC.request('challengeConsumer', [])
           .then(this.verifyChallenge)
           .catch(this.emitError);
+
+      // 2c. acl is '*' and there is no secret, immediately authorize content
+      } else {
+        this.authorizeConsumer();
       }
 
     // If not embedded, immediately authorize content
