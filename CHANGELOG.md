@@ -1,5 +1,10 @@
 Next Release
 -------------
+1.3.1
+------
+* Updated node version to 8.9.2 to support NPM 2FA
+
+
 1.3.0
 ------
 * Added the feature to pass in custom attributes for mounted iframe.
