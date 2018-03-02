@@ -1,5 +1,10 @@
 Next Release
 -------------
+1.3.2
+------
+* Updated default height calculation to max to account for dropdowns.
+
+
 1.3.1
 ------
 * Updated node version to 8.9.2 to support NPM 2FA
