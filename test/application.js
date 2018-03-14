@@ -227,6 +227,17 @@ describe('Application', () => {
         expect(emittedError).to.equal(testErr);
       });
     });
+
+    describe("#unload()", () => {
+      it("calls this.trigger with event 'xfc.unload' and last clicked item/href", sinon.test(function() {
+        const trigger = this.stub(application, 'trigger');
+        document.activeElement.href = 'alink.com';
+        document.activeElement.target = '_self';
+        application.unload();
+
+        sinon.assert.calledWith(trigger, 'xfc.unload', { target: '_self', url: 'alink.com' });
+      }));
+    });
   });
 
   describe('#launch()', () => {
