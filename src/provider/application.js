@@ -235,9 +235,8 @@ class Application extends EventEmitter {
   }
 
   unload() {
-    const nextURL = document.activeElement.href;
-
-    this.trigger('xfc.unload', { url: nextURL });
+    this.JSONRPC.notification('unload');
+    this.trigger('xfc.unload', { url: document.activeElement.href });
   }
 }
 
