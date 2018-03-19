@@ -54,7 +54,7 @@ class Frame extends EventEmitter {
         },
 
         unload(detail = {}) {
-          self.wrapper.setAttribute('data-status', 'unloading');
+          self.wrapper.setAttribute('data-status', 'unloaded');
           self.emit('xfc.unload', detail);
           return Promise.resolve();
         },
