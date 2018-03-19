@@ -229,12 +229,11 @@ describe('Application', () => {
     });
 
     describe("#unload()", () => {
-      it("calls this.trigger with event 'xfc.unload' and last clicked item/href", sinon.test(function() {
+      it("calls this.trigger with event 'xfc.unload'", sinon.test(function() {
         const trigger = this.stub(application, 'trigger');
-        document.activeElement.href = 'alink.com';
         application.unload();
 
-        sinon.assert.calledWith(trigger, 'xfc.unload', { url: 'alink.com' });
+        sinon.assert.calledWith(trigger, 'xfc.unload');
       }));
     });
   });
