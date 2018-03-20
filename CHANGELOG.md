@@ -1,8 +1,6 @@
 Next Release
 -------------
-1.4.0
-------
-* Added trigger for frame unloading.
+* Added trigger for frame unloading. #18
 
 1.3.2
 ------
