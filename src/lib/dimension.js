@@ -49,7 +49,7 @@ const getWidth = {
   min: () => Math.min(...getAllMeasures(getWidth)),
 };
 
-export function calculateHeight(calMethod = 'max') {
+export function calculateHeight(calMethod = 'bodyOffset') {
   if (!(calMethod in getHeight)) {
     logger.error(`'${calMethod}' is not a valid method name!`);
   }
@@ -61,4 +61,22 @@ export function calculateWidth(calMethod = 'scroll') {
     logger.error(`'${calMethod}' is not a valid method name!`);
   }
   return getWidth[calMethod]();
+}
+
+export function getOffsetToBody(node, offset = 0) {
+  // If the give node is body, return 0
+  if (node === window.document.body) {
+    return 0;
+  }
+
+  // Stops if the offset parent node is body;
+  // Otherwise keep searching up
+  const calculatedOffset = node.offsetTop + offset;
+  const offsetParent = node.offsetParent;
+
+  if (offsetParent === window.document.body) {
+    return calculatedOffset;
+  }
+
+  return getOffsetToBody(offsetParent, calculatedOffset);
 }

@@ -3,16 +3,17 @@ import { fixedTimeCompare } from '../lib/string';
 import { EventEmitter } from 'events';
 import URI from '../lib/uri';
 import logger from '../lib/logger';
-import { calculateHeight, calculateWidth } from '../lib/dimension';
+import { getOffsetToBody, calculateHeight, calculateWidth } from '../lib/dimension';
 import MutationObserver from 'mutation-observer';
 
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
-  init({ acls = [], secret = null, onReady = null }) {
+  init({ acls = [], secret = null, onReady = null, targetNodes = [] }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.onReady = onReady;
+    this.targetNodes = targetNodes;
     this.resizeConfig = null;
     this.requestResize = this.requestResize.bind(this);
     this.handleConsumerMessage = this.handleConsumerMessage.bind(this);
@@ -72,7 +73,18 @@ class Application extends EventEmitter {
       const width = calculateWidth(this.resizeConfig.WidthCalculationMethod);
       this.JSONRPC.notification('resize', [null, `${width}px`]);
     } else {
-      const height = calculateHeight(this.resizeConfig.heightCalculationMethod);
+      let height = calculateHeight(this.resizeConfig.heightCalculationMethod);
+
+      if (this.targetNodes.length > 0) {
+        const maxTargetHeight = this.targetNodes
+          .map(selector => document.querySelector(selector))
+          .filter(node => node)
+          .map(node => getOffsetToBody(node) + node.offsetHeight)
+          .reduce((max, curr) => Math.max(max, curr), 0);
+
+        height = Math.max(height, maxTargetHeight);
+      }
+
       this.JSONRPC.notification('resize', [`${height}px`]);
     }
   }
