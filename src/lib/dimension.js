@@ -63,14 +63,21 @@ export function calculateWidth(calMethod = 'scroll') {
   return getWidth[calMethod]();
 }
 
+/**
+ * This function returns the distance of the given node relative to the top of document.body
+ */
 export function getOffsetToBody(node, offset = 0) {
-  // If the give node is body, return 0
-  if (node === window.document.body) {
+  // If the given node is body or null, return 0
+  if (!node || node === window.document.body) {
     return 0;
   }
 
   // Stops if the offset parent node is body;
   // Otherwise keep searching up
+  // NOTE: offsetParent will return null on Webkit if the element is hidden
+  //       (the style.display of this element or any ancestor is "none") or
+  //       if the style.position of the element itself is set to "fixed"
+  //       See reference at https://developer.mozilla.org/en-US/docs/Web/API/HTMLelement/offsetParent#Compatibility
   const calculatedOffset = node.offsetTop + offset;
   const offsetParent = node.offsetParent;
 

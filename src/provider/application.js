@@ -9,11 +9,11 @@ import MutationObserver from 'mutation-observer';
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
-  init({ acls = [], secret = null, onReady = null, targetNodes = [] }) {
+  init({ acls = [], secret = null, onReady = null, targetSelectors = [] }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.onReady = onReady;
-    this.targetNodes = targetNodes;
+    this.targetSelectors = targetSelectors;
     this.resizeConfig = null;
     this.requestResize = this.requestResize.bind(this);
     this.handleConsumerMessage = this.handleConsumerMessage.bind(this);
@@ -75,14 +75,28 @@ class Application extends EventEmitter {
     } else {
       let height = calculateHeight(this.resizeConfig.heightCalculationMethod);
 
-      if (this.targetNodes.length > 0) {
-        const maxTargetHeight = this.targetNodes
-          .map(selector => document.querySelector(selector))
-          .filter(node => node)
-          .map(node => getOffsetToBody(node) + node.offsetHeight)
-          .reduce((max, curr) => Math.max(max, curr), 0);
+      // If targetSelectors is specified from Provider or Consumer or both,
+      // need to calculate the height based on specified target selectors
+      if (this.targetSelectors.length > 0 || this.resizeConfig.targetSelectors) {
+        let targetSelectors = [];
 
-        height = Math.max(height, maxTargetHeight);
+        if (this.targetSelectors.length > 0) {
+          targetSelectors = targetSelectors.concat(this.targetSelectors);
+        }
+        if (this.resizeConfig.targetSelectors) {
+          targetSelectors = targetSelectors.concat(this.resizeConfig.targetSelectors);
+        }
+
+        // Remove duplicates
+        targetSelectors = targetSelectors.filter(
+          (elem, index, arr) => arr.indexOf(elem) === index
+        );
+
+        height = targetSelectors
+          .map(selector => document.querySelectorAll(selector))
+          .reduce((accum, nodes) => [...accum, ...nodes], [])
+          .map(node => (!node ? 0 : getOffsetToBody(node) + node.offsetHeight))
+          .reduce((max, curr) => Math.max(max, curr), height);
       }
 
       this.JSONRPC.notification('resize', [`${height}px`]);

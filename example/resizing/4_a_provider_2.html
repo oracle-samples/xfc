@@ -13,7 +13,7 @@
   </head>
   <body>
     <div>
-      <h1>Content will change after 1 second.</h1>
+      <h1>Content will change after 2 second.</h1>
       <p>This page simulates the situation where the embedded content changes after authorization.</p>
     </div>
     <div id="wrapper">
@@ -31,9 +31,9 @@
       </div>
     </div>
     <script type="text/javascript">
-      XFC.Provider.init({ acls: ['http://localconsumer.com:8080'], targetSelectors: ['#ui-selectmenu-menu'] });
+      XFC.Provider.init({ acls: ['http://localconsumer.com:8080'] });
       var wrapper = document.getElementById('wrapper');
-      setTimeout(function() { wrapper.removeChild(document.getElementById('ui-selectmenu-menu')); }, 1000);
+      setTimeout(function() { wrapper.removeChild(document.getElementById('ui-selectmenu-menu')); }, 2000);
     </script>
   </body>
 </html>
