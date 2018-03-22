@@ -53,6 +53,12 @@ class Frame extends EventEmitter {
           return Promise.resolve();
         },
 
+        unload(detail = {}) {
+          self.wrapper.setAttribute('data-status', 'unloaded');
+          self.emit('xfc.unload', detail);
+          return Promise.resolve();
+        },
+
         resize(height = null, width = null) {
           if (typeof resizeConfig.customCalculationMethod === 'function') {
             resizeConfig.customCalculationMethod.call(self.iframe);

@@ -6,6 +6,7 @@ Cerner Corporation
 - Elliott Hoffman [@slor]
 - Greg Howdeshell [@poloka]
 - Matt Schile [@mschile]
+- Sam Milligan [@grneggandsam]
 
 [@mhemesath]: https://github.com/mhemesath
 [@kafkahw]: https://github.com/kafkahw
@@ -13,3 +14,4 @@ Cerner Corporation
 [@slor]: https://github.com/slor
 [@poloka]: https://github.com/poloka
 [@mschile]: https://github.com/mschile
+[@grneggandsam]: https://github.com/grneggandsam

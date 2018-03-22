@@ -19,6 +19,7 @@ class Application extends EventEmitter {
     this.authorizeConsumer = this.authorizeConsumer.bind(this);
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
+    this.unload = this.unload.bind(this);
 
     // If the document referer (parent frame) origin is trusted, default that
     // to the active ACL;
@@ -115,8 +116,9 @@ class Application extends EventEmitter {
   */
   launch() {
     if (window.self !== window.top) {
-      // 1: Setup listeners for all incoming communication
+      // 1: Setup listeners for all incoming communication and beforeunload
       window.addEventListener('message', this.handleConsumerMessage);
+      window.addEventListener('beforeunload', this.unload);
 
       // 2: Begin launch and authorization sequence
       this.JSONRPC.notification('launch');
@@ -230,6 +232,11 @@ class Application extends EventEmitter {
    */
   emitError(error) {
     this.emit('xfc.error', error);
+  }
+
+  unload() {
+    this.JSONRPC.notification('unload');
+    this.trigger('xfc.unload');
   }
 }
 

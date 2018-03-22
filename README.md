@@ -96,6 +96,7 @@ Application lifecycles go through 3 stages as they load:
 1. ```mounted``` The application frame has been appended to the DOM and is loading the remote application site.
 2. ```launched``` The application frame has loaded and the embedded application has begun authorization sequence. At this time the app is loaded, but is hidden to prevent clickjacking.
 3. ```authorized``` The application has approved authorization and is now visible.
+4. ```unload``` The application frame is about to unload due to redirect or other causes.
 
 These statuses are communicated to the consumer application environment in 2 ways.
 
@@ -136,6 +137,11 @@ frame.on('xfc.launched', function() {
 // Listen for a container to trigger an authorized event
 frame.on('xfc.authorized', function(detail) {
   console.log('authorized', detail);
+})
+
+// Listen for a container to trigger an unload event
+frame.on('xfc.unload', function(detail) {
+  console.log('unloading', detail);
 })
 ```
 

@@ -227,6 +227,15 @@ describe('Application', () => {
         expect(emittedError).to.equal(testErr);
       });
     });
+
+    describe("#unload()", () => {
+      it("calls this.trigger with event 'xfc.unload'", sinon.test(function() {
+        const trigger = this.stub(application, 'trigger');
+        application.unload();
+
+        sinon.assert.calledWith(trigger, 'xfc.unload');
+      }));
+    });
   });
 
   describe('#launch()', () => {

@@ -1,5 +1,7 @@
 Next Release
 -------------
+* Added trigger for frame unloading. #18
+
 1.3.2
 ------
 * Updated default height calculation to max to account for dropdowns.
