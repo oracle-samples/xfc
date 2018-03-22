@@ -1,6 +1,9 @@
 Next Release
 -------------
+1.4.0
+------
 * Added trigger for frame unloading. #18
+* Updated default height calucaltion to bodyScroll.
 
 1.3.2
 ------
