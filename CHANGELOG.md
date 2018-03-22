@@ -1,9 +1,14 @@
 Next Release
 -------------
+1.5.0
+------
+* Added support for calculating height of body containing absolute positioned elements.
+* Restored default height calculation back to bodyOffset.
+
 1.4.0
 ------
 * Added trigger for frame unloading. #18
-* Updated default height calucaltion to bodyScroll.
+* Updated default height calculation to bodyScroll.
 
 1.3.2
 ------
