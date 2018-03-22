@@ -49,7 +49,7 @@ const getWidth = {
   min: () => Math.min(...getAllMeasures(getWidth)),
 };
 
-export function calculateHeight(calMethod = 'max') {
+export function calculateHeight(calMethod = 'bodyScroll') {
   if (!(calMethod in getHeight)) {
     logger.error(`'${calMethod}' is not a valid method name!`);
   }
