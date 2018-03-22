@@ -92,9 +92,10 @@ class Application extends EventEmitter {
           .filter(val => val)
           .join(', ');
 
-        height = [].slice.call(document.querySelectorAll(targetSelectors))
-          .map(getOffsetHeightToBody)
-          .reduce((max, curr) => Math.max(max, curr), height);
+        const heights = [].slice.call(document.querySelectorAll(targetSelectors))
+          .map(getOffsetHeightToBody);
+
+        height = Math.max(...heights, height);
       }
 
       this.JSONRPC.notification('resize', [`${height}px`]);
