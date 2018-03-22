@@ -64,7 +64,7 @@ export function calculateWidth(calMethod = 'scroll') {
 }
 
 /**
- * This function returns the distance of the given node relative to the top of document.body
+ * This function returns the offset height of the given node relative to the top of document.body
  */
 export function getOffsetToBody(node, offset = 0) {
   // If the given node is body or null, return 0
@@ -86,4 +86,11 @@ export function getOffsetToBody(node, offset = 0) {
   }
 
   return getOffsetToBody(offsetParent, calculatedOffset);
+}
+
+/**
+ * This function returns the offset height of the given node relative to the top of document.body
+ */
+export function getOffsetHeightToBody(node) {
+  return !node ? 0 : getOffsetToBody(node) + node.offsetHeight;
 }

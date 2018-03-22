@@ -3,13 +3,22 @@ import { fixedTimeCompare } from '../lib/string';
 import { EventEmitter } from 'events';
 import URI from '../lib/uri';
 import logger from '../lib/logger';
-import { getOffsetToBody, calculateHeight, calculateWidth } from '../lib/dimension';
+import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
 import MutationObserver from 'mutation-observer';
 
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
-  init({ acls = [], secret = null, onReady = null, targetSelectors = [] }) {
+  /**
+   * init method
+   * @param  options.acls            An array that contains white listed origins
+   * @param  options.secret          A string or function used for authorization with Consumer
+   * @param  options.onReady         A function that will be called after App is authorized
+   * @param  options.targetSelectors A DOMString containing one or more selectors to match against.
+   *                                 This string must be a valid CSS selector string; if it's not,
+   *                                 a SyntaxError exception is thrown.
+   */
+  init({ acls = [], secret = null, onReady = null, targetSelectors = '' }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.onReady = onReady;
@@ -77,25 +86,14 @@ class Application extends EventEmitter {
 
       // If targetSelectors is specified from Provider or Consumer or both,
       // need to calculate the height based on specified target selectors
-      if (this.targetSelectors.length > 0 || this.resizeConfig.targetSelectors) {
-        let targetSelectors = [];
+      if (this.targetSelectors || this.resizeConfig.targetSelectors) {
+        // Combines target selectors from two sources
+        const targetSelectors = [this.targetSelectors, this.resizeConfig.targetSelectors]
+          .filter(val => val)
+          .join(', ');
 
-        if (this.targetSelectors.length > 0) {
-          targetSelectors = targetSelectors.concat(this.targetSelectors);
-        }
-        if (this.resizeConfig.targetSelectors) {
-          targetSelectors = targetSelectors.concat(this.resizeConfig.targetSelectors);
-        }
-
-        // Remove duplicates
-        targetSelectors = targetSelectors.filter(
-          (elem, index, arr) => arr.indexOf(elem) === index
-        );
-
-        height = targetSelectors
-          .map(selector => document.querySelectorAll(selector))
-          .reduce((accum, nodes) => [...accum, ...nodes], [])
-          .map(node => (!node ? 0 : getOffsetToBody(node) + node.offsetHeight))
+        height = [].slice.call(document.querySelectorAll(targetSelectors))
+          .map(getOffsetHeightToBody)
           .reduce((max, curr) => Math.max(max, curr), height);
       }
 
