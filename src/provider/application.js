@@ -3,16 +3,26 @@ import { fixedTimeCompare } from '../lib/string';
 import { EventEmitter } from 'events';
 import URI from '../lib/uri';
 import logger from '../lib/logger';
-import { calculateHeight, calculateWidth } from '../lib/dimension';
+import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
 import MutationObserver from 'mutation-observer';
 
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
-  init({ acls = [], secret = null, onReady = null }) {
+  /**
+   * init method
+   * @param  options.acls            An array that contains white listed origins
+   * @param  options.secret          A string or function used for authorization with Consumer
+   * @param  options.onReady         A function that will be called after App is authorized
+   * @param  options.targetSelectors A DOMString containing one or more selectors to match against.
+   *                                 This string must be a valid CSS selector string; if it's not,
+   *                                 a SyntaxError exception is thrown.
+   */
+  init({ acls = [], secret = null, onReady = null, targetSelectors = '' }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.onReady = onReady;
+    this.targetSelectors = targetSelectors;
     this.resizeConfig = null;
     this.requestResize = this.requestResize.bind(this);
     this.handleConsumerMessage = this.handleConsumerMessage.bind(this);
@@ -73,7 +83,22 @@ class Application extends EventEmitter {
       const width = calculateWidth(this.resizeConfig.WidthCalculationMethod);
       this.JSONRPC.notification('resize', [null, `${width}px`]);
     } else {
-      const height = calculateHeight(this.resizeConfig.heightCalculationMethod);
+      let height = calculateHeight(this.resizeConfig.heightCalculationMethod);
+
+      // If targetSelectors is specified from Provider or Consumer or both,
+      // need to calculate the height based on specified target selectors
+      if (this.targetSelectors || this.resizeConfig.targetSelectors) {
+        // Combines target selectors from two sources
+        const targetSelectors = [this.targetSelectors, this.resizeConfig.targetSelectors]
+          .filter(val => val)
+          .join(', ');
+
+        const heights = [].slice.call(document.querySelectorAll(targetSelectors))
+          .map(getOffsetHeightToBody);
+
+        height = Math.max(...heights, height);
+      }
+
       this.JSONRPC.notification('resize', [`${height}px`]);
     }
   }

@@ -63,6 +63,11 @@
         document.body,
         'http://localprovider.com:8080/example/resizing/4_a_provider.html'
       );
+      XFC.Consumer.mount(
+        document.body,
+        'http://localprovider.com:8080/example/resizing/4_a_provider_2.html',
+        { resizeConfig: { targetSelectors: '#ui-selectmenu-menu' } }
+      );
     </script>
   </body>
 </html>
