@@ -1,5 +1,7 @@
 Next Release
 -------------
+* Added download attribute check for IE11 in unload trigger.
+
 1.5.0
 ------
 * Added support for calculating height of body containing absolute positioned elements.
