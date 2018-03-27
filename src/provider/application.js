@@ -260,6 +260,7 @@ class Application extends EventEmitter {
   }
 
   unload() {
+    // Need this line because IE11 & some safari trigger onbeforeunload despite presence of download attribute
     if (document.activeElement && document.activeElement.hasAttribute('download')) {
       return;
     }
