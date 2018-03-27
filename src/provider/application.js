@@ -260,6 +260,9 @@ class Application extends EventEmitter {
   }
 
   unload() {
+    if (document.activeElement && document.activeElement.hasAttribute('download')) {
+      return;
+    }
     this.JSONRPC.notification('unload');
     this.trigger('xfc.unload');
   }
