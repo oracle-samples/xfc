@@ -1,5 +1,8 @@
 Next Release
 -------------
+
+1.5.1
+------
 * Added download attribute check for IE11 in unload trigger.
 
 1.5.0
