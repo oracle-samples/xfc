@@ -134,7 +134,7 @@ describe('Frame', () => {
         sinon.assert.notCalled(handle);
       });
 
-      it("doesn't ignore messages from different origins", () => {
+      it("ignores messages from different origins", () => {
         const event = {
           data: {jsonrpc: '2.0'},
           source: frame.iframe.contentWindow,
@@ -142,7 +142,7 @@ describe('Frame', () => {
         };
         frame.handleProviderMessage(event);
 
-        sinon.assert.called(handle);
+        sinon.assert.notCalled(handle);
       });
 
       it("calls this.JSONRPC.handle with the data of given event", () => {

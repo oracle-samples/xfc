@@ -198,11 +198,15 @@ class Frame extends EventEmitter {
     // 2. Identify the app the message came from.
     if (this.iframe.contentWindow !== event.source) return;
 
-    logger.log('<< consumer', event.origin, event.data);
+    // 3. Verify that the origin of the app is trusted
+    // For Chrome, the origin property is in the event.originalEvent object
+    const origin = event.origin || event.originalEvent.origin;
+    if (origin === this.origin) {
+      logger.log('<< consumer', event.origin, event.data);
 
-    // 3. Send a response, if any, back to the app.
-    this.JSONRPC.handle(event.data);
-
+      // 4. Send a response, if any, back to the app.
+      this.JSONRPC.handle(event.data);
+    }
   }
 
   /**

@@ -1,9 +1,6 @@
 Next Release
 -------------
 
-* Remove frame origin check as it doesn't provide any added security value and makes
-  integration more complicated for providing applications.
-
 1.5.1
 ------
 * Added download attribute check for IE11 in unload trigger.
