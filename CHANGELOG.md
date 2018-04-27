@@ -1,8 +1,6 @@
 Next Release
 -------------
 
-1.5.2
-------
 * Remove check for same origin on embedded frames.
 
 1.5.1
