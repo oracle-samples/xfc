@@ -1,7 +1,8 @@
 Next Release
 -------------
 
-* Remove check for same origin on embedded frames.
+* Remove frame origin check as it doesn't provide any added security value and makes
+  integration more complicated for providing applications..
 
 1.5.1
 ------
