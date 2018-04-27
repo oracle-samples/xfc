@@ -1,6 +1,10 @@
 Next Release
 -------------
 
+1.5.2
+------
+* Remove check for same origin on embedded frames.
+
 1.5.1
 ------
 * Added download attribute check for IE11 in unload trigger.
