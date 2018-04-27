@@ -145,28 +145,6 @@ describe('Frame', () => {
         sinon.assert.called(handle);
       });
 
-      it("if the origin changes in the frame, it updates in the app", () => {
-        const event = {
-          data: {jsonrpc: '2.0'},
-          source: frame.iframe.contentWindow,
-          origin: frame.origin
-        };
-
-        frame.handleProviderMessage(event);
-
-        sinon.assert.calledWith(handle, event.data);
-
-        const event2 = {
-          data: {jsonrpc: '2.0'},
-          source: frame.iframe.contentWindow,
-          origin: 'test'
-        };
-
-        frame.handleProviderMessage(event2);
-
-        sinon.assert.calledWith(handle, event2.data);
-      });
-
       it("calls this.JSONRPC.handle with the data of given event", () => {
         const event = {
           data: {jsonrpc: '2.0'},
