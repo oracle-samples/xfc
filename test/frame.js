@@ -145,7 +145,7 @@ describe('Frame', () => {
         sinon.assert.called(handle);
       });
 
-      it("if the origin changes in the frame, it updates in the app", () => {
+      it("updates the app's origin to match the frame's origin", () => {
         const event = {
           data: {jsonrpc: '2.0'},
           source: frame.iframe.contentWindow,
