@@ -198,9 +198,10 @@ class Frame extends EventEmitter {
     // 2. Identify the app the message came from.
     if (this.iframe.contentWindow !== event.source) return;
 
-    // For Chrome, the origin property is in the event.originalEvent object
+    // For Chrome, the origin property is in the event.originalEvent object.
+    // Update origin so it can be used to post back to this frame.
     this.origin = event.origin || event.originalEvent.origin;
-    
+
     logger.log('<< consumer', event.origin, event.data);
 
     // 3. Send a response, if any, back to the app.
