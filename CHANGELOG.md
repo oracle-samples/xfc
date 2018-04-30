@@ -1,6 +1,9 @@
 Next Release
 -------------
 
+
+1.6.0
+------
 * Remove frame origin check as it doesn't provide any added security value and makes
   integration more complicated for providing applications.
 
