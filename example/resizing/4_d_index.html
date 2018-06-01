@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Embedded Content Consuming Site</title>
+    <meta charset="utf-8" />
+    <script src="http://localhost:8080/xfc.js"></script>
+    <style>
+      iframe {
+        width: 100%;
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+      html[hidden] { display: none; }
+      @keyframes flickerAnimation {
+        0%    { opacity: 0.85; }
+        50%   { opacity: 0.20; }
+        100%  { opacity: 0.85; }
+      }
+      .xfc[data-status='mounted'] {
+        border: 5px dashed #000;
+      }
+      .xfc[data-status='launched'] {
+        border: 5px dashed #00F;
+      }
+      .xfc[data-status='authorized'] {
+        border: 5px dashed #0F0;
+      }
+      .xfc[data-status="unloaded"] {
+        animation: flickerAnimation 2s infinite;
+      }
+      .grid {
+        display: flex;
+        flex-flow: row wrap;
+      }
+      .grid div {
+        padding: 20px;
+      }
+      #c1 {
+        border: 5px dashed #000;
+      }
+      #c2 {
+        border: 5px dashed #00F;
+      }
+      #c3 {
+        border: 5px dashed #0F0;
+      }
+      #frameHolder {
+        height: 100px;
+        overflow: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h2>The page doesn't unload for few href attributes</h2>
+    </div>
+    <p>Avoid flickering</p>
+    <script>
+      XFC.Consumer.init()
+      XFC.Consumer.mount(
+        document.body, 'http://localprovider.com:8080/example/resizing/4_d_provider.html'
+      );
+    </script>
+  </body>
+</html>

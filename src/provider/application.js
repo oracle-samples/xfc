@@ -260,8 +260,15 @@ class Application extends EventEmitter {
   }
 
   unload() {
+    // Need to check for href attributes to avoid flickering.
+    const attributeCheck = document.activeElement.getAttribute('href');
+    let attributeCheck_href = false;
+    if(attributeCheck.includes('tel') || attributeCheck.includes('mailto') || attributeCheck.includes('fax') || 
+    attributeCheck.includes('sms') || attributeCheck.includes('callto')) {
+      attributeCheck_href = true;
+    }
     // Need this line because IE11 & some safari trigger onbeforeunload despite presence of download attribute
-    if (document.activeElement && document.activeElement.hasAttribute('download')) {
+    if (document.activeElement && (document.activeElement.hasAttribute('download') || attributeCheck_href)) {
       return;
     }
     this.JSONRPC.notification('unload');
