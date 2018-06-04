@@ -141,7 +141,7 @@ class Application extends EventEmitter {
   */
   launch() {
     if (window.self !== window.top) {
-      // 1: Setup listeners for all incoming communication and beforeunload
+      // 1: Setup listeners for all incoming communication and unload
       window.addEventListener('message', this.handleConsumerMessage);
       window.addEventListener('unload', this.unload);
 
