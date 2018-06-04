@@ -143,7 +143,7 @@ class Application extends EventEmitter {
     if (window.self !== window.top) {
       // 1: Setup listeners for all incoming communication and beforeunload
       window.addEventListener('message', this.handleConsumerMessage);
-      window.addEventListener('beforeunload', this.unload);
+      window.addEventListener('unload', this.unload);
 
       // 2: Begin launch and authorization sequence
       this.JSONRPC.notification('launch');
@@ -260,15 +260,8 @@ class Application extends EventEmitter {
   }
 
   unload() {
-    // Need to check for href attributes to avoid flickering.
-    const attributeCheck = document.activeElement.getAttribute('href');
-    let attributeCheck_href = false;
-    if(attributeCheck.includes('tel') || attributeCheck.includes('mailto') || attributeCheck.includes('fax') || 
-    attributeCheck.includes('sms') || attributeCheck.includes('callto')) {
-      attributeCheck_href = true;
-    }
     // Need this line because IE11 & some safari trigger onbeforeunload despite presence of download attribute
-    if (document.activeElement && (document.activeElement.hasAttribute('download') || attributeCheck_href)) {
+    if (document.activeElement && document.activeElement.hasAttribute('download')) {
       return;
     }
     this.JSONRPC.notification('unload');
