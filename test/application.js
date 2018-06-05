@@ -276,10 +276,5 @@ describe('Application', () => {
         sinon.assert.calledWith(window.addEventListener, 'unload');
       }));
     });
-
-    // TODO: add tests for window.self !== window.top scenario.
-    // Currently there's no tests for it because it's hard
-    // to mock window object based on current source code.
-    // See more at: http://stackoverflow.com/questions/11959746/sinon-stub-for-window-location-search#answer-11972168
   });
 });
