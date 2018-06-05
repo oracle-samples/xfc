@@ -260,6 +260,23 @@ describe('Application', () => {
       });
     });
 
+    describe("if window.self !== window.top", () => {
+      it("checks if eventListener is added'", sinon.test(function() {
+        global.window = {
+          addEventListener: () => console.log('mock addEventListener'),
+          top: { length: -1 },
+        };
+
+        const application = new Application();
+        application.init({ acls: ['http://localhost:8080'] });
+        sinon.spy(window, 'addEventListener');
+
+        application.launch();
+        sinon.assert.calledTwice(window.addEventListener);
+        sinon.assert.calledWith(window.addEventListener, 'unload');
+      }));
+    });
+
     // TODO: add tests for window.self !== window.top scenario.
     // Currently there's no tests for it because it's hard
     // to mock window object based on current source code.
