@@ -235,6 +235,24 @@ describe('Application', () => {
 
         sinon.assert.calledWith(trigger, 'xfc.unload');
       }));
+      it("does not call this.trigger with event 'xfc.unload'", sinon.test(function() {
+        const newlink = document.createElement('a');
+        newlink.setAttribute('href', 'tel:123');
+        newlink.focus();
+        const trigger = this.stub(application, 'trigger');
+        application.unload();
+
+        sinon.assert.neverCalledWith(trigger, 'xfc.unload');
+      }));
+      it("calls this.trigger with event 'xfc.unload' for regular href's", sinon.test(function() {
+        const newlink = document.createElement('a');
+        newlink.setAttribute('href', 'https://www.google.com/');
+        newlink.focus();
+        const trigger = this.stub(application, 'trigger');
+        application.unload();
+
+        sinon.assert.calledWith(trigger, 'xfc.unload');
+      }));
     });
   });
 
@@ -273,7 +291,7 @@ describe('Application', () => {
 
         application.launch();
         sinon.assert.calledTwice(window.addEventListener);
-        sinon.assert.calledWith(window.addEventListener, 'unload');
+        sinon.assert.calledWith(window.addEventListener, 'beforeunload');
       }));
     });
   });

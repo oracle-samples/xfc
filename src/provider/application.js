@@ -141,9 +141,9 @@ class Application extends EventEmitter {
   */
   launch() {
     if (window.self !== window.top) {
-      // 1: Setup listeners for all incoming communication and unload
+      // 1: Setup listeners for all incoming communication and beforeunload
       window.addEventListener('message', this.handleConsumerMessage);
-      window.addEventListener('unload', this.unload);
+      window.addEventListener('beforeunload', this.unload);
 
       // 2: Begin launch and authorization sequence
       this.JSONRPC.notification('launch');
@@ -260,10 +260,18 @@ class Application extends EventEmitter {
   }
 
   unload() {
+    const { activeElement } = document;
+
+    const hasDownload = activeElement ? activeElement.hasAttribute('download') : false;
+    const hrefValue = activeElement && activeElement.hasAttribute('href') ? activeElement.getAttribute('href') : '';
+
+    // Need to check for href attributes to avoid triggering unload.
+    const attributeCheck_href = hrefValue.includes('tel:') || hrefValue.includes('mailto:') || hrefValue.includes('fax:') ||
+     hrefValue.includes('sms:') || hrefValue.includes('callto:');
+
     // Need this line because IE11 & some safari trigger onbeforeunload despite presence of download attribute
-    if (document.activeElement && document.activeElement.hasAttribute('download')) {
-      return;
-    }
+    if (hasDownload || attributeCheck_href) return;
+
     this.JSONRPC.notification('unload');
     this.trigger('xfc.unload');
   }
