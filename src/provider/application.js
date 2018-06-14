@@ -260,20 +260,14 @@ class Application extends EventEmitter {
   }
 
   unload() {
-    const { activeElement } = document;
+    // These patterns trigger unload events but don't actually unload the page
+    const protocols = /^(tel|mailto|fax|sms|callto):/;
+    const element = document.activeElement;
 
-    const hasDownload = activeElement ? activeElement.hasAttribute('download') : false;
-    const hrefValue = activeElement && activeElement.hasAttribute('href') ? activeElement.getAttribute('href') : '';
-
-    // Need to check for href attributes to avoid triggering unload.
-    const attributeCheck_href = hrefValue.includes('tel:') || hrefValue.includes('mailto:') || hrefValue.includes('fax:') ||
-     hrefValue.includes('sms:') || hrefValue.includes('callto:');
-
-    // Need this line because IE11 & some safari trigger onbeforeunload despite presence of download attribute
-    if (hasDownload || attributeCheck_href) return;
-
-    this.JSONRPC.notification('unload');
-    this.trigger('xfc.unload');
+    if (!element || !(element.hasAttribute('download') || protocols.test(element.href))) {
+        this.JSONRPC.notification('unload');
+        this.trigger('xfc.unload');
+    }
   }
 }
 

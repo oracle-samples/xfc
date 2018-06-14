@@ -229,26 +229,32 @@ describe('Application', () => {
     });
 
     describe("#unload()", () => {
-      it("calls this.trigger with event 'xfc.unload'", sinon.test(function() {
-        const trigger = this.stub(application, 'trigger');
+      let trigger;
+      beforeEach(() => {
+        trigger = sinon.stub(application, 'trigger');
+      });
+      afterEach(() => {
+          application.trigger.restore();
+      });
+
+      it("calls this.trigger with event 'xfc.unload'", sinon.test(() => {
         application.unload();
 
         sinon.assert.calledWith(trigger, 'xfc.unload');
       }));
-      it("does not call this.trigger with event 'xfc.unload'", sinon.test(function() {
+      it("does not call this.trigger with event 'xfc.unload'", sinon.test(() => {
         const newlink = document.createElement('a');
         newlink.setAttribute('href', 'tel:123');
         newlink.focus();
-        const trigger = this.stub(application, 'trigger');
         application.unload();
+        sinon.assert.notCalled(trigger);
 
         sinon.assert.neverCalledWith(trigger, 'xfc.unload');
       }));
-      it("calls this.trigger with event 'xfc.unload' for regular href's", sinon.test(function() {
+      it("calls this.trigger with event 'xfc.unload' for regular href's", sinon.test(() => {
         const newlink = document.createElement('a');
         newlink.setAttribute('href', 'https://www.google.com/');
         newlink.focus();
-        const trigger = this.stub(application, 'trigger');
         application.unload();
 
         sinon.assert.calledWith(trigger, 'xfc.unload');
