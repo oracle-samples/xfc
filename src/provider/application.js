@@ -265,8 +265,8 @@ class Application extends EventEmitter {
     const element = document.activeElement;
 
     if (!element || !(element.hasAttribute('download') || protocols.test(element.href))) {
-        this.JSONRPC.notification('unload');
-        this.trigger('xfc.unload');
+      this.JSONRPC.notification('unload');
+      this.trigger('xfc.unload');
     }
   }
 }

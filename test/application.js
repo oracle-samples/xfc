@@ -234,7 +234,7 @@ describe('Application', () => {
         trigger = sinon.stub(application, 'trigger');
       });
       afterEach(() => {
-          application.trigger.restore();
+        application.trigger.restore();
       });
 
       it("calls this.trigger with event 'xfc.unload'", sinon.test(() => {
@@ -251,7 +251,7 @@ describe('Application', () => {
 
         sinon.assert.neverCalledWith(trigger, 'xfc.unload');
       }));
-      it("calls this.trigger with event 'xfc.unload' for regular href's", sinon.test(() => {
+      it("calls this.trigger with event 'xfc.unload' for regular hrefs", sinon.test(() => {
         const newlink = document.createElement('a');
         newlink.setAttribute('href', 'https://www.google.com/');
         newlink.focus();
