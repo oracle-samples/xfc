@@ -1,6 +1,9 @@
 Next Release
 -------------
 
+1.6.1
+------
+* Added href attribute pattern check before unloading.
 
 1.6.0
 ------
