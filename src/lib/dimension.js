@@ -1,6 +1,6 @@
 import logger from './logger';
 
-function getComputedStyle(prop, el = document.body) {
+const getComputedStyle = (prop, el = document.body) => {
   let result = null;
   if ('getComputedStyle' in window) {
     result = window.getComputedStyle(el, null);
@@ -8,16 +8,14 @@ function getComputedStyle(prop, el = document.body) {
     result = document.defaultView.getComputedStyle(el, null);
   }
   return result !== null ? parseInt(result[prop], 10) : 0;
-}
+};
 
-function getAllMeasures(dimension) {
-  return [
-    dimension.bodyOffset(),
-    dimension.bodyScroll(),
-    dimension.documentElementOffset(),
-    dimension.documentElementScroll(),
-  ];
-}
+const getAllMeasures = dimension => [
+  dimension.bodyOffset(),
+  dimension.bodyScroll(),
+  dimension.documentElementOffset(),
+  dimension.documentElementScroll(),
+];
 
 const getHeight = {
   bodyOffset: () => document.body.offsetHeight + getComputedStyle('marginTop') + getComputedStyle('marginBottom'),
@@ -49,24 +47,24 @@ const getWidth = {
   min: () => Math.min(...getAllMeasures(getWidth)),
 };
 
-export function calculateHeight(calMethod = 'bodyOffset') {
+export const calculateHeight = (calMethod = 'bodyOffset') => {
   if (!(calMethod in getHeight)) {
     logger.error(`'${calMethod}' is not a valid method name!`);
   }
   return getHeight[calMethod]();
-}
+};
 
-export function calculateWidth(calMethod = 'scroll') {
+export const calculateWidth = (calMethod = 'scroll') => {
   if (!(calMethod in getWidth)) {
     logger.error(`'${calMethod}' is not a valid method name!`);
   }
   return getWidth[calMethod]();
-}
+};
 
 /**
  * This function returns the offset height of the given node relative to the top of document.body
  */
-export function getOffsetToBody(node, offset = 0) {
+export const getOffsetToBody = (node, offset = 0) => {
   // If the given node is body or null, return 0
   if (!node || node === window.document.body) {
     return 0;
@@ -79,18 +77,19 @@ export function getOffsetToBody(node, offset = 0) {
   //       if the style.position of the element itself is set to "fixed"
   //       See reference at https://developer.mozilla.org/en-US/docs/Web/API/HTMLelement/offsetParent#Compatibility
   const calculatedOffset = node.offsetTop + offset;
-  const offsetParent = node.offsetParent;
+  const { offsetParent } = node;
 
   if (offsetParent === window.document.body) {
     return calculatedOffset;
   }
 
   return getOffsetToBody(offsetParent, calculatedOffset);
-}
+};
 
 /**
  * This function returns the offset height of the given node relative to the top of document.body
  */
-export function getOffsetHeightToBody(node) {
-  return !node ? 0 : getOffsetToBody(node) + node.offsetHeight;
-}
+export const getOffsetHeightToBody = node => (node
+  ? getOffsetToBody(node) + node.offsetHeight
+  : 0
+);

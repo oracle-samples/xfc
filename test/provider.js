@@ -1,8 +1,12 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import sinonTest from 'sinon-test';
 
 import Application from '../src/provider/application';
 import Provider from '../src/provider';
+
+const test = sinonTest(sinon);
+
 
 describe('Provider', () => {
   describe('#init(config)', () => {
@@ -11,7 +15,7 @@ describe('Provider', () => {
     const onReady = () => {};
 
     it('creates an instance of Application with given config', () => {
-      Provider.init({acls, secret, onReady});
+      Provider.init({ acls, secret, onReady });
 
       expect(Provider.application).to.be.an.instanceof(Application);
       expect(Provider.application.acls).to.eql(acls);
@@ -20,7 +24,7 @@ describe('Provider', () => {
     });
 
     describe('#on(eventName, listener)', () => {
-      it("calls 'on' method of this.application", sinon.test(function() {
+      it("calls 'on' method of this.application", test(function () {
         const eventName = 'eventA';
         const eventListener = () => {};
         const on = this.stub(Provider.application, 'on');
@@ -31,7 +35,7 @@ describe('Provider', () => {
     });
 
     describe('#fullscreen(source)', () => {
-      it("calls 'fullscreen' method of this.application", sinon.test(function() {
+      it("calls 'fullscreen' method of this.application", test(function () {
         const source = 'http://localhost:8080/page1.html';
         const fullscreen = this.stub(Provider.application, 'fullscreen');
         Provider.fullscreen(source);
@@ -41,7 +45,7 @@ describe('Provider', () => {
     });
 
     describe('#httpError(error)', () => {
-      it("calls 'httpError' method of this.application", sinon.test(function() {
+      it("calls 'httpError' method of this.application", test(function () {
         const error = 'error';
         const httpError = this.stub(Provider.application, 'httpError');
         Provider.httpError(error);
@@ -51,9 +55,9 @@ describe('Provider', () => {
     });
 
     describe('#trigger(event, detail)', () => {
-      it("calls 'trigger' method of this.application", sinon.test(function() {
+      it("calls 'trigger' method of this.application", test(function () {
         const event = 'eventA';
-        const detail = {data: 'test'};
+        const detail = { data: 'test' };
         const trigger = this.stub(Provider.application, 'trigger');
         Provider.trigger(event, detail);
 
@@ -62,7 +66,7 @@ describe('Provider', () => {
     });
 
     describe('#loadPage(url)', () => {
-      it("calls 'loadPage' method of this.application", sinon.test(function() {
+      it("calls 'loadPage' method of this.application", test(function () {
         const url = 'http://neworigin.com/page1';
         const loadPage = this.stub(Provider.application, 'loadPage');
         Provider.loadPage(url);

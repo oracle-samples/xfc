@@ -3,7 +3,7 @@ import logger from '../lib/logger';
 
 const Provider = {
   init(config) {
-    const enforceSecurity = config.secret || config.acls.some((x) => x !== '*');
+    const enforceSecurity = config.secret || config.acls.some(x => x !== '*');
 
     // Set hidden attribute with script if not present and security is being enforced
     if (enforceSecurity && window.self !== window.top && !document.documentElement.hasAttribute('hidden')) {

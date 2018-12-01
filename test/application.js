@@ -2,8 +2,11 @@ import { expect } from 'chai';
 import { EventEmitter } from 'events';
 import JSONRPC from 'jsonrpc-dispatch';
 import sinon from 'sinon';
+import sinonTest from 'sinon-test';
 
 import Application from '../src/provider/application';
+
+const test = sinonTest(sinon);
 
 describe('Application', () => {
   it('should be an instance of EventEmitter', () => {
@@ -17,18 +20,18 @@ describe('Application', () => {
     const application = new Application();
 
     const oldDocument = global.document;
-    global.document = {referrer: 'http://localhost:8080', createElement: document.createElement.bind(document) };
-    application.init({acls, secret, onReady});
+    global.document = { referrer: 'http://localhost:8080', createElement: document.createElement.bind(document) };
+    application.init({ acls, secret, onReady });
     global.document = oldDocument;
 
-    it ("sets activeACL to document referrer if in ACL", () => {
+    it('sets activeACL to document referrer if in ACL', () => {
       expect(application.activeACL).to.eq(acls[0]);
     });
 
-    it ("doesn't set activeACL to document referrer if not in ACL", () => {
+    it("doesn't set activeACL to document referrer if not in ACL", () => {
       const insecureApp = new Application();
-      global.document = {referrer: 'http://evilsite.com', createElement: document.createElement.bind(document) };
-      insecureApp.init({acls, secret, onReady});
+      global.document = { referrer: 'http://evilsite.com', createElement: document.createElement.bind(document) };
+      insecureApp.init({ acls, secret, onReady });
       global.document = oldDocument;
 
       expect(insecureApp.activeACL).to.equal(undefined);
@@ -51,10 +54,10 @@ describe('Application', () => {
     });
 
     describe('#trigger(event, detail)', () => {
-      it("calls this.JSONRPC.notification of 'event' with event and detail", sinon.test(function() {
+      it("calls this.JSONRPC.notification of 'event' with event and detail", test(function () {
         const notification = this.stub(application.JSONRPC, 'notification');
         const event = 'TestEvent';
-        const detail = {data: 'test'};
+        const detail = { data: 'test' };
         application.trigger(event, detail);
 
         sinon.assert.calledWith(notification, 'event', [event, detail]);
@@ -62,7 +65,7 @@ describe('Application', () => {
     });
 
     describe('#fullscreen(url)', () => {
-      it("calls this.trigger with event 'xfc.fullscreen' and given url", sinon.test(function() {
+      it("calls this.trigger with event 'xfc.fullscreen' and given url", test(function () {
         const trigger = this.stub(application, 'trigger');
         const url = 'test_url';
         application.fullscreen(url);
@@ -72,7 +75,7 @@ describe('Application', () => {
     });
 
     describe('#httpError(error)', () => {
-      it("calls this.trigger with event 'xfc.provider.httpError' and given error", sinon.test(function() {
+      it("calls this.trigger with event 'xfc.provider.httpError' and given error", test(function () {
         const trigger = this.stub(application, 'trigger');
         const error = 'error';
         application.httpError(error);
@@ -82,7 +85,7 @@ describe('Application', () => {
     });
 
     describe('#loadPage(url)', () => {
-      it("calls this.JSONRPC.notification of 'loadPage' with given url", sinon.test(function() {
+      it("calls this.JSONRPC.notification of 'loadPage' with given url", test(function () {
         const notification = this.stub(application.JSONRPC, 'notification');
         const url = 'test_url';
         application.loadPage(url);
@@ -93,49 +96,49 @@ describe('Application', () => {
 
     describe('#handleConsumerMessage(event)', () => {
       const handle = sinon.stub(application.JSONRPC, 'handle');
-      after(()=> handle.restore());
+      after(() => handle.restore());
 
-      it("ignores non-JSONRPC messages", () => {
-        const event = {data: 'bad data'};
+      it('ignores non-JSONRPC messages', () => {
+        const event = { data: 'bad data' };
         application.handleConsumerMessage(event);
 
         sinon.assert.notCalled(handle);
       });
 
-      it("ignores messages not from parent frame windows", () => {
-        const event = {data: {jsonrpc: '2.0'}, source: null};
+      it('ignores messages not from parent frame windows', () => {
+        const event = { data: { jsonrpc: '2.0' }, source: null };
         application.handleConsumerMessage(event);
 
         sinon.assert.notCalled(handle);
       });
 
-      it("ignores messages from different origins", () => {
+      it('ignores messages from different origins', () => {
         const event = {
-          data: {jsonrpc: '2.0'},
+          data: { jsonrpc: '2.0' },
           source: window.parent,
-          origin: 'invalid_origin'
+          origin: 'invalid_origin',
         };
         application.handleConsumerMessage(event);
 
         sinon.assert.notCalled(handle);
       });
 
-      it("calls this.JSONRPC.handle with the data of given event", () => {
+      it('calls this.JSONRPC.handle with the data of given event', () => {
         const event = {
-          data: {jsonrpc: '2.0'},
+          data: { jsonrpc: '2.0' },
           source: window.parent,
-          origin: acls[0]
+          origin: acls[0],
         };
         application.handleConsumerMessage(event);
 
         sinon.assert.calledWith(handle, event.data);
       });
 
-      it("sets an activeACL if origin is found within acls", () => {
+      it('sets an activeACL if origin is found within acls', () => {
         const event = {
-          data: {jsonrpc: '2.0'},
+          data: { jsonrpc: '2.0' },
           source: window.parent,
-          origin: acls[0]
+          origin: acls[0],
         };
         application.handleConsumerMessage(event);
         expect(application.activeACL).to.equal(acls[0]);
@@ -144,14 +147,14 @@ describe('Application', () => {
 
     describe('#verifyChallenge(secretAttempt)', () => {
       describe('this.secret is a string', () => {
-        it("ignores it if secrets don't match", sinon.test(function() {
+        it("ignores it if secrets don't match", test(function () {
           const authorizeConsumer = this.stub(application, 'authorizeConsumer');
           application.verifyChallenge('12');
 
           sinon.assert.notCalled(authorizeConsumer);
         }));
 
-        it("calls this.authorizeConsumer if secrets match", sinon.test(function() {
+        it('calls this.authorizeConsumer if secrets match', test(function () {
           const authorizeConsumer = this.stub(application, 'authorizeConsumer');
           application.verifyChallenge(secret);
 
@@ -162,34 +165,33 @@ describe('Application', () => {
       describe('this.secret is a function', () => {
         const application = new Application();
 
-        it("calls this.secret with secretAttempt", (done) => {
-          const testSecret = '12'
+        it('calls this.secret with secretAttempt', (done) => {
+          const testSecret = '12';
           const secret = (secretAttempt) => {
             expect(secretAttempt).to.equal(testSecret);
             done();
-            return Promise.resolve()
+            return Promise.resolve();
           };
-          application.init({secret});
+          application.init({ secret });
 
           application.verifyChallenge(testSecret);
         });
 
-        it("calls this.authorizeConsumer eventually", (done) => {
-          const secret = (secretAttempt) => Promise.resolve();
-          application.init({secret});
-          const authorizeConsumer = sinon.stub(
-            application, 'authorizeConsumer', () => {
+        it('calls this.authorizeConsumer eventually', (done) => {
+          const secret = () => Promise.resolve();
+          application.init({ secret });
+          const authorizeConsumer = sinon.stub(application, 'authorizeConsumer')
+            .callsFake(() => {
               done();
               authorizeConsumer.restore();
-            }
-          );
+            });
 
-          application.verifyChallenge("123");
+          application.verifyChallenge('123');
         });
       });
     });
 
-    describe("#authorizeConsumer()", () => {
+    describe('#authorizeConsumer()', () => {
       it("emits 'xfc.ready' event", () => {
         const emit = sinon.stub();
         application.on('xfc.ready', () => emit());
@@ -198,27 +200,27 @@ describe('Application', () => {
         sinon.assert.called(emit);
       });
 
-      it("calls this.JSONRPC.notification of 'authorized' with current url", sinon.test(function() {
+      it("calls this.JSONRPC.notification of 'authorized' with current url", test(function () {
         const notification = this.stub(application.JSONRPC, 'notification');
         application.authorizeConsumer();
 
         sinon.assert.calledWith(notification, 'authorized', [{ url: window.location.href }]);
       }));
 
-      it("calls this.onReady if onReady is a function", () => {
+      it('calls this.onReady if onReady is a function', () => {
         const onReady = sinon.stub();
         const application = new Application();
-        application.init({onReady});
+        application.init({ onReady });
         application.authorizeConsumer();
 
         sinon.assert.called(onReady);
       });
     });
 
-    describe("#emitError(error)", () => {
+    describe('#emitError(error)', () => {
       it("emits 'xfc.error' with the given error", () => {
         let emittedError = null;
-        const testErr = {code: 404, message: 'not found'};
+        const testErr = { code: 404, message: 'not found' };
         application.on('xfc.error', (err) => {
           emittedError = err;
         });
@@ -228,7 +230,7 @@ describe('Application', () => {
       });
     });
 
-    describe("#unload()", () => {
+    describe('#unload()', () => {
       let trigger;
       beforeEach(() => {
         trigger = sinon.stub(application, 'trigger');
@@ -237,12 +239,12 @@ describe('Application', () => {
         application.trigger.restore();
       });
 
-      it("calls this.trigger with event 'xfc.unload'", sinon.test(() => {
+      it("calls this.trigger with event 'xfc.unload'", test(() => {
         application.unload();
 
         sinon.assert.calledWith(trigger, 'xfc.unload');
       }));
-      it("does not call this.trigger with event 'xfc.unload'", sinon.test(() => {
+      it("does not call this.trigger with event 'xfc.unload'", test(() => {
         const newlink = document.createElement('a');
         newlink.setAttribute('href', 'tel:123');
         newlink.focus();
@@ -251,7 +253,7 @@ describe('Application', () => {
 
         sinon.assert.neverCalledWith(trigger, 'xfc.unload');
       }));
-      it("calls this.trigger with event 'xfc.unload' for regular hrefs", sinon.test(() => {
+      it("calls this.trigger with event 'xfc.unload' for regular hrefs", test(() => {
         const newlink = document.createElement('a');
         newlink.setAttribute('href', 'https://www.google.com/');
         newlink.focus();
@@ -284,8 +286,8 @@ describe('Application', () => {
       });
     });
 
-    describe("if window.self !== window.top", () => {
-      it("checks if eventListener is added'", sinon.test(function() {
+    describe('if window.self !== window.top', () => {
+      it("checks if eventListener is added'", test(() => {
         global.window = {
           addEventListener: () => console.log('mock addEventListener'),
           top: { length: -1 },

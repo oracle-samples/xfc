@@ -2,10 +2,12 @@ import { expect } from 'chai';
 import { EventEmitter } from 'events';
 import JSONRPC from 'jsonrpc-dispatch';
 import sinon from 'sinon';
+import sinonTest from 'sinon-test';
 
 import Frame from '../src/consumer/frame';
 import URI from '../src/lib/uri';
 
+const test = sinonTest(sinon);
 
 describe('Frame', () => {
   it('should be an instance of EventEmitter', () => {
@@ -14,7 +16,7 @@ describe('Frame', () => {
 
   describe('#init() with secret', () => {
     const container = document.body;
-    const source = "*";
+    const source = '*';
     const iframeAttrs = { allow: 'camera' };
     const options = { secret: 123, iframeAttrs };
     const frame = new Frame();
@@ -96,9 +98,9 @@ describe('Frame', () => {
     });
 
     describe('#send(message)', () => {
-      it("calls postMessage with given message on iframe.contentWindow", sinon.test(function() {
-        const postMessage = this.stub(frame.iframe.contentWindow, "postMessage");
-        const message = {data: 'test'};
+      it('calls postMessage with given message on iframe.contentWindow', test(function () {
+        const postMessage = this.stub(frame.iframe.contentWindow, 'postMessage');
+        const message = { data: 'test' };
         frame.send(message);
 
         sinon.assert.calledWith(postMessage, message);
@@ -106,10 +108,10 @@ describe('Frame', () => {
     });
 
     describe('#trigger(event, detail)', () => {
-      it("calls this.JSONRPC.notification of 'event' with event and detail", sinon.test(function() {
+      it("calls this.JSONRPC.notification of 'event' with event and detail", test(function () {
         const notification = this.stub(frame.JSONRPC, 'notification');
         const event = 'TestEvent';
-        const detail = {data: 'test'};
+        const detail = { data: 'test' };
         frame.trigger(event, detail);
 
         sinon.assert.calledWith(notification, 'event', [event, detail]);
@@ -118,17 +120,17 @@ describe('Frame', () => {
 
     describe('#handleProviderMessage(event)', () => {
       const handle = sinon.stub(frame.JSONRPC, 'handle');
-      after(()=> handle.restore());
+      after(() => handle.restore());
 
-      it("ignores non-JSONRPC messages", () => {
-        const event = {data: 'bad data'};
+      it('ignores non-JSONRPC messages', () => {
+        const event = { data: 'bad data' };
         frame.handleProviderMessage(event);
 
         sinon.assert.notCalled(handle);
       });
 
-      it("ignores messages from different frame windows", () => {
-        const event = {data: {jsonrpc: '2.0'}, source: null};
+      it('ignores messages from different frame windows', () => {
+        const event = { data: { jsonrpc: '2.0' }, source: null };
         frame.handleProviderMessage(event);
 
         sinon.assert.notCalled(handle);
@@ -136,9 +138,9 @@ describe('Frame', () => {
 
       it("doesn't ignore messages from different origins", () => {
         const event = {
-          data: {jsonrpc: '2.0'},
+          data: { jsonrpc: '2.0' },
           source: frame.iframe.contentWindow,
-          origin: 'invalid_origin'
+          origin: 'invalid_origin',
         };
         frame.handleProviderMessage(event);
 
@@ -147,20 +149,20 @@ describe('Frame', () => {
 
       it("updates the app's origin to match the frame's origin", () => {
         const event = {
-          data: {jsonrpc: '2.0'},
+          data: { jsonrpc: '2.0' },
           source: frame.iframe.contentWindow,
-          origin: 'http://localhost:8080'
+          origin: 'http://localhost:8080',
         };
         frame.handleProviderMessage(event);
 
         expect(frame.origin).to.equal(event.origin);
       });
 
-      it("calls this.JSONRPC.handle with the data of given event", () => {
+      it('calls this.JSONRPC.handle with the data of given event', () => {
         const event = {
-          data: {jsonrpc: '2.0'},
+          data: { jsonrpc: '2.0' },
           source: frame.iframe.contentWindow,
-          origin: frame.origin
+          origin: frame.origin,
         };
         frame.handleProviderMessage(event);
 

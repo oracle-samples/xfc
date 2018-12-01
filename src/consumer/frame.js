@@ -1,15 +1,13 @@
 import { EventEmitter } from 'events';
-import logger from '../lib/logger';
 import JSONRPC from 'jsonrpc-dispatch';
+import logger from '../lib/logger';
 import URI from '../lib/uri';
-
 
 /**
  * Application container class which represents an application frame hosting
  * an app on a 3rd party domain.
  */
 class Frame extends EventEmitter {
-
   constructor(props) {
     super(props);
 
@@ -92,7 +90,7 @@ class Frame extends EventEmitter {
           self.load(url);
           return Promise.resolve();
         },
-      }
+      },
     );
   }
 
@@ -206,7 +204,6 @@ class Frame extends EventEmitter {
 
     // 3. Send a response, if any, back to the app.
     this.JSONRPC.handle(event.data);
-
   }
 
   /**
@@ -229,7 +226,6 @@ class Frame extends EventEmitter {
   trigger(event, detail) {
     this.JSONRPC.notification('event', [event, detail]);
   }
-
 }
 
 export default Frame;

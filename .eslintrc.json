@@ -1,21 +1,29 @@
-// When you write javascript you should follow these soft rules and best practices
-// https://github.com/airbnb/javascript
-
-// This is a link to best practices and enforcer settings for eslint
-// https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb
-
-// Use this file as a starting point for your project's .eslintrc.
 {
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "plugins": [
+    "import",
+    "jsx-a11y",
+    "react",
+    "compat"
+  ],
   "env": {
     "browser": true,
-    "node": true,
-    "jquery": true,
-    "commonjs": true,
-    "es6": true
+    "jest": true
   },
-  "extends": ["airbnb"],
   "rules": {
-    "no-unused-vars": 0,
-    "max-len": 0
+    "jsx-a11y/href-no-hash": "off", // Turn this off until eslint-config-cerner updates to airbnb 16.x
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/test/*", "**/*.jest.*", "**/*.test.*"]}],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "compat/compat": "error" // error when using features that are not supported in the browsers we target in .browserslistrc
+  },
+  "globals": {
+    "shallow": true,
+    "render": true,
+    "mount": true,
+    "jsdom": true
+  },
+  "settings": {
+    "polyfills": ["fetch", "promises", "url", "urlsearchparams"] // do not show lint for these features. Add documentation about the polyfill requirement before adding to this list!
   }
 }

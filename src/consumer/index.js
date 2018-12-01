@@ -6,11 +6,11 @@ import Frame from './frame';
  * @param {string} event - event name
  * @param {function} handler - event handler function
  */
-function addEventHandler(emitter, event, handler) {
+const addEventHandler = (emitter, event, handler) => {
   if (typeof handler === 'function') {
     emitter.on(event, handler);
   }
-}
+};
 
 const Consumer = {
   /**
@@ -37,14 +37,12 @@ const Consumer = {
     frame.init(container, source, options);
 
     // Apply global handlers to the frame
-    Object.keys(this.globalHandlers).forEach(event => {
+    Object.keys(this.globalHandlers).forEach((event) => {
       const handlers = this.globalHandlers[event];
 
       // If 'handlers' is an array, apply each handler to frame
       if (Array.isArray(handlers)) {
-        handlers.forEach(handler => {
-          addEventHandler(frame, event, handler);
-        });
+        handlers.forEach(handler => addEventHandler(frame, event, handler));
       } else {
         addEventHandler(frame, event, handlers);
       }

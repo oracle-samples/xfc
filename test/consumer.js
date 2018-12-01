@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import sinon from 'sinon';
 
 import Consumer from '../src/consumer';
 import Frame from '../src/consumer/frame';
@@ -8,7 +7,7 @@ import Frame from '../src/consumer/frame';
 describe('Consumer', () => {
   describe('#init(globalHandlers)', () => {
     it('sets this.globalHandlers to the given globalHandlers', () => {
-      const globalHandlers = {'eventA': ()=>{}};
+      const globalHandlers = { eventA: () => {} };
       Consumer.init(globalHandlers);
 
       expect(Consumer.globalHandlers).to.equal(globalHandlers);
@@ -50,5 +49,4 @@ describe('Consumer', () => {
       });
     });
   });
-
 });

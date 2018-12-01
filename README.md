@@ -10,6 +10,7 @@ This project handles securely embedding web content into a 3rd party domain. Out
 * Event dispatching from embedded content into a framework
 
 ## Usage
+
 Include `xfc.js` in your project.
 
 Ensure `process.env.NODE_ENV` is set correctly in the build enviornment. Logging is only enabled in non-production environments. The environment can be set in webpack using the [DefinePlugin](https://webpack.js.org/guides/production-build/)
@@ -29,6 +30,7 @@ module.exports = {
 ```
 
 ### Setting Up A Consumer
+
 The consumer is the application which is embedding the 3rd party applications within it.
 
 ```js
@@ -57,8 +59,8 @@ To load a new page within the existing frame, simply call `load` method with the
 frame.load(newURL)
 ```
 
-
 #### Iframe Resizing Config
+
 By default, the height of iframe will automatically resize based on the height of the embedded content. This behavior can be changed by passing an extra option (`resizeConfig`) into `mount` method.
 
 ```js
@@ -79,8 +81,8 @@ XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/provide
 | customCalculationMethod | function | null           | When specified, XFC will use the given method to update iframe's size when necessary (e.g. dom changes, window resized, etc.)<br><br> NOTE: context `this` is provided as iframe to this method, so in the method you can access the iframe by accessing `this` |
 | targetSelectors         | string   | null           | When the embedded page contains elements styled with `position: absolute`, the iframe resizing logic won't calculate the height of the embedded page correctly because those elements are removed from normal document flow.<br><br>In this case, targetSelectors can be used to specify those absolute positioned elements so that they will be taken into consideration when calculating the height of the embedded page. Multiple selectors may be specified by separating them using commas.<br><br>If not specified, normal resizing logic will be used.<br><br> NOTE: this attribute can be also specified from Provider's side, e.g. `XFC.Provider.init({targetSelectors: '#target'})`|
 
-
 ### Setting Custom Attributes on Iframe
+
 Sometimes, it's useful for developers to add more attributes onto mounted iframes. A common use case, for instance, is adding `allow` attribute to `<iframe>` tag for cross-origin iframes in Chrome 64+ (See reference [here][3]). In those cases, we can pass an extra option called `iframeAttrs` into `mount` method as follows.
 
 ```js
@@ -88,7 +90,6 @@ XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/provide
 ```
 
 Here `iframeAttrs` is an object that contains entries, each of them being an entry of attribute's name and value.
-
 
 ### Monitoring Embedded App Lifecycles
 
@@ -105,6 +106,7 @@ These statuses are communicated to the consumer application environment in 2 way
 * A custom application event originating from the embedded iFrame.
 
 #### Styling Cross Frame Containers Based On Status
+
 The cross frame container ```data-status``` attribute can be used as a styling hook to hide containers until they have authorized
 
 ```css
@@ -121,6 +123,7 @@ The cross frame container ```data-status``` attribute can be used as a styling h
 ```
 
 ### Listening for Lifecycle Events
+
 Event listeners can be set up to listen for lifecycle changes to a cross frame container.
 The target of the event will be the embedded application frame which is an instance of EventEmitter.
 
@@ -147,6 +150,7 @@ frame.on('xfc.unload', function(detail) {
 ```
 
 ### Fullscreen Events
+
 A provider application may request to launch another provider app fullscreen.
 
 ```js
@@ -158,6 +162,7 @@ frame.on('xfc.fullscreen', function(url) {
 ```
 
 ### Sending custom events to a provider
+
 Each frame of the consumer can send custom events to its embedded provider through its _trigger_ method.
 
 ```js
@@ -166,8 +171,8 @@ Each frame of the consumer can send custom events to its embedded provider throu
 frame.trigger('fetchDetail', {id: 10});
 ```
 
-
 ## Setting Up A Provider
+
 The provider is the application which is embedded by the consumer.
 
 ```js
@@ -208,6 +213,7 @@ XFC.Provider.init({
 ```
 
 ### Launching Fullscreen
+
 An application may request to launch a pagelet fullscreen within the consumer application.
 
 ```js
@@ -216,6 +222,7 @@ XFC.Provider.fullscreen('http://localconsumer.com:8080/workflow')
 ```
 
 ### Sending custom events to its frame
+
 Provider can send custom events to the frame where it's embedded through _trigger_ method.
 
 ```js
@@ -234,21 +241,22 @@ XFC.Provider.httpError({code: 500, message: 'Internal Server Error'});
 ```
 
 ## Browser Support
+
 All supported browsers are defined in [here][1] with browserslist [queries][2].
 
-
 ## Development
+
 Add localconsumer.com to```/etc/hosts```.
 Add localprovider.com to```/etc/hosts```.
 
 Install dependencies and start the server.
-```
-npm install
-npm run dev
+
+```bash
+yarn install
+yarn run dev
 ```
 
 Navigate to http://localconsumer.com:8080/example
-
 
 [1]: ./.babelrc#L5
 [2]: https://github.com/ai/browserslist#queries

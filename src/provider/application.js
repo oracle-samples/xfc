@@ -1,11 +1,10 @@
 import JSONRPC from 'jsonrpc-dispatch';
-import { fixedTimeCompare } from '../lib/string';
 import { EventEmitter } from 'events';
+import MutationObserver from 'mutation-observer';
+import fixedTimeCompare from '../lib/fixedTimeCompare';
 import URI from '../lib/uri';
 import logger from '../lib/logger';
 import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
-import MutationObserver from 'mutation-observer';
-
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
@@ -18,7 +17,9 @@ class Application extends EventEmitter {
    *                                 This string must be a valid CSS selector string; if it's not,
    *                                 a SyntaxError exception is thrown.
    */
-  init({ acls = [], secret = null, onReady = null, targetSelectors = '' }) {
+  init({
+    acls = [], secret = null, onReady = null, targetSelectors = '',
+  }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.onReady = onReady;
@@ -53,26 +54,27 @@ class Application extends EventEmitter {
           self.requestResize();
 
           // Registers a mutation observer for body
-          const observer = new MutationObserver(
-            (mutations) => self.requestResize()
-          );
+          const observer = new MutationObserver(() => self.requestResize());
           observer.observe(
             document.body,
-            { attributes: true, childList: true, characterData: true, subtree: true }
+            {
+              attributes: true, childList: true, characterData: true, subtree: true,
+            },
           );
 
           // Registers a listener to window.onresize
           // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
-          const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
+          // Resize event will be considered complete if no follow-up events within `interval` ms.
+          const interval = 100;
           let resizeTimer = null;
-          window.onresize = (event) => {
+          window.onresize = () => {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => self.requestResize(), interval);
           };
 
           return Promise.resolve();
         },
-      }
+      },
     );
   }
 
@@ -150,7 +152,7 @@ class Application extends EventEmitter {
 
       // 2a. We have a specific origin to trust (excluding wildcard *),
       // wait for response to authorize.
-      if (this.acls.some((x) => x !== '*')) {
+      if (this.acls.some(x => x !== '*')) {
         this.JSONRPC.request('authorizeConsumer', [])
           .then(this.authorizeConsumer)
           .catch(this.emitError);
@@ -210,11 +212,13 @@ class Application extends EventEmitter {
 
     if (message) {
       logger.log('>> provider', this.acls, message);
+      /* eslint-disable no-restricted-globals */
       if (this.activeACL) {
         parent.postMessage(message, this.activeACL);
       } else {
-        this.acls.forEach((uri) => parent.postMessage(message, uri));
+        this.acls.forEach(uri => parent.postMessage(message, uri));
       }
+      /* eslint-enable no-restricted-globals */
     }
   }
 
