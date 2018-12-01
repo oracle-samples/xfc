@@ -7,7 +7,6 @@ import Provider from '../src/provider';
 
 const test = sinonTest(sinon);
 
-
 describe('Provider', () => {
   describe('#init(config)', () => {
     const acls = ['http://localhost:8080'];

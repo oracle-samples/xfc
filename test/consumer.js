@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import Consumer from '../src/consumer';
 import Frame from '../src/consumer/frame';
 
-
 describe('Consumer', () => {
   describe('#init(globalHandlers)', () => {
     it('sets this.globalHandlers to the given globalHandlers', () => {
