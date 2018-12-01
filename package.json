@@ -16,7 +16,7 @@
     "dev": "webpack-dev-server --config webpack.config.dev.js",
     "docs": "jsdoc  --package package.json -d doc ./src/**/*.js",
     "lint": "eslint 'src/**/*.js' --fix",
-    "test": "mocha --compilers js:babel-core/register --recursive",
+    "test": "mocha --recursive --compilers js:babel-core/register test/*.js",
     "webpack": "webpack -p --progress --colors --display-error-details"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "babel-plugin-array-includes": "^2.0.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "chai": "^4.2.0",
