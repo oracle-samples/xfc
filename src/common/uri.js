@@ -1,5 +1,5 @@
 /** URI class for parsing URIs */
-class URI {
+export default class URI {
   constructor(uri) {
     const a = document.createElement('a');
     a.href = uri;
@@ -15,5 +15,3 @@ class URI {
     this.origin = `${this.protocol}//${this.host}`;
   }
 }
-
-export default URI;

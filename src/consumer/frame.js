@@ -1,7 +1,8 @@
 import { EventEmitter } from 'events';
 import JSONRPC from 'jsonrpc-dispatch';
-import logger from '../lib/logger';
-import URI from '../lib/uri';
+import logger from '../common/logger';
+import URI from '../common/uri';
+import * as events from '../common/events';
 
 /**
  * Application container class which represents an application frame hosting
@@ -40,20 +41,20 @@ class Frame extends EventEmitter {
       {
         launch() {
           self.wrapper.setAttribute('data-status', 'launched');
-          self.emit('xfc.launched');
+          self.emit(events.launched);
           return Promise.resolve();
         },
 
         authorized(detail = {}) {
           self.wrapper.setAttribute('data-status', 'authorized');
-          self.emit('xfc.authorized', detail);
+          self.emit(events.authorized, detail);
           self.initIframeResizer();
           return Promise.resolve();
         },
 
         unload(detail = {}) {
           self.wrapper.setAttribute('data-status', 'unloaded');
-          self.emit('xfc.unload', detail);
+          self.emit(events.unload, detail);
           return Promise.resolve();
         },
 
@@ -148,7 +149,7 @@ class Frame extends EventEmitter {
     this.iframe = iframe;
     this.wrapper.appendChild(iframe);
 
-    this.emit('xfc.mounted');
+    this.emit(events.mounted);
   }
 
   /**
@@ -157,7 +158,7 @@ class Frame extends EventEmitter {
   unmount() {
     if (this.wrapper.parentNode === this.container) {
       this.container.removeChild(this.wrapper);
-      this.emit('xfc.unmounted');
+      this.emit(events.unmounted);
       this.cleanup();
     }
   }

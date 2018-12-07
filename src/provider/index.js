@@ -1,5 +1,5 @@
 import Application from './application';
-import logger from '../lib/logger';
+import logger from '../common/logger';
 
 const Provider = {
   init(config) {

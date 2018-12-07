@@ -1,10 +1,17 @@
 {
   "presets": [
-    "env",
-    "react"
+    [
+      "env",
+      {
+        "targets": {
+          "browsers": [ "last 2 versions", "iOS >= 10", "ie >= 10" ]
+        }
+      }
+    ]
   ],
   "plugins": [
     "array-includes",
+    "transform-runtime",
     "transform-object-rest-spread",
     "transform-class-properties"
   ]

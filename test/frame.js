@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonTest from 'sinon-test';
 
 import Frame from '../src/consumer/frame';
-import URI from '../src/lib/uri';
+import URI from '../src/common/uri';
 
 const test = sinonTest(sinon);
 

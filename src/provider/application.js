@@ -1,13 +1,14 @@
 import JSONRPC from 'jsonrpc-dispatch';
 import { EventEmitter } from 'events';
 import MutationObserver from 'mutation-observer';
-import fixedTimeCompare from '../lib/fixedTimeCompare';
-import URI from '../lib/uri';
-import logger from '../lib/logger';
-import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
+import fixedTimeCompare from '../common/fixedTimeCompare';
+import URI from '../common/uri';
+import logger from '../common/logger';
+import * as events from '../common/events';
+import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../common/dimension';
 
 /** Application class which represents an embedded application. */
-class Application extends EventEmitter {
+export default class Application extends EventEmitter {
   /**
    * init method
    * @param  options.acls            An array that contains white listed origins
@@ -17,9 +18,10 @@ class Application extends EventEmitter {
    *                                 This string must be a valid CSS selector string; if it's not,
    *                                 a SyntaxError exception is thrown.
    */
-  init({
-    acls = [], secret = null, onReady = null, targetSelectors = '',
-  }) {
+  init(options = {}) {
+    const {
+      acls = [], secret = null, onReady = null, targetSelectors = '',
+    } = options;
     this.acls = [].concat(acls);
     this.secret = secret;
     this.onReady = onReady;
@@ -119,7 +121,7 @@ class Application extends EventEmitter {
   * @param {string} url - The url of the application to mount.
   */
   fullscreen(url) {
-    this.trigger('xfc.fullscreen', url);
+    this.trigger(events.fullscreen, url);
   }
 
   /**
@@ -127,7 +129,7 @@ class Application extends EventEmitter {
    * @param  {object} error - an object containing error details
    */
   httpError(error = {}) {
-    this.trigger('xfc.provider.httpError', error);
+    this.trigger(events.providerHttpError, error);
   }
 
   /**
@@ -246,7 +248,7 @@ class Application extends EventEmitter {
     document.documentElement.removeAttribute('hidden');
 
     // Emit a ready event
-    this.emit('xfc.ready');
+    this.emit(events.ready);
     this.JSONRPC.notification('authorized', [{ url: window.location.href }]);
 
     // If there is an onReady callback, execute it
@@ -260,7 +262,7 @@ class Application extends EventEmitter {
    * @param  {object} error - an error object containing error code and error message
    */
   emitError(error) {
-    this.emit('xfc.error', error);
+    this.emit(events.error, error);
   }
 
   unload() {
@@ -270,9 +272,7 @@ class Application extends EventEmitter {
 
     if (!element || !(element.hasAttribute('download') || protocols.test(element.href))) {
       this.JSONRPC.notification('unload');
-      this.trigger('xfc.unload');
+      this.trigger(events.unload);
     }
   }
 }
-
-export default Application;
