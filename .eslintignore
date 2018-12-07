@@ -1,4 +1,8 @@
 node_modules
 build
+builds
 scripts
 config
+lib
+dist
+*.config.*

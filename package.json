@@ -10,12 +10,14 @@
     "src"
   ],
   "scripts": {
-    "babel": "babel src --out-dir lib",
-    "build": "yarn run test && yarn run clean && yarn run lint && yarn run babel && yarn run webpack",
+    "babel": "babel src --out-dir lib --ignore '**/test/*'",
+    "build": "yarn run babel && yarn run webpack",
     "clean": "rm -rf dist lib doc",
     "dev": "webpack-dev-server --config webpack.config.dev.js",
     "docs": "jsdoc  --package package.json -d doc ./src/**/*.js",
-    "lint": "eslint 'src/**/*.js' --fix",
+    "lint": "eslint './src/**/*.js'",
+    "prepublish": "yarn run build",
+    "prebuild": "yarn run clean && yarn run lint && yarn run test",
     "test": "mocha --recursive --compilers js:babel-core/register test/*.js",
     "webpack": "webpack -p --progress --colors --display-error-details"
   },
@@ -50,6 +52,7 @@
     "mocha": "^5.2.0",
     "sinon": "^7.1.1",
     "sinon-test": "^2.4.0",
+    "terser-webpack-plugin": "^1.1.0",
     "webpack": "^4.26.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10"
