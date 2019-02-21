@@ -7,6 +7,7 @@ Cerner Corporation
 - Greg Howdeshell [@poloka]
 - Matt Schile [@mschile]
 - Sam Milligan [@grneggandsam]
+- Supriti Yeotikar [@supritiy]
 
 [@mhemesath]: https://github.com/mhemesath
 [@kafkahw]: https://github.com/kafkahw
@@ -15,3 +16,4 @@ Cerner Corporation
 [@poloka]: https://github.com/poloka
 [@mschile]: https://github.com/mschile
 [@grneggandsam]: https://github.com/grneggandsam
+[@supritiy]: https:://github.com/supriticerner

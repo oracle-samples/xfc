@@ -1,6 +1,10 @@
 Next Release
 -------------
 
+1.7.0
+------
+* Change provider and consumer to classes.
+
 1.6.1
 ------
 * Added href attribute pattern check before unloading.
