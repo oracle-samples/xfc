@@ -1,7 +1,7 @@
 Next Release
 -------------
 
-1.7.0
+1.6.2
 ------
 * Add classes for provider and consumer.
 

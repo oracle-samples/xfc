@@ -36,20 +36,14 @@ class Consumer {
     const frame = new Frame();
     frame.init(container, source, options);
 
+
     // Apply global handlers to the frame
-    Object.keys(this.globalHandlers).forEach(event => {
-      const handlers = this.globalHandlers[event];
-
-      // If 'handlers' is an array, apply each handler to frame
-      if (Array.isArray(handlers)) {
-        handlers.forEach(handler => {
-          addEventHandler(frame, event, handler);
-        });
-      } else {
-        addEventHandler(frame, event, handlers);
-      }
+    Object.entries(this.globalHandlers).forEach(([event, handler]) => {
+      const handlersArray = [].concat(handler);
+      handlersArray.forEach(eventHandler => {
+        addEventHandler(frame, event, eventHandler);
+      });
     });
-
     frame.mount();
 
     return frame;
