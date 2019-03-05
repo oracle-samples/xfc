@@ -1,17 +1,5 @@
 import Frame from './frame';
 
-/**
- * Add the given event handler to an EventEmitter instance
- * @param {EventEmitter} emitter - an instance of EventEmitter
- * @param {string} event - event name
- * @param {function} handler - event handler function
- */
-function addEventHandler(emitter, event, handler) {
-  if (typeof handler === 'function') {
-    emitter.on(event, handler);
-  }
-}
-
 class Consumer {
   /**
    * Initialize a consumer.
@@ -41,7 +29,10 @@ class Consumer {
     Object.entries(this.globalHandlers).forEach(([event, handler]) => {
       const handlersArray = [].concat(handler);
       handlersArray.forEach(eventHandler => {
-        addEventHandler(frame, event, eventHandler);
+        // Add the given event handler to the frame.
+        if (typeof eventHandler === 'function') {
+          frame.on(event, eventHandler);
+        }
       });
     });
     frame.mount();
