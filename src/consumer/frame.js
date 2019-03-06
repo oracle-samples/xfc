@@ -206,7 +206,6 @@ class Frame extends EventEmitter {
 
     // 3. Send a response, if any, back to the app.
     this.JSONRPC.handle(event.data);
-
   }
 
   /**
