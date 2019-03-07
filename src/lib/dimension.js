@@ -90,6 +90,21 @@ export function getOffsetToBody(node, offset = 0) {
 
 /**
  * This function returns the offset height of the given node relative to the top of document.body
+ *
+ * @note We are explicitly using the scrollHeight here since offsetHeight doesn't include any ::before or ::after
+ * pseudo-elements, which can throw off the actual total height of the element. From the MDN web docs,
+ *
+ * scrollHeight:
+ * > is a measurement of the height of an element's content, including content not visible on the screen due to
+ * > overflow...is equal to the minimum height the element would require in order to fit all the content in the
+ * > viewport without using a vertical scrollbar
+ *
+ * offsetHeight:
+ * > is a measurement in pixels of the element's CSS height, including any borders, padding, and horizontal scrollbars
+ * > (if rendered). It does not include the height of pseudo-elements such as ::before or ::after
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetHeight
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight
  */
 export function getOffsetHeightToBody(node) {
   return !node ? 0 : getOffsetToBody(node) + node.scrollHeight;

@@ -17,5 +17,5 @@ Cerner Corporation
 [@poloka]: https://github.com/poloka
 [@mschile]: https://github.com/mschile
 [@grneggandsam]: https://github.com/grneggandsam
-[@supritiy]: https:://github.com/supriticerner
+[@supritiy]: https://github.com/supriticerner
 [@dev-cprice]: https://github.com/dev-cprice
