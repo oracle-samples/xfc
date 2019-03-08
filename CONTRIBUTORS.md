@@ -8,6 +8,7 @@ Cerner Corporation
 - Matt Schile [@mschile]
 - Sam Milligan [@grneggandsam]
 - Supriti Yeotikar [@supritiy]
+- Cody Price [@dev-cprice]
 
 [@mhemesath]: https://github.com/mhemesath
 [@kafkahw]: https://github.com/kafkahw
@@ -16,4 +17,5 @@ Cerner Corporation
 [@poloka]: https://github.com/poloka
 [@mschile]: https://github.com/mschile
 [@grneggandsam]: https://github.com/grneggandsam
-[@supritiy]: https:://github.com/supriticerner
+[@supritiy]: https://github.com/supriticerner
+[@dev-cprice]: https://github.com/dev-cprice
