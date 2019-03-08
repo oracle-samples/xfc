@@ -1,6 +1,10 @@
 Next Release
 -------------
 
+1.7.0
+------
+* Fix resizing: use scrollHeight instead of offsetHeight
+
 1.6.2
 ------
 * Add classes for provider and consumer.
