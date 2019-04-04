@@ -71,21 +71,23 @@ class Application extends EventEmitter {
           };
 
           // Resize for slow loading images
-          document.body.addEventListener(
-            'load',
-            function(event){
-              var tgt = event.target;
-              if( tgt.tagName == 'IMG'){
-                this.requestResize()
-              }
-            },
-            true
-          )
+          document.body.addEventListener('load', this.imageRequestResize.bind(this), true);
 
           return Promise.resolve();
         },
       }
     );
+  }
+
+  /**
+   * imageRequestResize function to call requestResize event for slow loading image
+   * @param {object} event - event which triggered the listener
+   */
+  imageRequestResize(event) {
+    const tgt = event.target;
+    if (tgt.tagName === 'IMG') {
+      this.requestResize();
+    }
   }
 
   requestResize() {
