@@ -70,6 +70,18 @@ class Application extends EventEmitter {
             resizeTimer = setTimeout(() => self.requestResize(), interval);
           };
 
+          // Resize for slow loading images
+          document.body.addEventListener(
+            'load',
+            function(event){
+              var tgt = event.target;
+              if( tgt.tagName == 'IMG'){
+                this.requestResize()
+              }
+            },
+            true
+          )
+
           return Promise.resolve();
         },
       }
