@@ -23,7 +23,7 @@ class Application extends EventEmitter {
     this.secret = secret;
     this.onReady = onReady;
     this.targetSelectors = targetSelectors;
-    this.resizeConfig = {};
+    this.resizeConfig = null;
     this.requestResize = this.requestResize.bind(this);
     this.handleConsumerMessage = this.handleConsumerMessage.bind(this);
     this.authorizeConsumer = this.authorizeConsumer.bind(this);
@@ -85,7 +85,7 @@ class Application extends EventEmitter {
    */
   imageRequestResize(event) {
     const tgt = event.target;
-    if (tgt.tagName === 'IMG' && !(tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
+    if (this.resizeConfig && tgt.tagName === 'IMG' && !(tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
       this.requestResize();
     }
   }
