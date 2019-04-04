@@ -23,13 +23,16 @@ class Application extends EventEmitter {
     this.secret = secret;
     this.onReady = onReady;
     this.targetSelectors = targetSelectors;
-    this.resizeConfig = null;
+    this.resizeConfig = {};
     this.requestResize = this.requestResize.bind(this);
     this.handleConsumerMessage = this.handleConsumerMessage.bind(this);
     this.authorizeConsumer = this.authorizeConsumer.bind(this);
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
+
+    // Resize for slow loading images
+    document.body.addEventListener('load', this.imageRequestResize.bind(this), true);
 
     // If the document referer (parent frame) origin is trusted, default that
     // to the active ACL;
@@ -70,9 +73,6 @@ class Application extends EventEmitter {
             resizeTimer = setTimeout(() => self.requestResize(), interval);
           };
 
-          // Resize for slow loading images
-          document.body.addEventListener('load', this.imageRequestResize.bind(this), true);
-
           return Promise.resolve();
         },
       }
@@ -85,7 +85,7 @@ class Application extends EventEmitter {
    */
   imageRequestResize(event) {
     const tgt = event.target;
-    if (tgt.tagName === 'IMG') {
+    if (tgt.tagName === 'IMG' && !(tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
       this.requestResize();
     }
   }
