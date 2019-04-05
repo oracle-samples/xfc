@@ -85,12 +85,13 @@ class Application extends EventEmitter {
    */
   imageRequestResize(event) {
     const tgt = event.target;
-    if (this.resizeConfig && tgt.tagName === 'IMG' && !(tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
+    if (tgt.tagName === 'IMG' && !(tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
       this.requestResize();
     }
   }
 
   requestResize() {
+    if (!this.resizeConfig) return;
     if (this.resizeConfig.customCal) {
       this.JSONRPC.notification('resize');
     } else if (this.resizeConfig.autoResizeWidth) {

@@ -273,11 +273,11 @@ describe('Application', () => {
       const requestResize = this.stub(application, 'requestResize');
       application.resizeConfig = {}
       const event = {
-        target: { 
-          tagName: "IMG", 
+        target: {
+          tagName: "IMG",
           hasAttribute: (attr) => { attr === 'height'}
         }
-      };  
+      };
       application.imageRequestResize(event);
 
       sinon.assert.called(requestResize);
@@ -288,7 +288,7 @@ describe('Application', () => {
       application.resizeConfig = {}
 
       let event = {
-        target: { 
+        target: {
           tagName: "IMG",
           hasAttribute: (attr) => { return ['width', 'height'].includes(attr)},
         }
@@ -297,19 +297,17 @@ describe('Application', () => {
 
       sinon.assert.notCalled(requestResize);
     }));
-
-    it("does not call requestResize when resizeConfig is null", sinon.test(function() {
-      const requestResize = this.stub(application, 'requestResize');
+  });
+  
+  describe('#requestResize()', () => {
+    it("does not resize when resizeConfig is null", sinon.test(function() {
+      const application = new Application();
+      application.init({ acls: ['*']});
+      const notification = this.stub(application.JSONRPC, 'notification');
       application.resizeConfig = null;
-      let event = {
-        target: { 
-          tagName: "IMG",
-          hasAttribute: () => console.log('mock hasAttribute'),
-        }
-      };
-      application.imageRequestResize(event);
+      application.requestResize();
 
-      sinon.assert.notCalled(requestResize);
+      sinon.assert.notCalled(notification);
     }));
   });
 
