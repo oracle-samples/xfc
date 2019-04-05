@@ -31,6 +31,9 @@ class Application extends EventEmitter {
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
 
+    // Resize for slow loading images
+    document.body.addEventListener('load', this.imageRequestResize.bind(this), true);
+
     // If the document referer (parent frame) origin is trusted, default that
     // to the active ACL;
     const parentOrigin = new URI(document.referrer).origin;
@@ -76,7 +79,19 @@ class Application extends EventEmitter {
     );
   }
 
+  /**
+   * imageRequestResize function to call requestResize event for slow loading image
+   * @param {object} event - event which triggered the listener
+   */
+  imageRequestResize(event) {
+    const tgt = event.target;
+    if (tgt.tagName === 'IMG' && !(tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
+      this.requestResize();
+    }
+  }
+
   requestResize() {
+    if (!this.resizeConfig) return;
     if (this.resizeConfig.customCal) {
       this.JSONRPC.notification('resize');
     } else if (this.resizeConfig.autoResizeWidth) {

@@ -17,7 +17,7 @@ describe('Application', () => {
     const application = new Application();
 
     const oldDocument = global.document;
-    global.document = {referrer: 'http://localhost:8080', createElement: document.createElement.bind(document) };
+    global.document = {referrer: 'http://localhost:8080', createElement: document.createElement.bind(document), body: { addEventListener: () => console.log('mock addEventListener') } };
     application.init({acls, secret, onReady});
     global.document = oldDocument;
 
@@ -27,7 +27,7 @@ describe('Application', () => {
 
     it ("doesn't set activeACL to document referrer if not in ACL", () => {
       const insecureApp = new Application();
-      global.document = {referrer: 'http://evilsite.com', createElement: document.createElement.bind(document) };
+      global.document = {referrer: 'http://evilsite.com', createElement: document.createElement.bind(document), body: { addEventListener: () => console.log('mock addEventListener') } };
       insecureApp.init({acls, secret, onReady});
       global.document = oldDocument;
 
@@ -49,6 +49,11 @@ describe('Application', () => {
     it("sets application's JSONRPC", () => {
       expect(application.JSONRPC).to.be.an.instanceof(JSONRPC);
     });
+    
+    it("calls addEventListener", sinon.test(function() {
+      sinon.spy(document.body, 'addEventListener');
+      expect(document.body.addEventListener.calledOnce);
+    }));
 
     describe('#trigger(event, detail)', () => {
       it("calls this.JSONRPC.notification of 'event' with event and detail", sinon.test(function() {
@@ -260,6 +265,50 @@ describe('Application', () => {
         sinon.assert.calledWith(trigger, 'xfc.unload');
       }));
     });
+  });
+
+  describe('#imageRequestResize(event)', () => {
+    const application = new Application();
+    it("calls requestResize for an image", sinon.test(function() {
+      const requestResize = this.stub(application, 'requestResize');
+      application.resizeConfig = {}
+      const event = {
+        target: {
+          tagName: "IMG",
+          hasAttribute: (attr) => { attr === 'height'}
+        }
+      };
+      application.imageRequestResize(event);
+
+      sinon.assert.called(requestResize);
+    }));
+
+    it("does not call requestResize for an image with height", sinon.test(function() {
+      const requestResize = this.stub(application, 'requestResize');
+      application.resizeConfig = {}
+
+      let event = {
+        target: {
+          tagName: "IMG",
+          hasAttribute: (attr) => { return ['width', 'height'].includes(attr)},
+        }
+      };
+      application.imageRequestResize(event);
+
+      sinon.assert.notCalled(requestResize);
+    }));
+  });
+  
+  describe('#requestResize()', () => {
+    it("does not resize when resizeConfig is null", sinon.test(function() {
+      const application = new Application();
+      application.init({ acls: ['*']});
+      const notification = this.stub(application.JSONRPC, 'notification');
+      application.resizeConfig = null;
+      application.requestResize();
+
+      sinon.assert.notCalled(notification);
+    }));
   });
 
   describe('#launch()', () => {
