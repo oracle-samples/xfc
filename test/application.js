@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { EventEmitter } from 'events';
 import JSONRPC from 'jsonrpc-dispatch';
 import sinon from 'sinon';
- 
+
 import Application from '../src/provider/application';
 
 describe('Application', () => {
@@ -54,22 +54,6 @@ describe('Application', () => {
       sinon.spy(document.body, 'addEventListener');
       expect(document.body.addEventListener.calledOnce);
     }));
-
-    describe('#imageRequestResize(event)', () => {
-      it("calls requestResize for an image", sinon.test(function() {
-        sinon.spy(application, 'requestResize');
-        application.resizeConfig = {}
-        const event = {
-          target: { 
-            tagName: "IMG", 
-            hasAttribute: (attr) => { attr === 'height'}
-          }
-        };  
-        application.imageRequestResize(event);
-
-        expect(application.requestResize.calledOnce);
-      }));
-    });
 
     describe('#trigger(event, detail)', () => {
       it("calls this.JSONRPC.notification of 'event' with event and detail", sinon.test(function() {
@@ -282,7 +266,53 @@ describe('Application', () => {
       }));
     });
   });
-  
+
+  describe('#imageRequestResize(event)', () => {
+    const application = new Application();
+    it("calls requestResize for an image", sinon.test(function() {
+      const requestResize = this.stub(application, 'requestResize');
+      application.resizeConfig = {}
+      const event = {
+        target: { 
+          tagName: "IMG", 
+          hasAttribute: (attr) => { attr === 'height'}
+        }
+      };  
+      application.imageRequestResize(event);
+
+      sinon.assert.called(requestResize);
+    }));
+
+    it("does not call requestResize for an image with height", sinon.test(function() {
+      const requestResize = this.stub(application, 'requestResize');
+      application.resizeConfig = {}
+
+      let event = {
+        target: { 
+          tagName: "IMG",
+          hasAttribute: (attr) => { return ['width', 'height'].includes(attr)},
+        }
+      };
+      application.imageRequestResize(event);
+
+      sinon.assert.notCalled(requestResize);
+    }));
+
+    it("does not call requestResize when resizeConfig is null", sinon.test(function() {
+      const requestResize = this.stub(application, 'requestResize');
+      application.resizeConfig = null;
+      let event = {
+        target: { 
+          tagName: "IMG",
+          hasAttribute: () => console.log('mock hasAttribute'),
+        }
+      };
+      application.imageRequestResize(event);
+
+      sinon.assert.notCalled(requestResize);
+    }));
+  });
+
   describe('#launch()', () => {
     describe('if window.self === window.top', () => {
       const tests = [
@@ -290,7 +320,7 @@ describe('Application', () => {
         { description: 'valid secret', args: { secret: '124' } },
         { description: 'acl = * and no secret', args: { acls: ['*'] } },
       ];
-  
+
       tests.forEach((test) => {
         describe(test.description, () => {
           it('calls this.authorizeConsumer', () => {
@@ -298,24 +328,24 @@ describe('Application', () => {
             application.init(test.args);
             const authorizeConsumer = sinon.stub(application, 'authorizeConsumer');
             application.launch();
-  
+
             sinon.assert.called(authorizeConsumer);
           });
         });
       });
     });
-  
+
     describe("if window.self !== window.top", () => {
       it("checks if eventListener is added'", sinon.test(function() {
         global.window = {
           addEventListener: () => console.log('mock addEventListener'),
           top: { length: -1 },
         };
-  
+
         const application = new Application();
         application.init({ acls: ['http://localhost:8080'] });
         sinon.spy(window, 'addEventListener');
-  
+
         application.launch();
         sinon.assert.calledTwice(window.addEventListener);
         sinon.assert.calledWith(window.addEventListener, 'beforeunload');

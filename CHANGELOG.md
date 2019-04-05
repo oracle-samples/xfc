@@ -1,6 +1,10 @@
 Next Release
 -------------
 
+1.7.1
+------
+* Add Image resizing for slow loading images.
+
 1.7.0
 ------
 * Fix resizing: use scrollHeight instead of offsetHeight
