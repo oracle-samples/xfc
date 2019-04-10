@@ -3,7 +3,7 @@ Next Release
 
 1.7.2
 ------
-* Add Image resizing only after DOM is ready.
+* Fix Image resizing for slow loading images by calling on document.
 
 1.7.1
 ------

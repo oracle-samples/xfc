@@ -30,12 +30,9 @@ class Application extends EventEmitter {
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
-    const self = this;
 
-    // Resize for slow loading images when DOM is ready
-    document.addEventListener('DOMContentLoaded', () => {
-      document.body.addEventListener('load', self.imageRequestResize.bind(self), true);
-    });
+    // Resize for slow loading images
+    document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
     // If the document referer (parent frame) origin is trusted, default that
     // to the active ACL;
@@ -44,6 +41,7 @@ class Application extends EventEmitter {
       this.activeACL = parentOrigin;
     }
 
+    const self = this;
     this.JSONRPC = new JSONRPC(
       self.send.bind(self),
       {

@@ -20,8 +20,8 @@ describe('Application', () => {
     global.document = {
       referrer: 'http://localhost:8080',
       createElement: document.createElement.bind(document),
-      addEventListener: () => console.log('mock addEventListener'),
-      body: { addEventListener: () => console.log('mock addEventListener') } };
+      addEventListener: () => console.log('mock addEventListener')
+    };
     application.init({acls, secret, onReady});
     global.document = oldDocument;
 
@@ -34,8 +34,8 @@ describe('Application', () => {
       global.document = {
         referrer: 'http://evilsite.com',
         createElement: document.createElement.bind(document),
-        addEventListener: () => console.log('mock addEventListener'),
-        body: { addEventListener: () => console.log('mock addEventListener') } };
+        addEventListener: () => console.log('mock addEventListener')
+      };
       insecureApp.init({acls, secret, onReady});
       global.document = oldDocument;
 
@@ -57,6 +57,11 @@ describe('Application', () => {
     it("sets application's JSONRPC", () => {
       expect(application.JSONRPC).to.be.an.instanceof(JSONRPC);
     });
+
+    it("calls addEventListener", sinon.test(function() {
+      sinon.spy(document, 'addEventListener');
+      expect(document.addEventListener.calledOnce);
+    }));
 
     describe('#trigger(event, detail)', () => {
       it("calls this.JSONRPC.notification of 'event' with event and detail", sinon.test(function() {
@@ -268,23 +273,6 @@ describe('Application', () => {
         sinon.assert.calledWith(trigger, 'xfc.unload');
       }));
     });
-
-    describe("#DOMContentLoaded", () => {
-      it("calls addEventListener only when DOM is ready", sinon.test(function() {
-        application.init({acls, secret, onReady});
-        const DOMContentLoaded_event = document.createEvent('Event');
-        DOMContentLoaded_event.initEvent('DOMContentLoaded', true, true);
-        document.addEventListener('DOMContentLoaded', () => console.log('mock DOMContentLoaded'));
-        document.dispatchEvent(DOMContentLoaded_event);
-
-        expect(document.body.addEventListener.calledOnce);
-      }));
-
-      it("does not call addEventListener when DOM is not ready", sinon.test(function() {
-        sinon.spy(document.body, 'addEventListener');
-        sinon.assert.notCalled(document.body.addEventListener);
-      }));
-    });
   });
 
   describe('#imageRequestResize(event)', () => {
@@ -359,9 +347,17 @@ describe('Application', () => {
           addEventListener: () => console.log('mock addEventListener'),
           top: { length: -1 },
         };
+        const oldDocument = global.document;
+        global.document = {
+          referrer: 'http://localhost:8080',
+          createElement: document.createElement.bind(document),
+          addEventListener: () => console.log('mock addEventListener'),
+          body: (function () { return; })()
+        };
 
         const application = new Application();
         application.init({ acls: ['http://localhost:8080'] });
+        global.document = oldDocument;
         sinon.spy(window, 'addEventListener');
 
         application.launch();
