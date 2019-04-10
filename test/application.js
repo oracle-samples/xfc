@@ -272,7 +272,7 @@ describe('Application', () => {
     describe("#DOMContentLoaded", () => {
       it("calls addEventListener only when DOM is ready", sinon.test(function() {
         application.init({acls, secret, onReady});
-        var DOMContentLoaded_event = document.createEvent('Event');
+        const DOMContentLoaded_event = document.createEvent('Event');
         DOMContentLoaded_event.initEvent('DOMContentLoaded', true, true);
         document.addEventListener('DOMContentLoaded', () => console.log('mock DOMContentLoaded'));
         document.dispatchEvent(DOMContentLoaded_event);
