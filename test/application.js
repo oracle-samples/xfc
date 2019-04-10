@@ -17,7 +17,11 @@ describe('Application', () => {
     const application = new Application();
 
     const oldDocument = global.document;
-    global.document = {referrer: 'http://localhost:8080', createElement: document.createElement.bind(document), body: { addEventListener: () => console.log('mock addEventListener') } };
+    global.document = {
+      referrer: 'http://localhost:8080',
+      createElement: document.createElement.bind(document),
+      addEventListener: () => console.log('mock addEventListener')
+    };
     application.init({acls, secret, onReady});
     global.document = oldDocument;
 
@@ -27,7 +31,11 @@ describe('Application', () => {
 
     it ("doesn't set activeACL to document referrer if not in ACL", () => {
       const insecureApp = new Application();
-      global.document = {referrer: 'http://evilsite.com', createElement: document.createElement.bind(document), body: { addEventListener: () => console.log('mock addEventListener') } };
+      global.document = {
+        referrer: 'http://evilsite.com',
+        createElement: document.createElement.bind(document),
+        addEventListener: () => console.log('mock addEventListener')
+      };
       insecureApp.init({acls, secret, onReady});
       global.document = oldDocument;
 
@@ -49,10 +57,10 @@ describe('Application', () => {
     it("sets application's JSONRPC", () => {
       expect(application.JSONRPC).to.be.an.instanceof(JSONRPC);
     });
-    
+
     it("calls addEventListener", sinon.test(function() {
-      sinon.spy(document.body, 'addEventListener');
-      expect(document.body.addEventListener.calledOnce);
+      sinon.spy(document, 'addEventListener');
+      expect(document.addEventListener.calledOnce);
     }));
 
     describe('#trigger(event, detail)', () => {
@@ -298,7 +306,7 @@ describe('Application', () => {
       sinon.assert.notCalled(requestResize);
     }));
   });
-  
+
   describe('#requestResize()', () => {
     it("does not resize when resizeConfig is null", sinon.test(function() {
       const application = new Application();
@@ -339,9 +347,17 @@ describe('Application', () => {
           addEventListener: () => console.log('mock addEventListener'),
           top: { length: -1 },
         };
+        const oldDocument = global.document;
+        global.document = {
+          referrer: 'http://localhost:8080',
+          createElement: document.createElement.bind(document),
+          addEventListener: () => console.log('mock addEventListener'),
+          body: (function () { return; })()
+        };
 
         const application = new Application();
         application.init({ acls: ['http://localhost:8080'] });
+        global.document = oldDocument;
         sinon.spy(window, 'addEventListener');
 
         application.launch();

@@ -32,7 +32,7 @@ class Application extends EventEmitter {
     this.unload = this.unload.bind(this);
 
     // Resize for slow loading images
-    document.body.addEventListener('load', this.imageRequestResize.bind(this), true);
+    document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
     // If the document referer (parent frame) origin is trusted, default that
     // to the active ACL;

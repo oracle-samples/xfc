@@ -1,6 +1,10 @@
 Next Release
 -------------
 
+1.7.2
+------
+* Fix Image resizing for slow loading images by calling on document.
+
 1.7.1
 ------
 * Add Image resizing for slow loading images.
