@@ -6,7 +6,7 @@ class Provider {
     const enforceSecurity = config.secret || config.acls.some((x) => x !== '*');
 
     // Set hidden attribute with script if not present and security is being enforced
-    if (enforceSecurity && window.self !== window.top && !document.documentElement.hasAttribute('hidden')) {
+    if (enforceSecurity && window.self !== window.top) {
       document.documentElement.setAttribute('hidden', null);
 
       // WARNING: Setting hidden attribute with script can be countered by
