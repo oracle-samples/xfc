@@ -199,6 +199,17 @@ describe('Application', () => {
 
           application.verifyChallenge("123");
         });
+
+        it("handles failure from this.secret", (done) => {
+          const error = new Error('promise rejected');
+          const secret = (secretAttempt) => Promise.reject(error);
+          application.init({secret});
+          expect(application.emitError).to.have.been.called;
+          application.verifyChallenge("123").catch((err) => {
+            expect(err).to.equal(error);
+            done();
+          });
+        });
       });
     });
 
