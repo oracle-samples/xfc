@@ -56,13 +56,14 @@
         <h2>authorized app</h2>
       </div>
     </div>
-    <p>The three examples below show usage of secret based authorization.  This means that the origin of the URL does not matter. The first example shows that a string literal can be used as a secret.  It shows that when the secret is incorrect, no content is displayed.  The second example shows a working example using string literal secret that works.  The third example shows that a secret function can be used to verify the secret.
+    <p>The four examples below show usage of secret based authorization.  This means that the origin of the URL does not matter. The first example shows that a string literal can be used as a secret.  It shows that when the secret is incorrect, no content is displayed.  The second example shows a working example using string literal secret that works.  The third example shows that a secret function can be used to verify the secret.  The fourth example shows how a failure response from the secret validation is handled and no content is displayed.
     </p>
     <script>
       XFC.Consumer.init()
       XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/initialization/1_b_secret_string_literal.html', {secret: 'abc12367'});
       XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/initialization/1_b_secret_string_literal.html', {secret: 'abc123'});
       XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/initialization/1_b_secret_function.html', {secret: 'OAuth Header'});
+      XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/initialization/1_b_secret_function_failure.html', {secret: 'OAuth Header'});
     </script>
   </body>
 </html>

@@ -246,8 +246,9 @@ class Application extends EventEmitter {
     if (typeof this.secret === 'string' && fixedTimeCompare(this.secret, secretAttempt)) {
       authorize();
     } else if (typeof this.secret === 'function') {
-      this.secret.call(this, secretAttempt).then(authorize);
+      return this.secret.call(this, secretAttempt).then(authorize);
     }
+    return Promise.resolve();
   }
 
   /**

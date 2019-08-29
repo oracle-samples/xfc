@@ -199,6 +199,17 @@ XFC.Provider.init({
 })
 ```
 
+If the case of secret validation failures, acceptance is a new Error
+
+```js
+XFC.Provider.init({
+  acls: ['*'],
+  secret: function(secret) {
+    return Promise.reject(new Error('Failure'));
+  }
+})
+```
+
 If the app is using an alternate form a security and does require XFC to provide clickjacking support, a wildcard with no secret may be passed. Under these conditions, XFC will not hide the content and the consumer will automatically be authorized.
 
 ```js
