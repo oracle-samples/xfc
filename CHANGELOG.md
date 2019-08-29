@@ -1,6 +1,10 @@
 Next Release
 -------------
 
+1.7.3
+------
+* Fix verifyChallenge to properly handle and return the Promise.reject scenario. #41
+
 1.7.2
 ------
 * Fix Image resizing for slow loading images by calling on document.
