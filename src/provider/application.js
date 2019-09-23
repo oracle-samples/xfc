@@ -5,6 +5,7 @@ import URI from '../lib/uri';
 import logger from '../lib/logger';
 import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
 import MutationObserver from 'mutation-observer';
+require('../lib/hasAttributePolyfill');
 
 
 /** Application class which represents an embedded application. */
