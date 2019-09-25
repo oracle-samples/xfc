@@ -25,23 +25,6 @@ describe('Application', () => {
     application.init({acls, secret, onReady});
     global.document = oldDocument;
 
-    it ("sets activeACL to document referrer if in ACL", () => {
-      expect(application.activeACL).to.eq(acls[0]);
-    });
-
-    it ("doesn't set activeACL to document referrer if not in ACL", () => {
-      const insecureApp = new Application();
-      global.document = {
-        referrer: 'http://evilsite.com',
-        createElement: document.createElement.bind(document),
-        addEventListener: () => console.log('mock addEventListener')
-      };
-      insecureApp.init({acls, secret, onReady});
-      global.document = oldDocument;
-
-      expect(insecureApp.activeACL).to.equal(undefined);
-    });
-
     it("sets application's acls to the given acls", () => {
       expect(application.acls).to.eql(acls);
     });

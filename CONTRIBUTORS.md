@@ -9,6 +9,7 @@ Cerner Corporation
 - Sam Milligan [@grneggandsam]
 - Supriti Yeotikar [@supritiy]
 - Cody Price [@dev-cprice]
+- Roxanne Calderon [@foxannefoxanne]
 
 [@mhemesath]: https://github.com/mhemesath
 [@kafkahw]: https://github.com/kafkahw
@@ -19,3 +20,4 @@ Cerner Corporation
 [@grneggandsam]: https://github.com/grneggandsam
 [@supritiy]: https://github.com/supriticerner
 [@dev-cprice]: https://github.com/dev-cprice
+[@foxannefoxanne]: https://github.com/foxannefoxanne
