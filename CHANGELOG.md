@@ -1,6 +1,6 @@
 Next Release
 -------------
-1.7.3
+1.8.0
 ------
 * Remove activeACL set by referrer, as it breaks if you have your own URL in the ACL list
 
