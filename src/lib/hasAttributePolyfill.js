@@ -1,10 +1,8 @@
 // Add polyfill for hasAttribute
 
-function hasAttribute(prototype) {
-  prototype.hasAttribute = prototype.hasAttribute || hasAttribute(name) {
+(function (prototype) {
+  prototype.hasAttribute = prototype.hasAttribute || function (name) {
     return !!(this.attributes[name] &&
       this.attributes[name].specified);
-  };
-}
-
-export { hasAttribute };
+  }
+})(Element.prototype);
