@@ -1,5 +1,6 @@
 import Application from './application';
 import logger from '../lib/logger';
+require('../lib/hasAttributePolyfill.js');
 
 class Provider {
   init(config) {
