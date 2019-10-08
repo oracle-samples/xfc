@@ -85,7 +85,7 @@ class Application extends EventEmitter {
    */
   imageRequestResize(event) {
     const tgt = event.target;
-    if (tgt.tagName === 'IMG' && !(tgt.hasAttribute && tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
+    if (tgt.tagName === 'IMG' && !(tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
       this.requestResize();
     }
   }
@@ -280,7 +280,7 @@ class Application extends EventEmitter {
     const protocols = /^(tel|mailto|fax|sms|callto):/;
     const element = document.activeElement;
 
-    if (!element || !(element.hasAttribute && element.hasAttribute('download') || protocols.test(element.href))) {
+    if (!element || !(element.hasAttribute('download') || protocols.test(element.href))) {
       this.JSONRPC.notification('unload');
       this.trigger('xfc.unload');
     }
