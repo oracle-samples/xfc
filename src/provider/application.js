@@ -77,7 +77,7 @@ class Application extends EventEmitter {
    */
   imageRequestResize(event) {
     const tgt = event.target;
-    if (tgt.tagName === 'IMG' && !((tgt.hasAttribute && tgt.hasAttribute('height')) || (tgt.hasAttribute && tgt.hasAttribute('width')))) {
+    if (tgt.tagName === 'IMG' && !(tgt.hasAttribute('height') || tgt.hasAttribute('width'))) {
       this.requestResize();
     }
   }
