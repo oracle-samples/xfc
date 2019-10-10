@@ -33,13 +33,6 @@ class Application extends EventEmitter {
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
-    // If the document referer (parent frame) origin is trusted, default that
-    // to the active ACL;
-    const parentOrigin = new URI(document.referrer).origin;
-    if (this.acls.includes(parentOrigin)) {
-      this.activeACL = parentOrigin;
-    }
-
     const self = this;
     this.JSONRPC = new JSONRPC(
       self.send.bind(self),
