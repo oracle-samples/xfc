@@ -1,9 +1,5 @@
 {
   "name": "xfc",
-  "sideEffects": [
-    "./src/lib/hasAttributePolyfill.js",
-    "./lib/lib/hasAttributePolyfill.js"
-  ],
   "version": "1.7.3",
   "description": "A Cross Frame Container that handles securely embedding web content into a 3rd party domain",
   "author": "Cerner Corporation",
