@@ -1,5 +1,10 @@
 Next Release
 -------------
+
+1.8.1
+------
+* Conditionally remove hasAttribute so it doesn't break on non-elements in IE10.  #44
+
 1.8.0
 ------
 * Remove activeACL set by referrer, as it breaks if you have your own URL in the ACL list
