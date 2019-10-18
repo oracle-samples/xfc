@@ -6,7 +6,6 @@ import logger from '../lib/logger';
 import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
 import MutationObserver from 'mutation-observer';
 
-
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
   /**
@@ -273,7 +272,7 @@ class Application extends EventEmitter {
     const protocols = /^(tel|mailto|fax|sms|callto):/;
     const element = document.activeElement;
 
-    if (!element || !(element.hasAttribute('download') || protocols.test(element.href))) {
+    if (!element || !(element.hasAttribute && element.hasAttribute('download') || protocols.test(element.href))) {
       this.JSONRPC.notification('unload');
       this.trigger('xfc.unload');
     }

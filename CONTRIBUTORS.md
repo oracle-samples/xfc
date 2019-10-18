@@ -10,6 +10,7 @@ Cerner Corporation
 - Supriti Yeotikar [@supritiy]
 - Cody Price [@dev-cprice]
 - Roxanne Calderon [@foxannefoxanne]
+- Yusuf Ali [@yusufali2205]
 
 [@mhemesath]: https://github.com/mhemesath
 [@kafkahw]: https://github.com/kafkahw
@@ -21,3 +22,4 @@ Cerner Corporation
 [@supritiy]: https://github.com/supriticerner
 [@dev-cprice]: https://github.com/dev-cprice
 [@foxannefoxanne]: https://github.com/foxannefoxanne
+[@yusufali2205]: https://github.com/yusufali2205

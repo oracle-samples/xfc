@@ -17,6 +17,7 @@
     "clean": "rm -rf dist lib doc",
     "dev": "webpack-dev-server --config webpack.config.dev.js",
     "lint-js": "eslint 'src/**/*.js' --fix",
+    "prepare": "npm run build-es5 && npm run build-webpack",
     "test": "mocha --compilers js:babel-core/register --recursive"
   },
   "dependencies": {
