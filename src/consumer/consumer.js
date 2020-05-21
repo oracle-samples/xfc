@@ -10,7 +10,7 @@ class Consumer {
    * Consumer.init(handlers);
    */
   init(globalHandlers = {}) {
-    logger.log('Consumer init');
+    console.log('Consumer init');
     this.globalHandlers = globalHandlers;
   }
 
@@ -22,7 +22,7 @@ class Consumer {
    * @return {Frame} Returns the application that was mounted.
    */
   mount(container, source, options = {}) {
-    logger.log('Consumer mount');
+    console.log('Consumer mount');
     const frame = new Frame();
     frame.init(container, source, options);
 
