@@ -27,6 +27,7 @@ class Frame extends EventEmitter {
   * @param {object} options - An optional parameter that contains a set of optional configs
   */
   init(container, source, { secret = null, resizeConfig = {}, iframeAttrs = {} } = {}) {
+    logger.log('Consumer frame init');
     this.source = source;
     this.container = container;
     this.iframe = null;
@@ -41,12 +42,14 @@ class Frame extends EventEmitter {
       self.send,
       {
         launch() {
+          logger.log('Consumer frame launch');
           self.wrapper.setAttribute('data-status', 'launched');
           self.emit('xfc.launched');
           return Promise.resolve();
         },
 
         authorized(detail = {}) {
+          logger.log('Consumer frame authorized');
           self.wrapper.setAttribute('data-status', 'authorized');
           self.emit('xfc.authorized', detail);
           self.initIframeResizer();
@@ -54,6 +57,7 @@ class Frame extends EventEmitter {
         },
 
         unload(detail = {}) {
+          logger.log('Consumer frame unload');
           self.wrapper.setAttribute('data-status', 'unloaded');
           self.emit('xfc.unload', detail);
           return Promise.resolve();
@@ -76,6 +80,7 @@ class Frame extends EventEmitter {
         },
 
         event(event, detail) {
+          logger.log('Consumer frame event');
           self.emit(event, detail);
           return Promise.resolve();
         },
@@ -125,6 +130,7 @@ class Frame extends EventEmitter {
   * Mount this application onto its container and initiate resize sync.
   */
   mount() {
+      logger.log('Consumer frame mount');
     if (this.iframe) return;
 
     // Set up listener for all incoming communication
@@ -181,6 +187,7 @@ class Frame extends EventEmitter {
    * @param  {string} url - the URL of new page to load.
    */
   load(url) {
+    logger.log('Consumer frame load');
     this.origin = new URI(url).origin;
     this.source = url;
     this.wrapper.setAttribute('data-status', 'mounted');
@@ -192,6 +199,7 @@ class Frame extends EventEmitter {
   * @param {object} event - The emitted message event.
   */
   handleProviderMessage(event) {
+    logger.log('Consumer frame in postmessage handler handleProviderMessage');
     // 1. This isn't a JSONRPC message or iframe is null, exit.
     if (!event.data.jsonrpc || !this.iframe) return;
 
@@ -215,6 +223,7 @@ class Frame extends EventEmitter {
   */
   send(message) {
     if (message) {
+      logger.log('Consumer frame send message');
       logger.log('>> consumer', this.origin, message);
       this.iframe.contentWindow.postMessage(message, this.origin);
     }

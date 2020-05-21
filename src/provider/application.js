@@ -18,6 +18,7 @@ class Application extends EventEmitter {
    *                                 a SyntaxError exception is thrown.
    */
   init({ acls = [], secret = null, onReady = null, targetSelectors = '' }) {
+    logger.log('Provider App init');
     this.acls = [].concat(acls);
     this.secret = secret;
     this.onReady = onReady;
@@ -116,6 +117,7 @@ class Application extends EventEmitter {
   * @param {object} detail - The data context to send with the event.
   */
   trigger(event, detail) {
+    logger.log('Provider App trigger');
     this.JSONRPC.notification('event', [event, detail]);
   }
 
@@ -140,6 +142,7 @@ class Application extends EventEmitter {
    * @param  {string} url - The url of the new page.
    */
   loadPage(url) {
+    logger.log('Provider App loadPage');
     this.JSONRPC.notification('loadPage', [url]);
   }
 
@@ -147,6 +150,7 @@ class Application extends EventEmitter {
   * Launches the provider app and begins the authorization sequence.
   */
   launch() {
+    logger.log('Provider App launch');
     if (window.self !== window.top) {
       // 1: Setup listeners for all incoming communication and beforeunload
       window.addEventListener('message', this.handleConsumerMessage);
@@ -184,6 +188,7 @@ class Application extends EventEmitter {
   * @param {object} event - The emitted message event.
   */
   handleConsumerMessage(event) {
+    logger.log('Provider  App in postmessage handler handleConsumerMessage');
     // Ignore Non-JSONRPC messages or messages not from the parent frame
     if (!event.data.jsonrpc || event.source !== window.parent) {
       return;
@@ -206,6 +211,7 @@ class Application extends EventEmitter {
   * @param {object} message - The message to send.
   */
   send(message) {
+    logger.log('Provider in App send message');
     // Dont' send messages if not embedded
     if (window.self === window.top) {
       return;
@@ -247,6 +253,7 @@ class Application extends EventEmitter {
   * Authorize the parent frame by unhiding the container.
   */
   authorizeConsumer() {
+    logger.log('Provider in App authorizeConsumer');
     document.documentElement.removeAttribute('hidden');
 
     // Emit a ready event
@@ -268,6 +275,7 @@ class Application extends EventEmitter {
   }
 
   unload() {
+    logger.log('Provider in App unload');
     // These patterns trigger unload events but don't actually unload the page
     const protocols = /^(tel|mailto|fax|sms|callto):/;
     const element = document.activeElement;

@@ -3,6 +3,7 @@ import logger from '../lib/logger';
 
 class Provider {
   init(config) {
+    logger.log('Provider init');
     const enforceSecurity = config.secret || config.acls.some((x) => x !== '*');
 
     // Set hidden attribute with script if not present and security is being enforced
@@ -20,6 +21,7 @@ class Provider {
   }
 
   on(eventName, listener) {
+    logger.log('Provider on event');
     this.application.on(eventName, listener);
   }
 
@@ -32,10 +34,12 @@ class Provider {
   }
 
   trigger(event, detail) {
+    logger.log('Provider trigger');
     this.application.trigger(event, detail);
   }
 
   loadPage(url) {
+    logger.log('Provider loadPage');
     this.application.loadPage(url);
   }
 }
