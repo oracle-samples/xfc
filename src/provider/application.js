@@ -259,7 +259,7 @@ class Application extends EventEmitter {
 
     // Emit a ready event
     this.emit('xfc.ready');
-    this.JSONRPC.notification('authorized', [{ url: window.location.href, test:this.info }]);
+    this.JSONRPC.notification('authorized', [{ url: window.location.href, info:this.info }]);
 
     // If there is an onReady callback, execute it
     if (typeof this.onReady === 'function') {
