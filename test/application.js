@@ -209,7 +209,17 @@ describe('Application', () => {
         const notification = this.stub(application.JSONRPC, 'notification');
         application.authorizeConsumer();
 
-        sinon.assert.calledWith(notification, 'authorized', [{ url: window.location.href }]);
+        sinon.assert.calledWith(notification, 'authorized', [{ url: window.location.href, options: {} }]);
+      }));
+
+      it("calls this.JSONRPC.notification of 'authorized' with current url and generic options object", sinon.test(function() {
+        const options = { moreDetail: 'detail' }
+        const application = new Application();
+        application.init({options});
+        const notification = this.stub(application.JSONRPC, 'notification');
+        application.authorizeConsumer();
+
+        sinon.assert.calledWith(notification, 'authorized', [{ url: window.location.href, options: { moreDetail: 'detail'} }]);
       }));
 
       it("calls this.onReady if onReady is a function", () => {

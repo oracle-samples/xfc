@@ -17,9 +17,10 @@ class Application extends EventEmitter {
    *                                 This string must be a valid CSS selector string; if it's not,
    *                                 a SyntaxError exception is thrown.
    */
-  init({ acls = [], secret = null, onReady = null, targetSelectors = '' }) {
+  init({ acls = [], secret = null, onReady = null, targetSelectors = '', options = {} }) {
     this.acls = [].concat(acls);
     this.secret = secret;
+    this.options = options;
     this.onReady = onReady;
     this.targetSelectors = targetSelectors;
     this.resizeConfig = null;
@@ -251,7 +252,7 @@ class Application extends EventEmitter {
 
     // Emit a ready event
     this.emit('xfc.ready');
-    this.JSONRPC.notification('authorized', [{ url: window.location.href }]);
+    this.JSONRPC.notification('authorized', [{ url: window.location.href, options: this.options }]);
 
     // If there is an onReady callback, execute it
     if (typeof this.onReady === 'function') {
