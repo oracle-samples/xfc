@@ -16,6 +16,8 @@ class Application extends EventEmitter {
    * @param  options.targetSelectors A DOMString containing one or more selectors to match against.
    *                                 This string must be a valid CSS selector string; if it's not,
    *                                 a SyntaxError exception is thrown.
+   * @param  options.options         An optional object used for App to transmit details to frame
+   *                                 after App is authorized.
    */
   init({ acls = [], secret = null, onReady = null, targetSelectors = '', options = {} }) {
     this.acls = [].concat(acls);
