@@ -1,5 +1,8 @@
 Next Release
 -------------
+1.9.0
+------
+* Add generic options object to App init. #46
 
 1.8.1
 ------

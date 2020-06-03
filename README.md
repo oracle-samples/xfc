@@ -218,6 +218,15 @@ XFC.Provider.init({
 })
 ```
 
+If the app wants to transmit details to frame after authorization, it may pass in an options object.
+
+```js
+XFC.Provider.init({
+  acls: ['*'],
+  options: { moreDetail: 'detail' }
+})
+```
+
 ### Launching Fullscreen
 An application may request to launch a pagelet fullscreen within the consumer application.
 
