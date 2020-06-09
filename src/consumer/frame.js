@@ -35,7 +35,6 @@ class Frame extends EventEmitter {
     this.origin = new URI(this.source).origin;
     this.secret = secret;
     this.resizeConfig = resizeConfig;
-    let getActivePatient = customMethods.getActivePatient;
 
     const self = this;
     this.JSONRPC = new JSONRPC(
@@ -94,7 +93,7 @@ class Frame extends EventEmitter {
           return Promise.resolve();
         },
 
-        getActivePatient,
+        customMethods: customMethods,
       }
     );
   }
