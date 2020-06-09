@@ -26,7 +26,7 @@ class Frame extends EventEmitter {
   * @param {string} source - The url source of the application
   * @param {object} options - An optional parameter that contains a set of optional configs
   */
-  init(container, source, { secret = null, resizeConfig = {}, iframeAttrs = {} } = {}) {
+  init(container, source, { secret = null, resizeConfig = {}, iframeAttrs = {}, customMethods = {} } = {}) {
     this.source = source;
     this.container = container;
     this.iframe = null;
@@ -35,6 +35,7 @@ class Frame extends EventEmitter {
     this.origin = new URI(this.source).origin;
     this.secret = secret;
     this.resizeConfig = resizeConfig;
+    let getActivePatient = customMethods.getActivePatient;
 
     const self = this;
     this.JSONRPC = new JSONRPC(
@@ -92,6 +93,8 @@ class Frame extends EventEmitter {
           self.load(url);
           return Promise.resolve();
         },
+
+        getActivePatient,
       }
     );
   }
@@ -227,6 +230,10 @@ class Frame extends EventEmitter {
   */
   trigger(event, detail) {
     this.JSONRPC.notification('event', [event, detail]);
+  }
+
+  invoke(jsonRPCFunction, args) {
+    return this.JSONRPC.request(jsonRPCFunction, [])
   }
 
 }

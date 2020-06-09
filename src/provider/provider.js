@@ -38,6 +38,11 @@ class Provider {
   loadPage(url) {
     this.application.loadPage(url);
   }
+
+  invoke(jsonRPCFunction, args) {
+    console.log('provider', jsonRPCFunction, args);
+    this.application.invoke(jsonRPCFunction, args);
+  }
 }
 
 export default Provider;

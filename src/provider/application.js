@@ -19,7 +19,7 @@ class Application extends EventEmitter {
    * @param  options.options         An optional object used for App to transmit details to frame
    *                                 after App is authorized.
    */
-  init({ acls = [], secret = null, onReady = null, targetSelectors = '', options = {} }) {
+  init({ acls = [], secret = null, onReady = null, targetSelectors = '', options = {}, customMethods = {} }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.options = options;
@@ -32,7 +32,7 @@ class Application extends EventEmitter {
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
-
+    let changeActivePatient = customMethods.changeActivePatient;
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
@@ -70,6 +70,7 @@ class Application extends EventEmitter {
 
           return Promise.resolve();
         },
+        changeActivePatient
       }
     );
   }
@@ -120,6 +121,11 @@ class Application extends EventEmitter {
   */
   trigger(event, detail) {
     this.JSONRPC.notification('event', [event, detail]);
+  }
+
+  invoke(jsonRPCFunction, args) {
+    console.log('app', jsonRPCFunction, args);
+    return this.JSONRPC.request(jsonRPCFunction, [])
   }
 
   /**

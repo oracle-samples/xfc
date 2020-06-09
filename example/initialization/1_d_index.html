@@ -58,8 +58,14 @@
     </div>
     <p>This example shows that the image resizing event is called only after the DOM is loaded</p>
     <script>
+      const customMethods = {
+        getActivePatient() {
+          console.log('called getActivePatient consumer extra method');
+          return Promise.resolve('mrn');
+        }
+      }
       XFC.Consumer.init()
-      XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/initialization/1_d_provider.html');
+      XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/initialization/1_d_provider.html', {customMethods: customMethods});
     </script>
   </body>
 </html>
