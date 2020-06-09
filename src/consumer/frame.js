@@ -35,66 +35,65 @@ class Frame extends EventEmitter {
     this.origin = new URI(this.source).origin;
     this.secret = secret;
     this.resizeConfig = resizeConfig;
+    const launch = () => {
+      self.wrapper.setAttribute('data-status', 'launched');
+      self.emit('xfc.launched');
+      return Promise.resolve();
+    };
+
+    const authorized = (detail = {}) => {
+      console.log('authorized');
+      self.wrapper.setAttribute('data-status', 'authorized');
+      self.emit('xfc.authorized', detail);
+      self.initIframeResizer();
+      return Promise.resolve();
+    };
+
+    const unload = (detail = {}) => {
+      self.wrapper.setAttribute('data-status', 'unloaded');
+      self.emit('xfc.unload', detail);
+      return Promise.resolve();
+    };
+
+    const resize = (height = null, width = null) => {
+      if (typeof resizeConfig.customCalculationMethod === 'function') {
+        resizeConfig.customCalculationMethod.call(self.iframe);
+        return Promise.resolve();
+      }
+
+      if (height) {
+        self.iframe.style.height = height;
+      }
+
+      if (width) {
+        self.iframe.style.width = width;
+      }
+      return Promise.resolve();
+    };
+
+    const event = (event, detail) => {
+      self.emit(event, detail);
+      return Promise.resolve();
+    };
+
+    const authorizeConsumer = () => {
+      return Promise.resolve('hello');
+    };
+
+    const challengeConsumer = () => {
+      return Promise.resolve(self.secret);
+    };
+
+    const loadPage = (url) => {
+      self.load(url);
+      return Promise.resolve();
+    };
+    
+    const obj = Object.assign({}, customMethods,{ launch: launch , authorized: authorized, unload: unload, resize: resize, event: event, authorizeConsumer: authorizeConsumer, challengeConsumer: challengeConsumer, loadPage: loadPage });
 
     const self = this;
     this.JSONRPC = new JSONRPC(
-      self.send,
-      {
-        launch() {
-          self.wrapper.setAttribute('data-status', 'launched');
-          self.emit('xfc.launched');
-          return Promise.resolve();
-        },
-
-        authorized(detail = {}) {
-          self.wrapper.setAttribute('data-status', 'authorized');
-          self.emit('xfc.authorized', detail);
-          self.initIframeResizer();
-          return Promise.resolve();
-        },
-
-        unload(detail = {}) {
-          self.wrapper.setAttribute('data-status', 'unloaded');
-          self.emit('xfc.unload', detail);
-          return Promise.resolve();
-        },
-
-        resize(height = null, width = null) {
-          if (typeof resizeConfig.customCalculationMethod === 'function') {
-            resizeConfig.customCalculationMethod.call(self.iframe);
-            return Promise.resolve();
-          }
-
-          if (height) {
-            self.iframe.style.height = height;
-          }
-
-          if (width) {
-            self.iframe.style.width = width;
-          }
-          return Promise.resolve();
-        },
-
-        event(event, detail) {
-          self.emit(event, detail);
-          return Promise.resolve();
-        },
-
-        authorizeConsumer() {
-          return Promise.resolve('hello');
-        },
-
-        challengeConsumer() {
-          return Promise.resolve(self.secret);
-        },
-
-        loadPage(url) {
-          self.load(url);
-          return Promise.resolve();
-        },
-
-        customMethods: customMethods,
-      }
+      self.send, obj
     );
   }
 
