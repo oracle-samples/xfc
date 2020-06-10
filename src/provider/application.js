@@ -121,8 +121,13 @@ class Application extends EventEmitter {
     this.JSONRPC.notification('event', [event, detail]);
   }
 
-  invoke(jsonRPCFunction, args) {
-    return this.JSONRPC.request(jsonRPCFunction, args || []);
+  /**
+  * Calls an event in the parent application.
+  * @param {string} method - The event name to trigger.
+  * @param {array} args - params to be sent to the event.
+  */
+  invoke(method, args = []) {
+    return this.JSONRPC.request(method, args);
   }
 
   /**

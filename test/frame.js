@@ -116,7 +116,7 @@ describe('Frame', () => {
       }));
     });
 
-    describe('#invoke(jsonRPCFunction, args)', () => {
+    describe('#invoke(method, args)', () => {
       it("calls this.JSONRPC.request without args", sinon.test(function() {
         const request = this.stub(frame.JSONRPC, 'request');
         const jsonRPCFunction = 'TestFunc';
