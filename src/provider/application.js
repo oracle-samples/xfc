@@ -37,40 +37,44 @@ class Application extends EventEmitter {
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
     const self = this;
-    const event = (event, detail) => {
-      self.emit(event, detail);
-      return Promise.resolve();
-    };
+    this.JSONRPC = new JSONRPC(
+      self.send.bind(self),
+      Object.assign(
+        {
+          event(event, detail) {
+            self.emit(event, detail);
+            return Promise.resolve();
+          },
 
-    const resize = (config = {}) => {
-      self.resizeConfig = config;
+          resize(config = {}) {
+            self.resizeConfig = config;
 
-      self.requestResize();
+            self.requestResize();
 
-      // Registers a mutation observer for body
-      const observer = new MutationObserver(
-        (mutations) => self.requestResize()
-      );
-      observer.observe(
-        document.body,
-        { attributes: true, childList: true, characterData: true, subtree: true }
-      );
+            // Registers a mutation observer for body
+            const observer = new MutationObserver(
+              (mutations) => self.requestResize()
+            );
+            observer.observe(
+              document.body,
+              { attributes: true, childList: true, characterData: true, subtree: true }
+            );
 
-      // Registers a listener to window.onresize
-      // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
-      const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
-      let resizeTimer = null;
-      window.onresize = (event) => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => self.requestResize(), interval);
-      };
+            // Registers a listener to window.onresize
+            // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
+            const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
+            let resizeTimer = null;
+            window.onresize = (event) => {
+              clearTimeout(resizeTimer);
+              resizeTimer = setTimeout(() => self.requestResize(), interval);
+            };
 
-      return Promise.resolve();
-    };
-
-    const obj = Object.assign({}, customMethods, { resize, event });
-
-    this.JSONRPC = new JSONRPC(self.send.bind(self), obj);
+            return Promise.resolve();
+          },
+        },
+        customMethods
+      )
+    );
   }
 
   /**

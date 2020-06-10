@@ -37,58 +37,66 @@ class Frame extends EventEmitter {
     this.resizeConfig = resizeConfig;
 
     const self = this;
-    const launch = () => {
-      self.wrapper.setAttribute('data-status', 'launched');
-      self.emit('xfc.launched');
-      return Promise.resolve();
-    };
+    this.JSONRPC = new JSONRPC(
+      self.send,
+      Object.assign(
+        {
+          launch() {
+            self.wrapper.setAttribute('data-status', 'launched');
+            self.emit('xfc.launched');
+            return Promise.resolve();
+          },
 
-    const authorized = (detail = {}) => {
-      self.wrapper.setAttribute('data-status', 'authorized');
-      self.emit('xfc.authorized', detail);
-      self.initIframeResizer();
-      return Promise.resolve();
-    };
+          authorized(detail = {}) {
+            self.wrapper.setAttribute('data-status', 'authorized');
+            self.emit('xfc.authorized', detail);
+            self.initIframeResizer();
+            return Promise.resolve();
+          },
 
-    const unload = (detail = {}) => {
-      self.wrapper.setAttribute('data-status', 'unloaded');
-      self.emit('xfc.unload', detail);
-      return Promise.resolve();
-    };
+          unload(detail = {}) {
+            self.wrapper.setAttribute('data-status', 'unloaded');
+            self.emit('xfc.unload', detail);
+            return Promise.resolve();
+          },
 
-    const resize = (height = null, width = null) => {
-      if (typeof resizeConfig.customCalculationMethod === 'function') {
-        resizeConfig.customCalculationMethod.call(self.iframe);
-        return Promise.resolve();
-      }
+          resize(height = null, width = null) {
+            if (typeof resizeConfig.customCalculationMethod === 'function') {
+              resizeConfig.customCalculationMethod.call(self.iframe);
+              return Promise.resolve();
+            }
 
-      if (height) {
-        self.iframe.style.height = height;
-      }
+            if (height) {
+              self.iframe.style.height = height;
+            }
 
-      if (width) {
-        self.iframe.style.width = width;
-      }
-      return Promise.resolve();
-    };
+            if (width) {
+              self.iframe.style.width = width;
+            }
+            return Promise.resolve();
+          },
 
-    const event = (event, detail) => {
-      self.emit(event, detail);
-      return Promise.resolve();
-    };
+          event(event, detail) {
+            self.emit(event, detail);
+            return Promise.resolve();
+          },
 
-    const authorizeConsumer = () => Promise.resolve('hello');
+          authorizeConsumer() {
+            return Promise.resolve('hello');
+          },
 
-    const challengeConsumer = () => Promise.resolve(self.secret);
+          challengeConsumer() {
+            return Promise.resolve(self.secret);
+          },
 
-    const loadPage = (url) => {
-      self.load(url);
-      return Promise.resolve();
-    };
-
-    const obj = Object.assign({}, customMethods, { launch, authorized, unload, resize, event, authorizeConsumer, challengeConsumer, loadPage });
-
-    this.JSONRPC = new JSONRPC(self.send, obj);
+          loadPage(url) {
+            self.load(url);
+            return Promise.resolve();
+          },
+        },
+        customMethods
+      )
+    );
   }
 
   initIframeResizer() {
