@@ -14,6 +14,7 @@ describe('Application', () => {
     const acls = ['http://localhost:8080'];
     const secret = '123';
     const onReady = () => {};
+    const customMethods = { add(x, y) { return Promise.resolve(x + y); } };
     const application = new Application();
 
     const oldDocument = global.document;
@@ -22,7 +23,7 @@ describe('Application', () => {
       createElement: document.createElement.bind(document),
       addEventListener: () => console.log('mock addEventListener')
     };
-    application.init({acls, secret, onReady});
+    application.init({acls, secret, onReady, customMethods});
     global.document = oldDocument;
 
     it("sets application's acls to the given acls", () => {
@@ -44,6 +45,10 @@ describe('Application', () => {
     it("calls addEventListener", sinon.test(function() {
       sinon.spy(document, 'addEventListener');
       expect(document.addEventListener.calledOnce);
+    }));
+
+    it("registers methods and customMethods with JSONRPC", sinon.test(function() {
+      expect(application.JSONRPC.methods).to.have.keys(['add', 'event', 'resize']);
     }));
 
     describe('#trigger(event, detail)', () => {

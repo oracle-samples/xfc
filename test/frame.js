@@ -16,7 +16,8 @@ describe('Frame', () => {
     const container = document.body;
     const source = "*";
     const iframeAttrs = { allow: 'camera' };
-    const options = { secret: 123, iframeAttrs };
+    const customMethods = { foo() {} };
+    const options = { secret: 123, iframeAttrs, customMethods };
     const frame = new Frame();
     frame.init(container, source, options);
 
@@ -25,6 +26,12 @@ describe('Frame', () => {
     it('sets the secret', () => expect(frame.secret).to.equal(options.secret));
     it('sets the iframeAttrs', () => expect(frame.iframeAttrs).to.equal(iframeAttrs));
     it('sets the JSONRPC', () => expect(frame.JSONRPC).to.be.an.instanceof(JSONRPC));
+    it("registers methods with JSONRPC", sinon.test(function() {
+      expect(frame.JSONRPC.methods).to.have.any.keys(['authorizeConsumer', 'authorized']);
+    }));
+    it("registers customMethods with JSONRPC", sinon.test(function() {
+      expect(frame.JSONRPC.methods).to.have.any.keys(['foo']);
+    }));
   });
 
   describe('#init() without secret', () => {
@@ -39,6 +46,9 @@ describe('Frame', () => {
     it('sets the secret to null', () => expect(frame.secret).to.be.null);
     it('sets the iframeAttrs', () => expect(frame.iframeAttrs).to.equal(iframeAttrs));
     it('sets the JSONRPC', () => expect(frame.JSONRPC).to.be.an.instanceof(JSONRPC));
+    it("doesn't registers customMethods with JSONRPC", sinon.test(function() {
+      expect(frame.JSONRPC.methods).to.not.have.any.keys(['foo']);
+    }));
 
     describe('#mount()', () => {
       const emit = sinon.stub();
