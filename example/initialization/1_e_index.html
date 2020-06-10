@@ -56,10 +56,12 @@
         <h2>authorized app</h2>
       </div>
     </div>
-    <p>This example shows that the image resizing event is called only after the DOM is loaded</p>
+    <p>This example shows that customMethods are called</p>
     <script>
       XFC.Consumer.init()
-      XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/initialization/1_d_provider.html');
+      frame = XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/initialization/1_e_provider.html');
+      setTimeout(function(){ frame.invoke('add', [1, 2]).then(result => { console.log('result',result)}); }, 3000);
+
     </script>
   </body>
 </html>

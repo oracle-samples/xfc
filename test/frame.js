@@ -116,6 +116,28 @@ describe('Frame', () => {
       }));
     });
 
+    describe('#invoke(jsonRPCFunction, args)', () => {
+      it("calls this.JSONRPC.request without args", sinon.test(function() {
+        const request = this.stub(frame.JSONRPC, 'request');
+        const jsonRPCFunction = 'TestFunc';
+        frame.invoke(jsonRPCFunction);
+
+        sinon.assert.calledWith(request, 'TestFunc', []);
+      }));
+      it("calls this.JSONRPC.request with args", sinon.test(function() {
+        const request = this.stub(frame.JSONRPC, 'request');
+        const jsonRPCFunction = 'TestFunc';
+        const args = [ 'test' ];
+        frame.invoke(jsonRPCFunction, args);
+
+        sinon.assert.calledWith(request, 'TestFunc', args);
+      }));
+      it('returns a promise', sinon.test(function() {
+        const promise = frame.invoke('foo', ['hi']);
+        expect(promise).to.be.an('promise');
+      }));
+    });
+
     describe('#handleProviderMessage(event)', () => {
       const handle = sinon.stub(frame.JSONRPC, 'handle');
       after(()=> handle.restore());

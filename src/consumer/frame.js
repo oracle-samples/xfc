@@ -35,6 +35,8 @@ class Frame extends EventEmitter {
     this.origin = new URI(this.source).origin;
     this.secret = secret;
     this.resizeConfig = resizeConfig;
+
+    const self = this;
     const launch = () => {
       self.wrapper.setAttribute('data-status', 'launched');
       self.emit('xfc.launched');
@@ -42,7 +44,6 @@ class Frame extends EventEmitter {
     };
 
     const authorized = (detail = {}) => {
-      console.log('authorized');
       self.wrapper.setAttribute('data-status', 'authorized');
       self.emit('xfc.authorized', detail);
       self.initIframeResizer();
@@ -76,25 +77,18 @@ class Frame extends EventEmitter {
       return Promise.resolve();
     };
 
-    const authorizeConsumer = () => {
-      return Promise.resolve('hello');
-    };
+    const authorizeConsumer = () => Promise.resolve('hello');
 
-    const challengeConsumer = () => {
-      return Promise.resolve(self.secret);
-    };
+    const challengeConsumer = () => Promise.resolve(self.secret);
 
     const loadPage = (url) => {
       self.load(url);
       return Promise.resolve();
     };
-    
-    const obj = Object.assign({}, customMethods,{ launch: launch , authorized: authorized, unload: unload, resize: resize, event: event, authorizeConsumer: authorizeConsumer, challengeConsumer: challengeConsumer, loadPage: loadPage });
 
-    const self = this;
-    this.JSONRPC = new JSONRPC(
-      self.send, obj
-    );
+    const obj = Object.assign({}, customMethods, { launch, authorized, unload, resize, event, authorizeConsumer, challengeConsumer, loadPage });
+
+    this.JSONRPC = new JSONRPC(self.send, obj);
   }
 
   initIframeResizer() {
@@ -231,7 +225,7 @@ class Frame extends EventEmitter {
   }
 
   invoke(jsonRPCFunction, args) {
-    return this.JSONRPC.request(jsonRPCFunction, [])
+    return this.JSONRPC.request(jsonRPCFunction, args || []);
   }
 
 }

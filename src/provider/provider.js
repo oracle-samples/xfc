@@ -40,8 +40,7 @@ class Provider {
   }
 
   invoke(jsonRPCFunction, args) {
-    console.log('provider', jsonRPCFunction, args);
-    this.application.invoke(jsonRPCFunction, args);
+    return this.application.invoke(jsonRPCFunction, args);
   }
 }
 

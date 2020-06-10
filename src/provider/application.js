@@ -32,47 +32,45 @@ class Application extends EventEmitter {
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
-    let changeActivePatient = customMethods.changeActivePatient;
+
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
     const self = this;
-    this.JSONRPC = new JSONRPC(
-      self.send.bind(self),
-      {
-        event(event, detail) {
-          self.emit(event, detail);
-          return Promise.resolve();
-        },
+    const event = (event, detail) => {
+      self.emit(event, detail);
+      return Promise.resolve();
+    };
 
-        resize(config = {}) {
-          self.resizeConfig = config;
+    const resize = (config = {}) => {
+      self.resizeConfig = config;
 
-          self.requestResize();
+      self.requestResize();
 
-          // Registers a mutation observer for body
-          const observer = new MutationObserver(
-            (mutations) => self.requestResize()
-          );
-          observer.observe(
-            document.body,
-            { attributes: true, childList: true, characterData: true, subtree: true }
-          );
+      // Registers a mutation observer for body
+      const observer = new MutationObserver(
+        (mutations) => self.requestResize()
+      );
+      observer.observe(
+        document.body,
+        { attributes: true, childList: true, characterData: true, subtree: true }
+      );
 
-          // Registers a listener to window.onresize
-          // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
-          const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
-          let resizeTimer = null;
-          window.onresize = (event) => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => self.requestResize(), interval);
-          };
+      // Registers a listener to window.onresize
+      // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
+      const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
+      let resizeTimer = null;
+      window.onresize = (event) => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => self.requestResize(), interval);
+      };
 
-          return Promise.resolve();
-        },
-        changeActivePatient
-      }
-    );
+      return Promise.resolve();
+    };
+
+    const obj = Object.assign({}, customMethods, { resize, event });
+
+    this.JSONRPC = new JSONRPC(self.send.bind(self), obj);
   }
 
   /**
@@ -124,8 +122,7 @@ class Application extends EventEmitter {
   }
 
   invoke(jsonRPCFunction, args) {
-    console.log('app', jsonRPCFunction, args);
-    return this.JSONRPC.request(jsonRPCFunction, [])
+    return this.JSONRPC.request(jsonRPCFunction, args || []);
   }
 
   /**

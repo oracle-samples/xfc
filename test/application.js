@@ -57,6 +57,28 @@ describe('Application', () => {
       }));
     });
 
+    describe('#invoke(jsonRPCFunction, args)', () => {
+      it("calls this.JSONRPC.request without args", sinon.test(function() {
+        const request = this.stub(application.JSONRPC, 'request');
+        const jsonRPCFunction = 'TestFunc';
+        application.invoke(jsonRPCFunction);
+
+        sinon.assert.calledWith(request, 'TestFunc', []);
+      }));
+      it("calls this.JSONRPC.request with args", sinon.test(function() {
+        const request = this.stub(application.JSONRPC, 'request');
+        const jsonRPCFunction = 'TestFunc';
+        const args = [ 'test' ];
+        application.invoke(jsonRPCFunction, args);
+
+        sinon.assert.calledWith(request, 'TestFunc', args);
+      }));
+      it('returns a promise', sinon.test(function() {
+        const promise = application.invoke('foo', ['hi']);
+        expect(promise).to.be.an('promise');
+      }));
+    });
+
     describe('#fullscreen(url)', () => {
       it("calls this.trigger with event 'xfc.fullscreen' and given url", sinon.test(function() {
         const trigger = this.stub(application, 'trigger');
