@@ -16,7 +16,8 @@ describe('Frame', () => {
     const container = document.body;
     const source = "*";
     const iframeAttrs = { allow: 'camera' };
-    const options = { secret: 123, iframeAttrs };
+    const customMethods = { foo() {} };
+    const options = { secret: 123, iframeAttrs, customMethods };
     const frame = new Frame();
     frame.init(container, source, options);
 
@@ -25,6 +26,12 @@ describe('Frame', () => {
     it('sets the secret', () => expect(frame.secret).to.equal(options.secret));
     it('sets the iframeAttrs', () => expect(frame.iframeAttrs).to.equal(iframeAttrs));
     it('sets the JSONRPC', () => expect(frame.JSONRPC).to.be.an.instanceof(JSONRPC));
+    it("registers methods with JSONRPC", sinon.test(function() {
+      expect(frame.JSONRPC.methods).to.have.any.keys(['authorizeConsumer', 'authorized']);
+    }));
+    it("registers customMethods with JSONRPC", sinon.test(function() {
+      expect(frame.JSONRPC.methods).to.have.any.keys(['foo']);
+    }));
   });
 
   describe('#init() without secret', () => {
@@ -39,6 +46,9 @@ describe('Frame', () => {
     it('sets the secret to null', () => expect(frame.secret).to.be.null);
     it('sets the iframeAttrs', () => expect(frame.iframeAttrs).to.equal(iframeAttrs));
     it('sets the JSONRPC', () => expect(frame.JSONRPC).to.be.an.instanceof(JSONRPC));
+    it("doesn't registers customMethods with JSONRPC", sinon.test(function() {
+      expect(frame.JSONRPC.methods).to.not.have.any.keys(['foo']);
+    }));
 
     describe('#mount()', () => {
       const emit = sinon.stub();
@@ -113,6 +123,28 @@ describe('Frame', () => {
         frame.trigger(event, detail);
 
         sinon.assert.calledWith(notification, 'event', [event, detail]);
+      }));
+    });
+
+    describe('#invoke(method, args)', () => {
+      it("calls this.JSONRPC.request without args", sinon.test(function() {
+        const request = this.stub(frame.JSONRPC, 'request');
+        const jsonRPCFunction = 'TestFunc';
+        frame.invoke(jsonRPCFunction);
+
+        sinon.assert.calledWith(request, 'TestFunc', []);
+      }));
+      it("calls this.JSONRPC.request with args", sinon.test(function() {
+        const request = this.stub(frame.JSONRPC, 'request');
+        const jsonRPCFunction = 'TestFunc';
+        const args = [ 'test' ];
+        frame.invoke(jsonRPCFunction, args);
+
+        sinon.assert.calledWith(request, 'TestFunc', args);
+      }));
+      it('returns a promise', sinon.test(function() {
+        const promise = frame.invoke('foo', ['hi']);
+        expect(promise).to.be.an('promise');
       }));
     });
 

@@ -19,7 +19,7 @@ class Application extends EventEmitter {
    * @param  options.options         An optional object used for App to transmit details to frame
    *                                 after App is authorized.
    */
-  init({ acls = [], secret = null, onReady = null, targetSelectors = '', options = {} }) {
+  init({ acls = [], secret = null, onReady = null, targetSelectors = '', options = {}, customMethods = {} }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.options = options;
@@ -39,38 +39,41 @@ class Application extends EventEmitter {
     const self = this;
     this.JSONRPC = new JSONRPC(
       self.send.bind(self),
-      {
-        event(event, detail) {
-          self.emit(event, detail);
-          return Promise.resolve();
+      Object.assign(
+        {
+          event(event, detail) {
+            self.emit(event, detail);
+            return Promise.resolve();
+          },
+
+          resize(config = {}) {
+            self.resizeConfig = config;
+
+            self.requestResize();
+
+            // Registers a mutation observer for body
+            const observer = new MutationObserver(
+              (mutations) => self.requestResize()
+            );
+            observer.observe(
+              document.body,
+              { attributes: true, childList: true, characterData: true, subtree: true }
+            );
+
+            // Registers a listener to window.onresize
+            // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
+            const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
+            let resizeTimer = null;
+            window.onresize = (event) => {
+              clearTimeout(resizeTimer);
+              resizeTimer = setTimeout(() => self.requestResize(), interval);
+            };
+
+            return Promise.resolve();
+          },
         },
-
-        resize(config = {}) {
-          self.resizeConfig = config;
-
-          self.requestResize();
-
-          // Registers a mutation observer for body
-          const observer = new MutationObserver(
-            (mutations) => self.requestResize()
-          );
-          observer.observe(
-            document.body,
-            { attributes: true, childList: true, characterData: true, subtree: true }
-          );
-
-          // Registers a listener to window.onresize
-          // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
-          const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
-          let resizeTimer = null;
-          window.onresize = (event) => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => self.requestResize(), interval);
-          };
-
-          return Promise.resolve();
-        },
-      }
+        customMethods
+      )
     );
   }
 
@@ -120,6 +123,15 @@ class Application extends EventEmitter {
   */
   trigger(event, detail) {
     this.JSONRPC.notification('event', [event, detail]);
+  }
+
+  /**
+  * Calls an event in the parent application.
+  * @param {string} method - The event name to trigger.
+  * @param {array} args - params to be sent to the event.
+  */
+  invoke(method, args = []) {
+    return this.JSONRPC.request(method, args);
   }
 
   /**

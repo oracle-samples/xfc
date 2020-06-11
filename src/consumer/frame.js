@@ -26,7 +26,7 @@ class Frame extends EventEmitter {
   * @param {string} source - The url source of the application
   * @param {object} options - An optional parameter that contains a set of optional configs
   */
-  init(container, source, { secret = null, resizeConfig = {}, iframeAttrs = {} } = {}) {
+  init(container, source, { secret = null, resizeConfig = {}, iframeAttrs = {}, customMethods = {} } = {}) {
     this.source = source;
     this.container = container;
     this.iframe = null;
@@ -39,60 +39,63 @@ class Frame extends EventEmitter {
     const self = this;
     this.JSONRPC = new JSONRPC(
       self.send,
-      {
-        launch() {
-          self.wrapper.setAttribute('data-status', 'launched');
-          self.emit('xfc.launched');
-          return Promise.resolve();
-        },
-
-        authorized(detail = {}) {
-          self.wrapper.setAttribute('data-status', 'authorized');
-          self.emit('xfc.authorized', detail);
-          self.initIframeResizer();
-          return Promise.resolve();
-        },
-
-        unload(detail = {}) {
-          self.wrapper.setAttribute('data-status', 'unloaded');
-          self.emit('xfc.unload', detail);
-          return Promise.resolve();
-        },
-
-        resize(height = null, width = null) {
-          if (typeof resizeConfig.customCalculationMethod === 'function') {
-            resizeConfig.customCalculationMethod.call(self.iframe);
+      Object.assign(
+        {
+          launch() {
+            self.wrapper.setAttribute('data-status', 'launched');
+            self.emit('xfc.launched');
             return Promise.resolve();
-          }
+          },
 
-          if (height) {
-            self.iframe.style.height = height;
-          }
+          authorized(detail = {}) {
+            self.wrapper.setAttribute('data-status', 'authorized');
+            self.emit('xfc.authorized', detail);
+            self.initIframeResizer();
+            return Promise.resolve();
+          },
 
-          if (width) {
-            self.iframe.style.width = width;
-          }
-          return Promise.resolve();
+          unload(detail = {}) {
+            self.wrapper.setAttribute('data-status', 'unloaded');
+            self.emit('xfc.unload', detail);
+            return Promise.resolve();
+          },
+
+          resize(height = null, width = null) {
+            if (typeof resizeConfig.customCalculationMethod === 'function') {
+              resizeConfig.customCalculationMethod.call(self.iframe);
+              return Promise.resolve();
+            }
+
+            if (height) {
+              self.iframe.style.height = height;
+            }
+
+            if (width) {
+              self.iframe.style.width = width;
+            }
+            return Promise.resolve();
+          },
+
+          event(event, detail) {
+            self.emit(event, detail);
+            return Promise.resolve();
+          },
+
+          authorizeConsumer() {
+            return Promise.resolve('hello');
+          },
+
+          challengeConsumer() {
+            return Promise.resolve(self.secret);
+          },
+
+          loadPage(url) {
+            self.load(url);
+            return Promise.resolve();
+          },
         },
-
-        event(event, detail) {
-          self.emit(event, detail);
-          return Promise.resolve();
-        },
-
-        authorizeConsumer() {
-          return Promise.resolve('hello');
-        },
-
-        challengeConsumer() {
-          return Promise.resolve(self.secret);
-        },
-
-        loadPage(url) {
-          self.load(url);
-          return Promise.resolve();
-        },
-      }
+        customMethods
+      )
     );
   }
 
@@ -227,6 +230,15 @@ class Frame extends EventEmitter {
   */
   trigger(event, detail) {
     this.JSONRPC.notification('event', [event, detail]);
+  }
+
+  /**
+  * Calls an event in the parent application.
+  * @param {string} method - The event name to trigger.
+  * @param {array} args - params to be sent to the event.
+  */
+  invoke(method, args = []) {
+    return this.JSONRPC.request(method, args);
   }
 
 }

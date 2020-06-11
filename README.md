@@ -227,6 +227,21 @@ XFC.Provider.init({
 })
 ```
 
+If the app and framework wants to register new custom methods with JSONRPC, it may pass in an customMethods object and Provider
+can call custom events on the frame using invoke method.
+
+```js
+XFC.Consumer.mount(
+  document.body,
+  'http://localprovider.com:8080/example/provider.html',
+  { customMethods: { add(x, y) { return Promise.resolve(x + y); } } }
+);
+```
+
+```js
+XFC.Provider.invoke('add', [1, 2]);
+```
+
 ### Launching Fullscreen
 An application may request to launch a pagelet fullscreen within the consumer application.
 

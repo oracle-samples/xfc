@@ -14,6 +14,7 @@ describe('Application', () => {
     const acls = ['http://localhost:8080'];
     const secret = '123';
     const onReady = () => {};
+    const customMethods = { add(x, y) { return Promise.resolve(x + y); } };
     const application = new Application();
 
     const oldDocument = global.document;
@@ -22,7 +23,7 @@ describe('Application', () => {
       createElement: document.createElement.bind(document),
       addEventListener: () => console.log('mock addEventListener')
     };
-    application.init({acls, secret, onReady});
+    application.init({acls, secret, onReady, customMethods});
     global.document = oldDocument;
 
     it("sets application's acls to the given acls", () => {
@@ -46,6 +47,10 @@ describe('Application', () => {
       expect(document.addEventListener.calledOnce);
     }));
 
+    it("registers methods and customMethods with JSONRPC", sinon.test(function() {
+      expect(application.JSONRPC.methods).to.have.keys(['add', 'event', 'resize']);
+    }));
+
     describe('#trigger(event, detail)', () => {
       it("calls this.JSONRPC.notification of 'event' with event and detail", sinon.test(function() {
         const notification = this.stub(application.JSONRPC, 'notification');
@@ -54,6 +59,27 @@ describe('Application', () => {
         application.trigger(event, detail);
 
         sinon.assert.calledWith(notification, 'event', [event, detail]);
+      }));
+    });
+
+    describe('#invoke(method, args)', () => {
+      it("calls this.JSONRPC.request without args", sinon.test(function() {
+        const request = this.stub(application.JSONRPC, 'request');
+        application.invoke('TestFunc');
+
+        sinon.assert.calledWith(request, 'TestFunc', []);
+      }));
+      it("calls this.JSONRPC.request with args", sinon.test(function() {
+        const request = this.stub(application.JSONRPC, 'request');
+        const jsonRPCFunction = 'TestFunc';
+        const args = [ 'test' ];
+        application.invoke(jsonRPCFunction, args);
+
+        sinon.assert.calledWith(request, 'TestFunc', args);
+      }));
+      it('returns a promise', sinon.test(function() {
+        const promise = application.invoke('foo', ['hi']);
+        expect(promise).to.be.an('promise');
       }));
     });
 
