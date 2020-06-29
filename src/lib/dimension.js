@@ -79,7 +79,7 @@ export function getOffsetToBody(node, offset = 0) {
   //       if the style.position of the element itself is set to "fixed"
   //       See reference at https://developer.mozilla.org/en-US/docs/Web/API/HTMLelement/offsetParent#Compatibility
   const calculatedOffset = node.offsetTop + offset;
-  const offsetParent = node.offsetParent;
+  const { offsetParent } = node;
 
   if (offsetParent === window.document.body) {
     return calculatedOffset;

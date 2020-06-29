@@ -1,3 +1,5 @@
+/* eslint-disable no-bitwise, import/prefer-default-export */
+
 /**
 * Comparison algorithm to prevent timing attacks.
 * See: https://en.wikipedia.org/wiki/Timing_attack
