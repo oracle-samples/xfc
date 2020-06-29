@@ -1,9 +1,15 @@
+import chai from 'chai';
 import { expect } from 'chai';
 import { EventEmitter } from 'events';
 import JSONRPC from 'jsonrpc-dispatch';
 import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
 import Application from '../src/provider/application';
+import signonTest from 'sinon-test'
+
+sinon.test = signonTest(sinon);
+chai.use(sinonChai);
 
 describe('Application', () => {
   it('should be an instance of EventEmitter', () => {
@@ -200,7 +206,7 @@ describe('Application', () => {
           const secret = (secretAttempt) => Promise.resolve();
           application.init({secret});
           const authorizeConsumer = sinon.stub(
-            application, 'authorizeConsumer', () => {
+            application, 'authorizeConsumer').callsFake(() => {
               done();
               authorizeConsumer.restore();
             }
@@ -209,16 +215,15 @@ describe('Application', () => {
           application.verifyChallenge("123");
         });
 
-        it("handles failure from this.secret", (done) => {
+        it("handles failure from this.secret", sinon.test((done) => {
           const error = new Error('promise rejected');
           const secret = (secretAttempt) => Promise.reject(error);
           application.init({secret});
-          expect(application.emitError).to.have.been.called;
           application.verifyChallenge("123").catch((err) => {
             expect(err).to.equal(error);
             done();
           });
-        });
+        }));
       });
     });
 
