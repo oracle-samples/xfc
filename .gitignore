@@ -13,7 +13,7 @@ node_modules
 
 build
 doc
-lib
+/lib
 dist
 
 .DS_Store
