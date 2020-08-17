@@ -1,15 +1,13 @@
 import { EventEmitter } from 'events';
-import logger from '../lib/logger';
 import JSONRPC from 'jsonrpc-dispatch';
+import logger from '../lib/logger';
 import URI from '../lib/uri';
-
 
 /**
  * Application container class which represents an application frame hosting
  * an app on a 3rd party domain.
  */
 class Frame extends EventEmitter {
-
   constructor(props) {
     super(props);
 
@@ -26,7 +24,9 @@ class Frame extends EventEmitter {
   * @param {string} source - The url source of the application
   * @param {object} options - An optional parameter that contains a set of optional configs
   */
-  init(container, source, { secret = null, resizeConfig = {}, iframeAttrs = {}, customMethods = {} } = {}) {
+  init(container, source, {
+    secret = null, resizeConfig = {}, iframeAttrs = {}, customMethods = {},
+  } = {}) {
     this.source = source;
     this.container = container;
     this.iframe = null;
@@ -39,63 +39,61 @@ class Frame extends EventEmitter {
     const self = this;
     this.JSONRPC = new JSONRPC(
       self.send,
-      Object.assign(
-        {
-          launch() {
-            self.wrapper.setAttribute('data-status', 'launched');
-            self.emit('xfc.launched');
-            return Promise.resolve();
-          },
-
-          authorized(detail = {}) {
-            self.wrapper.setAttribute('data-status', 'authorized');
-            self.emit('xfc.authorized', detail);
-            self.initIframeResizer();
-            return Promise.resolve();
-          },
-
-          unload(detail = {}) {
-            self.wrapper.setAttribute('data-status', 'unloaded');
-            self.emit('xfc.unload', detail);
-            return Promise.resolve();
-          },
-
-          resize(height = null, width = null) {
-            if (typeof resizeConfig.customCalculationMethod === 'function') {
-              resizeConfig.customCalculationMethod.call(self.iframe);
-              return Promise.resolve();
-            }
-
-            if (height) {
-              self.iframe.style.height = height;
-            }
-
-            if (width) {
-              self.iframe.style.width = width;
-            }
-            return Promise.resolve();
-          },
-
-          event(event, detail) {
-            self.emit(event, detail);
-            return Promise.resolve();
-          },
-
-          authorizeConsumer() {
-            return Promise.resolve('hello');
-          },
-
-          challengeConsumer() {
-            return Promise.resolve(self.secret);
-          },
-
-          loadPage(url) {
-            self.load(url);
-            return Promise.resolve();
-          },
+      ({
+        launch() {
+          self.wrapper.setAttribute('data-status', 'launched');
+          self.emit('xfc.launched');
+          return Promise.resolve();
         },
-        customMethods
-      )
+
+        authorized(detail = {}) {
+          self.wrapper.setAttribute('data-status', 'authorized');
+          self.emit('xfc.authorized', detail);
+          self.initIframeResizer();
+          return Promise.resolve();
+        },
+
+        unload(detail = {}) {
+          self.wrapper.setAttribute('data-status', 'unloaded');
+          self.emit('xfc.unload', detail);
+          return Promise.resolve();
+        },
+
+        resize(height = null, width = null) {
+          if (typeof resizeConfig.customCalculationMethod === 'function') {
+            resizeConfig.customCalculationMethod.call(self.iframe);
+            return Promise.resolve();
+          }
+
+          if (height) {
+            self.iframe.style.height = height;
+          }
+
+          if (width) {
+            self.iframe.style.width = width;
+          }
+          return Promise.resolve();
+        },
+
+        event(event, detail) {
+          self.emit(event, detail);
+          return Promise.resolve();
+        },
+
+        authorizeConsumer() {
+          return Promise.resolve('hello');
+        },
+
+        challengeConsumer() {
+          return Promise.resolve(self.secret);
+        },
+
+        loadPage(url) {
+          self.load(url);
+          return Promise.resolve();
+        },
+        ...customMethods,
+      }),
     );
   }
 
@@ -116,7 +114,7 @@ class Frame extends EventEmitter {
       // replace customCalculationMethod by a boolean indicator
       // in config because method is not transferrable.
       if (typeof config.customCalculationMethod === 'function') {
-        config = Object.assign({}, config);
+        config = { ...config };
         config.customCal = true;
         delete config.customCalculationMethod;
       }
@@ -240,7 +238,6 @@ class Frame extends EventEmitter {
   invoke(method, args = []) {
     return this.JSONRPC.request(method, args);
   }
-
 }
 
 export default Frame;
