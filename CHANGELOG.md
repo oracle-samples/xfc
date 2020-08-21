@@ -1,5 +1,7 @@
 Next Release
 -------------
+* Add support for wildcard characters in acls urls. 
+
 1.9.0
 ------
 * Add custom methods #47
