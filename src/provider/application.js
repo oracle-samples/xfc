@@ -216,7 +216,7 @@ class Application extends EventEmitter {
     }
 
     if (this.acls.includes('*') || this.acls.includes(origin) || this.acls.some((acl) => {
-      const aclRegExp = new RegExp(acl.replace('*', '[a-zA-Z0-9-.]*'));
+      const aclRegExp = new RegExp(acl.replace('*', '[a-zA-Z0-9-._]*'));
       return origin.match(aclRegExp);
     })) {
       this.JSONRPC.handle(event.data);

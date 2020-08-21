@@ -153,7 +153,7 @@ describe('Application', () => {
         const event = {
           data: { jsonrpc: '2.0' },
           source: window.parent,
-          origin: 'http://t3St.d0-main.domain.com',
+          origin: 'http://t3_St.d0-main.domain.com',
         };
 
         application.handleConsumerMessage(event);
