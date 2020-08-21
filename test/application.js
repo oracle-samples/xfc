@@ -17,7 +17,7 @@ describe('Application', () => {
   });
 
   describe('#init()', () => {
-    const acls = ['http://localhost:8080'];
+    const acls = ['http://localhost:8080', 'http://*.domain.com'];
     const secret = '123';
     const onReady = () => {};
     const customMethods = { add(x, y) { return Promise.resolve(x + y); } };
@@ -121,6 +121,7 @@ describe('Application', () => {
 
     describe('#handleConsumerMessage(event)', () => {
       const handle = sinon.stub(application.JSONRPC, 'handle');
+      afterEach(() => handle.reset());
       after(()=> handle.restore());
 
       it("ignores non-JSONRPC messages", () => {
@@ -142,6 +143,30 @@ describe('Application', () => {
           data: {jsonrpc: '2.0'},
           source: window.parent,
           origin: 'invalid_origin'
+        };
+        application.handleConsumerMessage(event);
+
+        sinon.assert.notCalled(handle);
+      });
+
+      it('handles acl messages with wildcards', () => {
+        const event = {
+          data: { jsonrpc: '2.0' },
+          source: window.parent,
+          origin: 'http://t3st.d0-main.domain.com',
+        };
+
+        application.handleConsumerMessage(event);
+        
+        sinon.assert.calledWith(handle, event.data);
+        expect(application.activeACL).to.equal(undefined);
+      });
+
+      it('ignores messages with invalid domain characters', () => {
+        const event = {
+          data: { jsonrpc: '2.0' },
+          source: window.parent,
+          origin: 'http://bad#.domain.com',
         };
         application.handleConsumerMessage(event);
 

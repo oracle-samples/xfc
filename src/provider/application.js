@@ -215,7 +215,10 @@ class Application extends EventEmitter {
       this.activeACL = origin;
     }
 
-    if (this.acls.includes('*') || this.acls.includes(origin)) {
+    if (this.acls.includes('*') || this.acls.includes(origin) || this.acls.some((acl) => {
+      const aclRegExp = new RegExp(acl.replace('*', '[a-zA-Z0-9-.]*'));
+      return origin.match(aclRegExp);
+    })) {
       this.JSONRPC.handle(event.data);
     }
   }
@@ -238,6 +241,10 @@ class Application extends EventEmitter {
       logger.log('>> provider', this.acls, message);
       if (this.activeACL) {
         parent.postMessage(message, this.activeACL);
+      } else if (this.acls.some((acl) => acl.includes('*'))) {
+        // If acls includes urls with wild cards we do not know
+        // where we are embedded.  Provide '*' so the messages can be sent.
+        this.acls.forEach((uri) => parent.postMessage(message, '*'));
       } else {
         this.acls.forEach((uri) => parent.postMessage(message, uri));
       }
