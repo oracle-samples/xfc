@@ -173,6 +173,17 @@ describe('Application', () => {
         sinon.assert.notCalled(handle);
       });
 
+      it('ignores messages when the origin is shorter than the wildcard acl', () => {
+        const event = {
+          data: { jsonrpc: '2.0' },
+          source: window.parent,
+          origin: '.com',
+        };
+        application.handleConsumerMessage(event);
+
+        sinon.assert.notCalled(handle);
+      });
+
       it("calls this.JSONRPC.handle with the data of given event", () => {
         const event = {
           data: {jsonrpc: '2.0'},
