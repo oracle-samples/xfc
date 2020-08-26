@@ -17,7 +17,7 @@ describe('Application', () => {
   });
 
   describe('#init()', () => {
-    const acls = ['http://localhost:8080', 'http://*.domain.com'];
+    const acls = ['http://localhost:8080', '*.domain.com'];
     const secret = '123';
     const onReady = () => {};
     const customMethods = { add(x, y) { return Promise.resolve(x + y); } };
@@ -162,11 +162,11 @@ describe('Application', () => {
         expect(application.activeACL).to.equal(undefined);
       });
 
-      it('ignores messages with invalid domain characters', () => {
+      it('ignores messages that do not match against the origin end', () => {
         const event = {
           data: { jsonrpc: '2.0' },
           source: window.parent,
-          origin: 'http://bad#.domain.com',
+          origin: 'http://test.domain.com.bad.com',
         };
         application.handleConsumerMessage(event);
 

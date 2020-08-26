@@ -216,8 +216,9 @@ class Application extends EventEmitter {
     }
 
     if (this.acls.includes('*') || this.acls.includes(origin) || this.acls.some((acl) => {
-      const aclRegExp = new RegExp(acl.replace('*', '[a-zA-Z0-9-._]*'));
-      return origin.match(aclRegExp);
+      // Strip leading wildcard to get domain and verify it matches the end of the event's origin.
+      const domain = acl.replace(/^\*/, '');
+      return origin.substring(origin.length - domain.length) === domain;
     })) {
       this.JSONRPC.handle(event.data);
     }
