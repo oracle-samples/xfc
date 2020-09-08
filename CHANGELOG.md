@@ -1,6 +1,8 @@
 Next Release
 -------------
-* Add support for wildcard characters in acls urls. 
+1.10.0
+------
+* Add support for wildcard characters in acls urls.
 
 1.9.0
 ------
