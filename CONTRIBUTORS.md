@@ -11,6 +11,7 @@ Cerner Corporation
 - Cody Price [@dev-cprice]
 - Roxanne Calderon [@foxannefoxanne]
 - Yusuf Ali [@yusufali2205]
+- Jake Varness [@jvarness]
 
 [@mhemesath]: https://github.com/mhemesath
 [@kafkahw]: https://github.com/kafkahw
@@ -23,3 +24,4 @@ Cerner Corporation
 [@dev-cprice]: https://github.com/dev-cprice
 [@foxannefoxanne]: https://github.com/foxannefoxanne
 [@yusufali2205]: https://github.com/yusufali2205
+[@jvarness]: https://github.com/jvarness
