@@ -7,6 +7,7 @@ import { fixedTimeCompare } from '../lib/string';
 import URI from '../lib/uri';
 import logger from '../lib/logger';
 import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
+import parentHasClass from '../lib/parentHasClass';
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
@@ -56,7 +57,11 @@ class Application extends EventEmitter {
 
           // Registers a mutation observer for body
           const observer = new MutationObserver(
-            (mutations) => self.requestResize(),
+            (mutations) => {
+              // Allow consuming applications to exclude elements from firing requestResizes
+              const elementIsExcluded = (Array.from(mutations).some((mutation) => parentHasClass(mutation.target, 'xfc-exclude-mutation-observer')));
+              return !elementIsExcluded && self.requestResize();
+            }
           );
           observer.observe(
             document.body,
