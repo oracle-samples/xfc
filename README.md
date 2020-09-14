@@ -177,6 +177,16 @@ XFC.Provider.init({
 })
 ```
 
+If the provider is being used across the same domain with different subdomains, a wildcard character can be set as the first character of the acl.
+
+```js
+// Only load within domain.com (http://test.domain.com, https://test2.domain.com, https://test.test2.domain.com, etc.)
+XFC.Provider.init({
+  acls: ['*.domain.com']
+})
+
+```
+
 If the app is using secret authorization, it may pass in a secret and wildcard for authorization.
 
 ```js

@@ -24,11 +24,10 @@ class Consumer {
     const frame = new Frame();
     frame.init(container, source, options);
 
-
     // Apply global handlers to the frame
     Object.entries(this.globalHandlers).forEach(([event, handler]) => {
       const handlersArray = [].concat(handler);
-      handlersArray.forEach(eventHandler => {
+      handlersArray.forEach((eventHandler) => {
         // Add the given event handler to the frame.
         if (typeof eventHandler === 'function') {
           frame.on(event, eventHandler);
@@ -39,7 +38,6 @@ class Consumer {
 
     return frame;
   }
-
 }
 
 export default Consumer;

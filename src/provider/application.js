@@ -1,11 +1,12 @@
+/* eslint-disable no-mixed-operators, no-restricted-globals */
+
 import JSONRPC from 'jsonrpc-dispatch';
-import { fixedTimeCompare } from '../lib/string';
 import { EventEmitter } from 'events';
+import MutationObserver from 'mutation-observer';
+import { fixedTimeCompare } from '../lib/string';
 import URI from '../lib/uri';
 import logger from '../lib/logger';
 import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
-import MutationObserver from 'mutation-observer';
-import parentHasClass from '../lib/parentHasClass';
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
@@ -20,7 +21,9 @@ class Application extends EventEmitter {
    * @param  options.options         An optional object used for App to transmit details to frame
    *                                 after App is authorized.
    */
-  init({ acls = [], secret = null, onReady = null, targetSelectors = '', options = {}, customMethods = {} }) {
+  init({
+    acls = [], secret = null, onReady = null, targetSelectors = '', options = {}, customMethods = {},
+  }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.options = options;
@@ -40,45 +43,41 @@ class Application extends EventEmitter {
     const self = this;
     this.JSONRPC = new JSONRPC(
       self.send.bind(self),
-      Object.assign(
-        {
-          event(event, detail) {
-            self.emit(event, detail);
-            return Promise.resolve();
-          },
-
-          resize(config = {}) {
-            self.resizeConfig = config;
-
-            self.requestResize();
-
-            // Registers a mutation observer for body
-            const observer = new MutationObserver(
-              (mutations) => {
-                // Allow consuming applications to exclude elements from firing requestResizes
-                const elementIsExcluded = (Array.from(mutations).some((mutation) => parentHasClass(mutation.target, 'xfc-exclude-mutation-observer')));
-                return !elementIsExcluded && self.requestResize();
-              }
-            );
-            observer.observe(
-              document.body,
-              { attributes: true, childList: true, characterData: true, subtree: true }
-            );
-
-            // Registers a listener to window.onresize
-            // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
-            const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
-            let resizeTimer = null;
-            window.onresize = (event) => {
-              clearTimeout(resizeTimer);
-              resizeTimer = setTimeout(() => self.requestResize(), interval);
-            };
-
-            return Promise.resolve();
-          },
+      ({
+        event(event, detail) {
+          self.emit(event, detail);
+          return Promise.resolve();
         },
-        customMethods
-      )
+
+        resize(config = {}) {
+          self.resizeConfig = config;
+
+          self.requestResize();
+
+          // Registers a mutation observer for body
+          const observer = new MutationObserver(
+            (mutations) => self.requestResize(),
+          );
+          observer.observe(
+            document.body,
+            {
+              attributes: true, childList: true, characterData: true, subtree: true,
+            },
+          );
+
+          // Registers a listener to window.onresize
+          // Optimizes the listener by debouncing (https://bencentra.com/code/2015/02/27/optimizing-window-resize.html#debouncing)
+          const interval = 100; // Resize event will be considered complete if no follow-up events within `interval` ms.
+          let resizeTimer = null;
+          window.onresize = (event) => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => self.requestResize(), interval);
+          };
+
+          return Promise.resolve();
+        },
+        ...customMethods,
+      }),
     );
   }
 
@@ -108,7 +107,7 @@ class Application extends EventEmitter {
       if (this.targetSelectors || this.resizeConfig.targetSelectors) {
         // Combines target selectors from two sources
         const targetSelectors = [this.targetSelectors, this.resizeConfig.targetSelectors]
-          .filter(val => val)
+          .filter((val) => val)
           .join(', ');
 
         const heights = [].slice.call(document.querySelectorAll(targetSelectors))
@@ -216,7 +215,11 @@ class Application extends EventEmitter {
       this.activeACL = origin;
     }
 
-    if (this.acls.includes('*') || this.acls.includes(origin)) {
+    if (this.acls.includes('*') || this.acls.includes(origin) || this.acls.some((acl) => {
+      // Strip leading wildcard to get domain and verify it matches the end of the event's origin.
+      const domain = acl.replace(/^\*/, '');
+      return origin.substring(origin.length - domain.length) === domain;
+    })) {
       this.JSONRPC.handle(event.data);
     }
   }
@@ -239,6 +242,10 @@ class Application extends EventEmitter {
       logger.log('>> provider', this.acls, message);
       if (this.activeACL) {
         parent.postMessage(message, this.activeACL);
+      } else if (this.acls.some((acl) => acl.includes('*'))) {
+        // If acls includes urls with wild cards we do not know
+        // where we are embedded.  Provide '*' so the messages can be sent.
+        this.acls.forEach((uri) => parent.postMessage(message, '*'));
       } else {
         this.acls.forEach((uri) => parent.postMessage(message, uri));
       }

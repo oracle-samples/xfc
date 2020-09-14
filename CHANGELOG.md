@@ -1,5 +1,13 @@
 Next Release
 -------------
+1.10.1
+------
+* Remove sinon-test as dependency
+
+1.10.0
+------
+* Add support for wildcard characters in acls urls.
+
 1.9.0
 ------
 * Add custom methods #47
