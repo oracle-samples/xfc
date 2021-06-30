@@ -12,13 +12,14 @@
 /* eslint no-console: 0 */
 
 if (window && !window.onerror) {
-  window.onerror = (errMessage, errUrl, errLineNumber) => {
+  window.onerror = (message, source, lineno, colno, error) => {
     console.group();
     console.log('Error handled in Consumer iframe :');
-    console.log('Error Message :', errMessage);
-    console.log('URL :', errUrl);
-    console.log('LineNo :', errLineNumber);
-    console.error('Error handled in Consumer iframe :', errMessage, errUrl, errLineNumber);
+    console.log('Message :', message);
+    console.log('Source :', source);
+    console.log('Line no :', lineno);
+    console.log('Column no :', colno);
+    console.log('Error stack :', error.stack ? error.stack : '');
     console.groupEnd();
     return true;
   };
