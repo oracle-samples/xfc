@@ -20,6 +20,8 @@ class Application extends EventEmitter {
    *                                 a SyntaxError exception is thrown.
    * @param  options.options         An optional object used for App to transmit details to frame
    *                                 after App is authorized.
+   * @param options.dispatchFunction A function that will be used to dispatch messages instead of
+   *                                 parent.postMessage.
    */
   init({
     acls = [],
