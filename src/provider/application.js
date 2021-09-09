@@ -22,13 +22,20 @@ class Application extends EventEmitter {
    *                                 after App is authorized.
    */
   init({
-    acls = [], secret = null, onReady = null, targetSelectors = '', options = {}, customMethods = {},
+    acls = [],
+    secret = null,
+    onReady = null,
+    targetSelectors = '',
+    options = {},
+    customMethods = {},
+    dispatchFunction = null,
   }) {
     this.acls = [].concat(acls);
     this.secret = secret;
     this.options = options;
     this.onReady = onReady;
     this.targetSelectors = targetSelectors;
+    this.dispatchFunction = dispatchFunction;
     this.resizeConfig = null;
     this.requestResize = this.requestResize.bind(this);
     this.handleConsumerMessage = this.handleConsumerMessage.bind(this);
@@ -229,8 +236,8 @@ class Application extends EventEmitter {
   * @param {object} message - The message to send.
   */
   send(message) {
-    // Dont' send messages if not embedded
-    if (window.self === window.top) {
+    // Don't send messages if not embedded, unless a custom dispatch function was provided
+    if (!this.dispatchFunction && window.self === window.top) {
       return;
     }
 
@@ -240,14 +247,17 @@ class Application extends EventEmitter {
 
     if (message) {
       logger.log('>> provider', this.acls, message);
+
+      const dispatch = this.dispatchFunction || parent.postMessage;
+
       if (this.activeACL) {
-        parent.postMessage(message, this.activeACL);
+        dispatch(message, this.activeACL);
       } else if (this.acls.some((acl) => acl.includes('*'))) {
         // If acls includes urls with wild cards we do not know
         // where we are embedded.  Provide '*' so the messages can be sent.
-        this.acls.forEach((uri) => parent.postMessage(message, '*'));
+        this.acls.forEach((uri) => dispatch(message, '*'));
       } else {
-        this.acls.forEach((uri) => parent.postMessage(message, uri));
+        this.acls.forEach((uri) => dispatch(message, uri));
       }
     }
   }
