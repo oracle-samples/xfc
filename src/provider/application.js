@@ -21,7 +21,8 @@ class Application extends EventEmitter {
    * @param  options.options         An optional object used for App to transmit details to frame
    *                                 after App is authorized.
    * @param options.dispatchFunction A function that will be used to dispatch messages instead of
-   *                                 parent.postMessage.
+   *                                 `parent.postMessage`. This function will receive the same
+   *                                 `message` and `targetOrigin` arguments as `postMessage`.
    */
   init({
     acls = [],
@@ -37,7 +38,6 @@ class Application extends EventEmitter {
     this.options = options;
     this.onReady = onReady;
     this.targetSelectors = targetSelectors;
-    this.dispatchFunction = dispatchFunction;
     this.resizeConfig = null;
     this.requestResize = this.requestResize.bind(this);
     this.handleConsumerMessage = this.handleConsumerMessage.bind(this);
@@ -45,6 +45,13 @@ class Application extends EventEmitter {
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
+
+    this.dispatchFunction = dispatchFunction || ((message, targetOrigin) => {
+      // Don't send messages if not embedded
+      if (window.self !== window.top) {
+        parent.postMessage(message, targetOrigin);
+      }
+    });
 
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
@@ -234,15 +241,10 @@ class Application extends EventEmitter {
   }
 
   /**
-  * Send the given message to the frame parent.
+  * Send the given message to the application's parent.
   * @param {object} message - The message to send.
   */
   send(message) {
-    // Don't send messages if not embedded, unless a custom dispatch function was provided
-    if (!this.dispatchFunction && window.self === window.top) {
-      return;
-    }
-
     if (this.acls.length < 1) {
       logger.error('Message not sent, no acls provided.');
     }
@@ -250,16 +252,14 @@ class Application extends EventEmitter {
     if (message) {
       logger.log('>> provider', this.acls, message);
 
-      const dispatch = this.dispatchFunction || parent.postMessage;
-
       if (this.activeACL) {
-        dispatch(message, this.activeACL);
+        this.dispatchFunction(message, this.activeACL);
       } else if (this.acls.some((acl) => acl.includes('*'))) {
         // If acls includes urls with wild cards we do not know
         // where we are embedded.  Provide '*' so the messages can be sent.
-        this.acls.forEach((uri) => dispatch(message, '*'));
+        this.acls.forEach((uri) => this.dispatchFunction(message, '*'));
       } else {
-        this.acls.forEach((uri) => dispatch(message, uri));
+        this.acls.forEach((uri) => this.dispatchFunction(message, uri));
       }
     }
   }
