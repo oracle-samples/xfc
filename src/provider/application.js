@@ -23,6 +23,10 @@ class Application extends EventEmitter {
    * @param options.dispatchFunction A function that will be used to dispatch messages instead of
    *                                 `parent.postMessage`. This function will receive the same
    *                                 `message` and `targetOrigin` arguments as `postMessage`.
+   * @param options.authorizeMessage A function that will be called with a MessageEvent when the
+   *                                 consumer dispatches a message in order to decide whether to
+   *                                 handle the message or not. The message will be handled if this
+   *                                 function returns true.
    */
   init({
     acls = [],
@@ -32,6 +36,7 @@ class Application extends EventEmitter {
     options = {},
     customMethods = {},
     dispatchFunction = null,
+    authorizeMessage = null,
   }) {
     this.acls = [].concat(acls);
     this.secret = secret;
@@ -52,6 +57,8 @@ class Application extends EventEmitter {
         parent.postMessage(message, targetOrigin);
       }
     });
+
+    this.isMessageAuthorized = authorizeMessage || this.authorizeConsumerMessage;
 
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
@@ -95,6 +102,8 @@ class Application extends EventEmitter {
         ...customMethods,
       }),
     );
+
+    window.addEventListener('message', this.handleConsumerMessage);
   }
 
   /**
@@ -183,8 +192,7 @@ class Application extends EventEmitter {
   */
   launch() {
     if (window.self !== window.top) {
-      // 1: Setup listeners for all incoming communication and beforeunload
-      window.addEventListener('message', this.handleConsumerMessage);
+      // 1: Setup listener for beforeunload
       window.addEventListener('beforeunload', this.unload);
 
       // 2: Begin launch and authorization sequence
@@ -215,13 +223,13 @@ class Application extends EventEmitter {
   }
 
   /**
-  * Handles an incoming message event by processing the JSONRPC request
-  * @param {object} event - The emitted message event.
-  */
-  handleConsumerMessage(event) {
+   * Verify an incoming message event's origin against the configured ACLs
+   * @param {object} event - The emitted message event.
+   */
+  authorizeConsumerMessage(event) {
     // Ignore Non-JSONRPC messages or messages not from the parent frame
     if (!event.data.jsonrpc || event.source !== window.parent) {
-      return;
+      return false;
     }
 
     logger.log('<< provider', event.origin, event.data);
@@ -236,6 +244,18 @@ class Application extends EventEmitter {
       const domain = acl.replace(/^\*/, '');
       return origin.substring(origin.length - domain.length) === domain;
     })) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+  * Handles an incoming message event by processing the JSONRPC request
+  * @param {object} event - The emitted message event.
+  */
+  handleConsumerMessage(event) {
+    if (this.isMessageAuthorized(event)) {
       this.JSONRPC.handle(event.data);
     }
   }

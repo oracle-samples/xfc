@@ -429,9 +429,9 @@ describe('Application', () => {
         };
 
         const application = new Application();
+        sinon.spy(window, 'addEventListener');
         application.init({ acls: ['http://localhost:8080'] });
         global.document = oldDocument;
-        sinon.spy(window, 'addEventListener');
 
         application.launch();
         sinon.assert.calledTwice(window.addEventListener);
