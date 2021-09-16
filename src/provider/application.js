@@ -104,6 +104,7 @@ class Application extends EventEmitter {
     );
 
     window.addEventListener('message', this.handleConsumerMessage);
+    window.addEventListener('beforeunload', this.unload);
   }
 
   /**
@@ -192,26 +193,23 @@ class Application extends EventEmitter {
   */
   launch() {
     if (window.self !== window.top) {
-      // 1: Setup listener for beforeunload
-      window.addEventListener('beforeunload', this.unload);
-
-      // 2: Begin launch and authorization sequence
+      // Begin launch and authorization sequence
       this.JSONRPC.notification('launch');
 
-      // 2a. We have a specific origin to trust (excluding wildcard *),
+      // We have a specific origin to trust (excluding wildcard *),
       // wait for response to authorize.
       if (this.acls.some((x) => x !== '*')) {
         this.JSONRPC.request('authorizeConsumer', [])
           .then(this.authorizeConsumer)
           .catch(this.emitError);
 
-      // 2b. We don't know who to trust, challenge parent for secret
+      // We don't know who to trust, challenge parent for secret
       } else if (this.secret) {
         this.JSONRPC.request('challengeConsumer', [])
           .then(this.verifyChallenge)
           .catch(this.emitError);
 
-      // 2c. acl is '*' and there is no secret, immediately authorize content
+      // acl is '*' and there is no secret, immediately authorize content
       } else {
         this.authorizeConsumer();
       }
