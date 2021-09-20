@@ -20,9 +20,23 @@ class Application extends EventEmitter {
    *                                 a SyntaxError exception is thrown.
    * @param  options.options         An optional object used for App to transmit details to frame
    *                                 after App is authorized.
+   * @param options.dispatchFunction A function that will be used to dispatch messages instead of
+   *                                 `parent.postMessage`. This function will receive the same
+   *                                 `message` and `targetOrigin` arguments as `postMessage`.
+   * @param options.authorizeMessage A function that will be called with a MessageEvent when the
+   *                                 consumer dispatches a message in order to decide whether to
+   *                                 handle the message or not. The message will be handled if this
+   *                                 function returns true.
    */
   init({
-    acls = [], secret = null, onReady = null, targetSelectors = '', options = {}, customMethods = {},
+    acls = [],
+    secret = null,
+    onReady = null,
+    targetSelectors = '',
+    options = {},
+    customMethods = {},
+    dispatchFunction = null,
+    authorizeMessage = null,
   }) {
     this.acls = [].concat(acls);
     this.secret = secret;
@@ -36,6 +50,15 @@ class Application extends EventEmitter {
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
+
+    this.dispatchFunction = dispatchFunction || ((message, targetOrigin) => {
+      // Don't send messages if not embedded
+      if (window.self !== window.top) {
+        parent.postMessage(message, targetOrigin);
+      }
+    });
+
+    this.isMessageAuthorized = authorizeMessage || this.authorizeConsumerMessage;
 
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
@@ -79,6 +102,9 @@ class Application extends EventEmitter {
         ...customMethods,
       }),
     );
+
+    window.addEventListener('message', this.handleConsumerMessage);
+    window.addEventListener('beforeunload', this.unload);
   }
 
   /**
@@ -167,27 +193,23 @@ class Application extends EventEmitter {
   */
   launch() {
     if (window.self !== window.top) {
-      // 1: Setup listeners for all incoming communication and beforeunload
-      window.addEventListener('message', this.handleConsumerMessage);
-      window.addEventListener('beforeunload', this.unload);
-
-      // 2: Begin launch and authorization sequence
+      // Begin launch and authorization sequence
       this.JSONRPC.notification('launch');
 
-      // 2a. We have a specific origin to trust (excluding wildcard *),
+      // We have a specific origin to trust (excluding wildcard *),
       // wait for response to authorize.
       if (this.acls.some((x) => x !== '*')) {
         this.JSONRPC.request('authorizeConsumer', [])
           .then(this.authorizeConsumer)
           .catch(this.emitError);
 
-      // 2b. We don't know who to trust, challenge parent for secret
+      // We don't know who to trust, challenge parent for secret
       } else if (this.secret) {
         this.JSONRPC.request('challengeConsumer', [])
           .then(this.verifyChallenge)
           .catch(this.emitError);
 
-      // 2c. acl is '*' and there is no secret, immediately authorize content
+      // acl is '*' and there is no secret, immediately authorize content
       } else {
         this.authorizeConsumer();
       }
@@ -199,13 +221,13 @@ class Application extends EventEmitter {
   }
 
   /**
-  * Handles an incoming message event by processing the JSONRPC request
-  * @param {object} event - The emitted message event.
-  */
-  handleConsumerMessage(event) {
+   * Verify an incoming message event's origin against the configured ACLs
+   * @param {object} event - The emitted message event.
+   */
+  authorizeConsumerMessage(event) {
     // Ignore Non-JSONRPC messages or messages not from the parent frame
     if (!event.data.jsonrpc || event.source !== window.parent) {
-      return;
+      return false;
     }
 
     logger.log('<< provider', event.origin, event.data);
@@ -220,34 +242,42 @@ class Application extends EventEmitter {
       const domain = acl.replace(/^\*/, '');
       return origin.substring(origin.length - domain.length) === domain;
     })) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+  * Handles an incoming message event by processing the JSONRPC request
+  * @param {object} event - The emitted message event.
+  */
+  handleConsumerMessage(event) {
+    if (this.isMessageAuthorized(event)) {
       this.JSONRPC.handle(event.data);
     }
   }
 
   /**
-  * Send the given message to the frame parent.
+  * Send the given message to the application's parent.
   * @param {object} message - The message to send.
   */
   send(message) {
-    // Dont' send messages if not embedded
-    if (window.self === window.top) {
-      return;
-    }
-
     if (this.acls.length < 1) {
       logger.error('Message not sent, no acls provided.');
     }
 
     if (message) {
       logger.log('>> provider', this.acls, message);
+
       if (this.activeACL) {
-        parent.postMessage(message, this.activeACL);
+        this.dispatchFunction(message, this.activeACL);
       } else if (this.acls.some((acl) => acl.includes('*'))) {
         // If acls includes urls with wild cards we do not know
         // where we are embedded.  Provide '*' so the messages can be sent.
-        this.acls.forEach((uri) => parent.postMessage(message, '*'));
+        this.acls.forEach((uri) => this.dispatchFunction(message, '*'));
       } else {
-        this.acls.forEach((uri) => parent.postMessage(message, uri));
+        this.acls.forEach((uri) => this.dispatchFunction(message, uri));
       }
     }
   }

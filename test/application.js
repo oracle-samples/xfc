@@ -329,6 +329,7 @@ describe('Application', () => {
       it("does not call this.trigger with event 'xfc.unload'", sinon.test(() => {
         const newlink = document.createElement('a');
         newlink.setAttribute('href', 'tel:123');
+        document.body.appendChild(newlink);
         newlink.focus();
         application.unload();
         sinon.assert.notCalled(trigger);
@@ -338,6 +339,7 @@ describe('Application', () => {
       it("calls this.trigger with event 'xfc.unload' for regular hrefs", sinon.test(() => {
         const newlink = document.createElement('a');
         newlink.setAttribute('href', 'https://www.google.com/');
+        document.body.appendChild(newlink);
         newlink.focus();
         application.unload();
 
@@ -427,9 +429,9 @@ describe('Application', () => {
         };
 
         const application = new Application();
+        sinon.spy(window, 'addEventListener');
         application.init({ acls: ['http://localhost:8080'] });
         global.document = oldDocument;
-        sinon.spy(window, 'addEventListener');
 
         application.launch();
         sinon.assert.calledTwice(window.addEventListener);
