@@ -1,6 +1,6 @@
 {
   "name": "xfc",
-  "version": "1.10.1",
+  "version": "1.11.0",
   "description": "A Cross Frame Container that handles securely embedding web content into a 3rd party domain",
   "author": "Cerner Corporation",
   "license": "Apache-2.0",
