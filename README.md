@@ -89,6 +89,22 @@ XFC.Consumer.mount(document.body, 'http://localprovider.com:8080/example/provide
 
 Here `iframeAttrs` is an object that contains entries, each of them being an entry of attribute's name and value.
 
+### Applying Visual Focus Indicator on Iframe
+Certain configuration within this library such as `fixedWidth` or `fixedHeight` may prevent the content to be fully displayed within the viewport, and thereby needing `scrolling` to be enabled. For keyboard only users, it is important to display a visual focus indicator to indicate where the focus currently is at to help guide them with page navigation.
+
+To allow the styles to be applied for `focus` and `blur` events, please provide the CSS styles for each in the `focusIndicator` object.
+
+```js
+XFC.Consumer.mount(document.body,
+  'http://localprovider.com:8080/example/provider.html',
+  {
+    focusIndicator: {
+      focusStyleStr: "outline: 2px dashed blue;",
+      blurStyleStr: "outline: 0px;",
+    }
+  }
+);
+```
 
 ### Monitoring Embedded App Lifecycles
 

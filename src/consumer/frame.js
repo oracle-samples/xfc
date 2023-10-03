@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import JSONRPC from 'jsonrpc-dispatch';
+import parse from 'style-to-object';
 import logger from '../lib/logger';
 import URI from '../lib/uri';
 
@@ -25,7 +26,7 @@ class Frame extends EventEmitter {
   * @param {object} options - An optional parameter that contains a set of optional configs
   */
   init(container, source, {
-    secret = null, resizeConfig = {}, iframeAttrs = {}, customMethods = {},
+    secret = null, resizeConfig = {}, iframeAttrs = {}, customMethods = {}, focusIndicator,
   } = {}) {
     this.source = source;
     this.container = container;
@@ -35,6 +36,7 @@ class Frame extends EventEmitter {
     this.origin = new URI(this.source).origin;
     this.secret = secret;
     this.resizeConfig = resizeConfig;
+    this.focusIndicator = focusIndicator || null;
 
     const self = this;
     this.JSONRPC = new JSONRPC(
@@ -71,6 +73,36 @@ class Frame extends EventEmitter {
 
           if (width) {
             self.iframe.style.width = width;
+          }
+          return Promise.resolve();
+        },
+
+        setFocus() {
+          if (self.focusIndicator) {
+            // Parse the CSS style string to object
+            const styleObj = parse(self.focusIndicator.focusStyleStr);
+
+            Object.entries(styleObj).forEach(([key, value]) => {
+              // Apply CSS style when focus is on the frame. When assigning the
+              // style directly on the iframe using (=), the style update triggers a
+              // window resize where as `setProperty` does not.
+              self.iframe.style.setProperty(key, value);
+            });
+          }
+          return Promise.resolve();
+        },
+
+        setBlur() {
+          if (self.focusIndicator) {
+            // Parse the CSS style string to object
+            const styleObj = parse(self.focusIndicator.blurStyleStr);
+
+            Object.entries(styleObj).forEach(([key, value]) => {
+              // Apply CSS style when focus is not on the frame. When assigning the
+              // style directly on the iframe using (=), the style update triggers a
+              // window resize where as `setProperty` does not.
+              self.iframe.style.setProperty(key, value);
+            });
           }
           return Promise.resolve();
         },

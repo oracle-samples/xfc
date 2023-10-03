@@ -63,6 +63,18 @@ class Application extends EventEmitter {
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
+    // Event listener and handler to set visual focus indicator (outline style) on the frame
+    window.addEventListener('focus', () => {
+      // Send message to the consumer/frame.js to handle setting the style
+      this.JSONRPC.notification('setFocus');
+    }, true);
+
+    // Event listener and handler to unset visual focus indicator (outline style) on the frame
+    window.addEventListener('blur', () => {
+      // Send message to the consumer/frame.js to handle setting the style
+      this.JSONRPC.notification('setBlur');
+    }, true);
+
     const self = this;
     this.JSONRPC = new JSONRPC(
       self.send.bind(self),
@@ -81,6 +93,7 @@ class Application extends EventEmitter {
           const observer = new MutationObserver(
             (mutations) => self.requestResize(),
           );
+
           observer.observe(
             document.body,
             {
@@ -120,6 +133,7 @@ class Application extends EventEmitter {
 
   requestResize() {
     if (!this.resizeConfig) return;
+
     if (this.resizeConfig.customCal) {
       this.JSONRPC.notification('resize');
     } else if (this.resizeConfig.autoResizeWidth) {

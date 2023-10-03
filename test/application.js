@@ -157,7 +157,7 @@ describe('Application', () => {
         };
 
         application.handleConsumerMessage(event);
-        
+
         sinon.assert.calledWith(handle, event.data);
         expect(application.activeACL).to.equal(undefined);
       });
@@ -434,7 +434,11 @@ describe('Application', () => {
         global.document = oldDocument;
 
         application.launch();
-        sinon.assert.calledTwice(window.addEventListener);
+        sinon.assert.callCount(window.addEventListener, 4);
+
+        sinon.assert.calledWith(window.addEventListener, 'focus');
+        sinon.assert.calledWith(window.addEventListener, 'blur');
+        sinon.assert.calledWith(window.addEventListener, 'message');
         sinon.assert.calledWith(window.addEventListener, 'beforeunload');
       }));
     });

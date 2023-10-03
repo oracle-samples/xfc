@@ -200,4 +200,33 @@ describe('Frame', () => {
       });
     });
   });
+
+  describe('#init() with focusIndicator', () => {
+    const container = document.body;
+    const source = 'http://test.com:8080/test';
+
+    it('sets focus indicator object when provided', () => {
+      const focusIndicator = {
+        focusStyleStr: "outline: 2px dashed blue",
+        blurStyleStr: "outline: 0px",
+      }
+
+      const frame = new Frame();
+      frame.init(container, source, { focusIndicator });
+
+      it('sets the focusIndicator focus style', () => expect(frame.focusIndicator.focusStyleStr).to.equal('outline: 2px dashed blue'));
+      it('sets the focusIndicator blur style', () => expect(frame.focusIndicator.blurStyleStr).to.equal('outline: 0px'));
+    });
+
+    it('does not set focus indicator object when not provided/null', () => {
+      const focusIndicator = null;
+
+      const frame = new Frame();
+      frame.init(container, source, { focusIndicator });
+
+      it('sets the focusIdicator object with null', () => expect(frame.focusIndicator).to.be.null);
+      it('sets the focusIndicator.focusStyleStr with null', () => expect(frame.focusIndicator.focusStyleStr).to.be.null);
+      it('sets the focusIndicator.blurStyleStr with null', () => expect(frame.focusIndicator.blurStyleStr).to.be.null);
+    });
+  });
 });

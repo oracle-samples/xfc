@@ -23,7 +23,8 @@
   "dependencies": {
     "@babel/runtime": "^7.5.0",
     "jsonrpc-dispatch": "^2.3.0",
-    "mutation-observer": "^1.0.3"
+    "mutation-observer": "^1.0.3",
+    "style-to-object": "^0.4.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.0",
