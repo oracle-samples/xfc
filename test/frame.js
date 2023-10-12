@@ -207,14 +207,14 @@ describe('Frame', () => {
 
     it('sets focus indicator object when provided', () => {
       const focusIndicator = {
-        focusStyleStr: "outline: 2px dashed blue",
+        focusStyleStr: "outline: 2px dashed #3496cf",
         blurStyleStr: "outline: none",
       }
 
       const frame = new Frame();
       frame.init(container, source, { focusIndicator });
 
-      it('sets the focusIndicator focus style', () => expect(frame.focusIndicator.focusStyleStr).to.equal('outline: 2px dashed blue'));
+      it('sets the focusIndicator focus style', () => expect(frame.focusIndicator.focusStyleStr).to.equal('outline: 2px dashed #3496cf'));
       it('sets the focusIndicator blur style', () => expect(frame.focusIndicator.blurStyleStr).to.equal('outline: none'));
     });
 

@@ -99,12 +99,14 @@ XFC.Consumer.mount(document.body,
   'http://localprovider.com:8080/example/provider.html',
   {
     focusIndicator: {
-      focusStyleStr: "outline: 2px dashed blue;",
+      focusStyleStr: "outline: 2px dashed -webkit-focus-ring-color;",
       blurStyleStr: "outline: none;",
     }
   }
 );
 ```
+
+Please note that the styles in `focusStyleStr` will be applied when there is a focus event. Likewise, the styles in `blurStyleStr` will be applied when there is a blur event. Multiple CSS style attributes can be applied. However, the CSS style attributes need to match up for focus, and blur events so that those styles can be unset/removed properly in the blur event.
 
 ### Monitoring Embedded App Lifecycles
 

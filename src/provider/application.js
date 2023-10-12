@@ -63,15 +63,15 @@ class Application extends EventEmitter {
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
-    // Event listener and handler to set visual focus indicator (outline style) on the frame
+    // Event listener, and handler for `focus` event
     window.addEventListener('focus', () => {
-      // Send message to the consumer/frame.js to handle setting the style
+      // Send message to the consumer/frame.js to handle `setFocus` event
       this.JSONRPC.notification('setFocus');
     }, true);
 
-    // Event listener and handler to unset visual focus indicator (outline style) on the frame
+    // Event listener, and handler for `blur` event
     window.addEventListener('blur', () => {
-      // Send message to the consumer/frame.js to handle setting the style
+      // Send message to the consumer/frame.js to handle `setBlur` event
       this.JSONRPC.notification('setBlur');
     }, true);
 
