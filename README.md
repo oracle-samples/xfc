@@ -100,7 +100,7 @@ XFC.Consumer.mount(document.body,
   {
     focusIndicator: {
       focusStyleStr: "outline: 2px dashed blue;",
-      blurStyleStr: "outline: 0px;",
+      blurStyleStr: "outline: none;",
     }
   }
 );
