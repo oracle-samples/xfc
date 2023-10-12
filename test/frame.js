@@ -201,32 +201,79 @@ describe('Frame', () => {
     });
   });
 
-  describe('#init() with focusIndicator', () => {
+  describe('Focus Indicator', () => {
     const container = document.body;
     const source = 'http://test.com:8080/test';
 
-    it('sets focus indicator object when provided', () => {
-      const focusIndicator = {
-        focusStyleStr: "outline: 2px dashed #3496cf",
-        blurStyleStr: "outline: none",
-      }
+    const focusIndicator = {
+      focusStyleStr: "outline: 2px dashed -webkit-focus-ring-color",
+      blurStyleStr: "outline: none",
+    };
 
-      const frame = new Frame();
-      frame.init(container, source, { focusIndicator });
+    const frame = new Frame();
 
-      it('sets the focusIndicator focus style', () => expect(frame.focusIndicator.focusStyleStr).to.equal('outline: 2px dashed #3496cf'));
-      it('sets the focusIndicator blur style', () => expect(frame.focusIndicator.blurStyleStr).to.equal('outline: none'));
+    describe('#init() with style in focus indicator object', () => {
+      it('sets focus indicator object when provided', sinon.test(function () {
+        frame.init(container, source, { focusIndicator });
+
+        expect(frame.focusIndicator.focusStyleStr).to.equal('outline: 2px dashed -webkit-focus-ring-color');
+        expect(frame.focusIndicator.blurStyleStr).to.equal('outline: none');
+      }));
+
+      it('does not set focus indicator object when not provided/null', sinon.test(function () {
+        const focusIndicator = null;
+        frame.init(container, source, { focusIndicator });
+
+        it('sets the focusIdicator object with null', () => expect(frame.focusIndicator).to.be.null);
+        it('sets the focusIndicator.focusStyleStr with null', () => expect(frame.focusIndicator.focusStyleStr).to.be.null);
+        it('sets the focusIndicator.blurStyleStr with null', () => expect(frame.focusIndicator.blurStyleStr).to.be.null);
+      }));
     });
 
-    it('does not set focus indicator object when not provided/null', () => {
-      const focusIndicator = null;
+    describe('setting iframe style', () => {
+      it('sets the focus style on the frame', sinon.test(function () {
+        frame.init(container, source, { focusIndicator });
 
-      const frame = new Frame();
-      frame.init(container, source, { focusIndicator });
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
 
-      it('sets the focusIdicator object with null', () => expect(frame.focusIndicator).to.be.null);
-      it('sets the focusIndicator.focusStyleStr with null', () => expect(frame.focusIndicator.focusStyleStr).to.be.null);
-      it('sets the focusIndicator.blurStyleStr with null', () => expect(frame.focusIndicator.blurStyleStr).to.be.null);
+        frame.JSONRPC.methods.setFocus(); // Calling setFocus() method
+        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('2px dashed -webkit-focus-ring-color');
+      }));
+
+      it('sets the blur style on the iframe', sinon.test(function () {
+        frame.init(container, source, { focusIndicator });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.setBlur(); // Calling setBlur() method
+        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('none');
+      }));
+
+      it('does not set the focus style on the iframe', sinon.test(function () {
+        frame.init(container, source, {});
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.setFocus(); // Calling setFocus() method
+        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('');
+      }));
+
+      it('does not set the blur style on the iframe', sinon.test(function () {
+        frame.init(container, source, {});
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.setBlur(); // Calling setBlur() method
+        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('');
+      }));
     });
   });
 });
