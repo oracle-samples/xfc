@@ -99,7 +99,7 @@ XFC.Consumer.mount(document.body,
   'http://localprovider.com:8080/example/provider.html',
   {
     focusIndicator: {
-      focusStyleStr: "outline: 2px dashed -webkit-focus-ring-color;",
+      focusStyleStr: "outline: 2px dashed #000;",
       blurStyleStr: "outline: none;",
     }
   }

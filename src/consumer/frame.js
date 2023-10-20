@@ -107,6 +107,13 @@ class Frame extends EventEmitter {
           return Promise.resolve();
         },
 
+        isScrollingEnabled() {
+          if (self.iframe.getAttribute('scrolling') === 'no') {
+            return Promise.resolve(false);
+          }
+          return Promise.resolve(true);
+        },
+
         event(event, detail) {
           self.emit(event, detail);
           return Promise.resolve();

@@ -19,7 +19,7 @@
 
 <body>
   <h1>Focus Indicator</h1>
-  <p>Set focus indicator on the fame when it has focus, and unset the focus indicator when the frame no longer has
+  <p>Set focus indicator on the frame when it has focus, and unset the focus indicator when the frame no longer has
     focus when using keyboard to navigate the page. The content can be scrolled using keyboard when the frame has focus.
   </p>
   <div>
@@ -41,8 +41,8 @@
           fixedHeight: '200px',
         },
         focusIndicator: {
-          focusStyleStr: "outline: 2px dashed -webkit-focus-ring-color;",
-          blurStyleStr: "outline: none;",
+          focusStyleStr: "outline: 2px dashed #000",
+          blurStyleStr: "outline: none",
         },
       }
     );

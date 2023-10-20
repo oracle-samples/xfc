@@ -206,7 +206,7 @@ describe('Frame', () => {
     const source = 'http://test.com:8080/test';
 
     const focusIndicator = {
-      focusStyleStr: "outline: 2px dashed -webkit-focus-ring-color",
+      focusStyleStr: "outline: 2px dashed #000",
       blurStyleStr: "outline: none",
     };
 
@@ -216,7 +216,7 @@ describe('Frame', () => {
       it('sets focus indicator object when provided', sinon.test(function () {
         frame.init(container, source, { focusIndicator });
 
-        expect(frame.focusIndicator.focusStyleStr).to.equal('outline: 2px dashed -webkit-focus-ring-color');
+        expect(frame.focusIndicator.focusStyleStr).to.equal('outline: 2px dashed #000');
         expect(frame.focusIndicator.blurStyleStr).to.equal('outline: none');
       }));
 
@@ -239,7 +239,7 @@ describe('Frame', () => {
         frame.mount();
 
         frame.JSONRPC.methods.setFocus(); // Calling setFocus() method
-        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('2px dashed -webkit-focus-ring-color');
+        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('2px dashed #000');
       }));
 
       it('sets the blur style on the iframe', sinon.test(function () {

@@ -50,6 +50,7 @@ class Application extends EventEmitter {
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
+    this.hasFocusableElement = true;
 
     this.dispatchFunction = dispatchFunction || ((message, targetOrigin) => {
       // Don't send messages if not embedded
@@ -59,18 +60,63 @@ class Application extends EventEmitter {
     });
 
     this.isMessageAuthorized = authorizeMessage || this.authorizeConsumerMessage;
+    this.isScrollingEnabled = false;
 
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
+    const focusableElementSelector = 'a[href]:not([tabindex=\'-1\']), area[href]:not([tabindex=\'-1\']), input:not([disabled]):not([tabindex=\'-1\']), '
+      + "select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']), "
+      + "iframe:not([tabindex='-1']), [tabindex]:not([tabindex='-1']), [contentEditable=true]:not([tabindex='-1'])";
+
+    const isContentScrollable = () => (
+      document.documentElement.scrollHeight > document.documentElement.clientHeight
+      || document.body.scrollHeight > document.body.clientHeight
+      || document.documentElement.scrollWidth > document.documentElement.clientWidth
+      || document.body.scrollWidth > document.body.clientWidth
+    );
+
+    window.onload = () => {
+      this.hasFocusableElement = [...document.body.querySelectorAll(`${focusableElementSelector}`)].some(
+        (element) => !element.hasAttribute('disabled')
+          && !element.getAttribute('aria-hidden')
+          && !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length)
+          && window.getComputedStyle(element).visibility !== 'hidden'
+          && element.closest('[inert]') === null,
+      );
+
+      this.JSONRPC.request('isScrollingEnabled', [])
+        .then((scrollingEnabled) => {
+          if (scrollingEnabled && this.hasFocusableElement === false) {
+            // Set tabIndex="0" so focus can go into the document when
+            // using tab key when scrolling is enabled
+            document.body.tabIndex = 0;
+          }
+        });
+    };
+
     // Event listener, and handler for `focus` event
     window.addEventListener('focus', () => {
-      // Send message to the consumer/frame.js to handle `setFocus` event
-      this.JSONRPC.notification('setFocus');
+      if (this.hasFocusableElement || !isContentScrollable()) {
+        return;
+      }
+
+      // Check if the container frame is scrollable
+      this.JSONRPC.request('isScrollingEnabled', [])
+        .then((scrollingEnabled) => {
+          if (scrollingEnabled && isContentScrollable() && this.hasFocusableElement === false) {
+            // Send message to the consumer/frame.js to handle `setFocus` event
+            this.JSONRPC.notification('setFocus');
+          }
+        });
     }, true);
 
     // Event listener, and handler for `blur` event
     window.addEventListener('blur', () => {
+      if (this.hasFocusableElement) {
+        return;
+      }
+
       // Send message to the consumer/frame.js to handle `setBlur` event
       this.JSONRPC.notification('setBlur');
     }, true);
