@@ -434,8 +434,10 @@ describe('Application', () => {
         global.document = oldDocument;
 
         application.launch();
-        sinon.assert.callCount(window.addEventListener, 4);
+        sinon.assert.callCount(window.addEventListener, 6);
 
+        sinon.assert.calledWith(window.addEventListener, 'load');
+        sinon.assert.calledWith(window.addEventListener, 'resize');
         sinon.assert.calledWith(window.addEventListener, 'focus');
         sinon.assert.calledWith(window.addEventListener, 'blur');
         sinon.assert.calledWith(window.addEventListener, 'message');

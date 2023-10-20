@@ -50,7 +50,7 @@ class Application extends EventEmitter {
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
-    this.hasFocusableElement = true;
+    this.hasInteractableElement = true;
 
     this.dispatchFunction = dispatchFunction || ((message, targetOrigin) => {
       // Don't send messages if not embedded
@@ -65,9 +65,9 @@ class Application extends EventEmitter {
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
-    const focusableElementSelector = 'a[href]:not([tabindex=\'-1\']), area[href]:not([tabindex=\'-1\']), input:not([disabled]):not([tabindex=\'-1\']), '
+    const interactableElementSelector = 'a[href]:not([tabindex=\'-1\']), area[href]:not([tabindex=\'-1\']), input:not([disabled]):not([tabindex=\'-1\']), '
       + "select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']), "
-      + "iframe:not([tabindex='-1']), [tabindex]:not([tabindex='-1']), [contentEditable=true]:not([tabindex='-1'])";
+      + "[contentEditable=true]:not([tabindex='-1'])";
 
     const isContentScrollable = () => (
       document.documentElement.scrollHeight > document.documentElement.clientHeight
@@ -76,8 +76,8 @@ class Application extends EventEmitter {
       || document.body.scrollWidth > document.body.clientWidth
     );
 
-    window.onload = () => {
-      this.hasFocusableElement = [...document.body.querySelectorAll(`${focusableElementSelector}`)].some(
+    window.addEventListener('load', () => {
+      this.hasInteractableElement = [...document.body.querySelectorAll(`${interactableElementSelector}`)].some(
         (element) => !element.hasAttribute('disabled')
           && !element.getAttribute('aria-hidden')
           && !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length)
@@ -87,24 +87,37 @@ class Application extends EventEmitter {
 
       this.JSONRPC.request('isScrollingEnabled', [])
         .then((scrollingEnabled) => {
-          if (scrollingEnabled && this.hasFocusableElement === false) {
+          if (scrollingEnabled && isContentScrollable() && this.hasInteractableElement === false) {
             // Set tabIndex="0" so focus can go into the document when
             // using tab key when scrolling is enabled
             document.body.tabIndex = 0;
           }
         });
-    };
+    }, true);
+
+    window.addEventListener('resize', () => {
+      this.JSONRPC.request('isScrollingEnabled', [])
+        .then((scrollingEnabled) => {
+          if (scrollingEnabled && isContentScrollable() && this.hasInteractableElement === false) {
+            // Set tabIndex="0" so focus can go into the document when
+            // using tab key when scrolling is enabled
+            document.body.tabIndex = 0;
+          } else if (document.body.getAttribute('tabIndex') === '0') {
+            document.body.removeAttribute('tabIndex');
+          }
+        });
+    }, true);
 
     // Event listener, and handler for `focus` event
     window.addEventListener('focus', () => {
-      if (this.hasFocusableElement || !isContentScrollable()) {
+      if (this.hasInteractableElement || !isContentScrollable()) {
         return;
       }
 
       // Check if the container frame is scrollable
       this.JSONRPC.request('isScrollingEnabled', [])
         .then((scrollingEnabled) => {
-          if (scrollingEnabled && isContentScrollable() && this.hasFocusableElement === false) {
+          if (scrollingEnabled && isContentScrollable() && this.hasInteractableElement === false) {
             // Send message to the consumer/frame.js to handle `setFocus` event
             this.JSONRPC.notification('setFocus');
           }
@@ -113,7 +126,7 @@ class Application extends EventEmitter {
 
     // Event listener, and handler for `blur` event
     window.addEventListener('blur', () => {
-      if (this.hasFocusableElement) {
+      if (this.hasInteractableElement) {
         return;
       }
 
