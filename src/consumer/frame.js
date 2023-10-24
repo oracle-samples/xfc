@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events';
 import JSONRPC from 'jsonrpc-dispatch';
-import parse from 'style-to-object';
 import logger from '../lib/logger';
 import URI from '../lib/uri';
 
