@@ -14,6 +14,14 @@
     html[hidden] {
       display: none;
     }
+
+    .iframe-focus-style {
+      outline: 2px dashed #000;
+    }
+
+    .iframe-blur-style {
+      outline: none;
+    }
   </style>
 </head>
 
@@ -41,8 +49,8 @@
           fixedHeight: '200px',
         },
         focusIndicator: {
-          focusStyleStr: "outline: 2px dashed #000",
-          blurStyleStr: "outline: none",
+          classNameFocusStyle: "iframe-focus-style",
+          classNameBlurStyle: "iframe-blur-style",
         },
       }
     );

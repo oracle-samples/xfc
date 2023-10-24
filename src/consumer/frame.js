@@ -79,30 +79,14 @@ class Frame extends EventEmitter {
 
         setFocus() {
           if (self.focusIndicator) {
-            // Parse the CSS style string to object
-            const styleObj = parse(self.focusIndicator.focusStyleStr);
-
-            Object.entries(styleObj).forEach(([key, value]) => {
-              // Apply CSS style when focus is on the frame. When assigning the
-              // style directly on the iframe using (=), the style update triggers a
-              // window resize where as `setProperty` does not.
-              self.iframe.style.setProperty(key, value);
-            });
+            self.iframe.className = self.focusIndicator.classNameFocusStyle;
           }
           return Promise.resolve();
         },
 
         setBlur() {
           if (self.focusIndicator) {
-            // Parse the CSS style string to object
-            const styleObj = parse(self.focusIndicator.blurStyleStr);
-
-            Object.entries(styleObj).forEach(([key, value]) => {
-              // Apply CSS style when focus is not on the frame. When assigning the
-              // style directly on the iframe using (=), the style update triggers a
-              // window resize where as `setProperty` does not.
-              self.iframe.style.setProperty(key, value);
-            });
+            self.iframe.className = self.focusIndicator.classNameBlurStyle;
           }
           return Promise.resolve();
         },

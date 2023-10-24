@@ -94,19 +94,29 @@ Certain configuration within this library such as `fixedWidth` or `fixedHeight` 
 
 To allow the styles to be applied for `focus` and `blur` events, please provide the CSS styles for each in the `focusIndicator` object.
 
+```css
+  .iframe-focus-style {
+    outline: 2px dashed #000;
+  }
+
+  .iframe-blur-style {
+    outline: none;
+  }
+```
+
 ```js
 XFC.Consumer.mount(document.body,
   'http://localprovider.com:8080/example/provider.html',
   {
     focusIndicator: {
-      focusStyleStr: "outline: 2px dashed #000;",
-      blurStyleStr: "outline: none;",
+      classNameFocusStyle: "iframe-focus-style",
+      classNameBlurStyle: "iframe-blur-style",
     }
   }
 );
 ```
 
-Please note that the styles in `focusStyleStr` will be applied when there is a focus event. Likewise, the styles in `blurStyleStr` will be applied when there is a blur event. Multiple CSS style attributes can be applied. However, the CSS style attributes need to match up for focus, and blur events so that those styles can be unset/removed properly in the blur event.
+Please note that the styles associated with `classNameFocusStyle` will be applied when there is a focus event. Likewise, the styles associated with `classNameBlurStyle` will be applied when there is a blur event. Multiple CSS style attributes can be applied. However, the CSS style attributes need to match up for focus, and blur events so that those styles can be unset/removed properly in the blur event.
 
 ### Monitoring Embedded App Lifecycles
 
