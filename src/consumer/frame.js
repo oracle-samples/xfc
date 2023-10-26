@@ -77,14 +77,14 @@ class Frame extends EventEmitter {
         },
 
         setFocus() {
-          if (self.focusIndicator.classNameFocusStyle) {
+          if (self.focusIndicator && self.focusIndicator.classNameFocusStyle) {
             self.iframe.className = self.focusIndicator.classNameFocusStyle;
           }
           return Promise.resolve();
         },
 
         setBlur() {
-          if (self.focusIndicator.classNameBlurStyle) {
+          if (self.focusIndicator && self.focusIndicator.classNameBlurStyle) {
             self.iframe.className = self.focusIndicator.classNameBlurStyle;
           }
           return Promise.resolve();

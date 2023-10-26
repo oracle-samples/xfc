@@ -7,7 +7,7 @@ import Frame from '../src/consumer/frame';
 import URI from '../src/lib/uri';
 
 
-xdescribe('Frame', () => {
+describe('Frame', () => {
   it('should be an instance of EventEmitter', () => {
     expect(new Frame()).to.be.an.instanceof(EventEmitter);
   });
@@ -206,8 +206,8 @@ xdescribe('Frame', () => {
     const source = 'http://test.com:8080/test';
 
     const focusIndicator = {
-      classNameFocusStyle: "outline: 2px dashed #000",
-      classNameBlurStyle: "outline: none",
+      classNameFocusStyle: "iframe-focus-style",
+      classNameBlurStyle: "iframe-blur-style",
     };
 
     const frame = new Frame();
@@ -216,8 +216,8 @@ xdescribe('Frame', () => {
       it('sets focus indicator object when provided', sinon.test(function () {
         frame.init(container, source, { focusIndicator });
 
-        expect(frame.focusIndicator.focusStyleStr).to.equal('outline: 2px dashed #000');
-        expect(frame.focusIndicator.blurStyleStr).to.equal('outline: none');
+        expect(frame.focusIndicator.classNameFocusStyle).to.equal('iframe-focus-style');
+        expect(frame.focusIndicator.classNameBlurStyle).to.equal('iframe-blur-style');
       }));
 
       it('does not set focus indicator object when not provided/null', sinon.test(function () {
@@ -225,13 +225,13 @@ xdescribe('Frame', () => {
         frame.init(container, source, { focusIndicator });
 
         it('sets the focusIdicator object with null', () => expect(frame.focusIndicator).to.be.null);
-        it('sets the focusIndicator.focusStyleStr with null', () => expect(frame.focusIndicator.focusStyleStr).to.be.null);
-        it('sets the focusIndicator.blurStyleStr with null', () => expect(frame.focusIndicator.blurStyleStr).to.be.null);
+        it('sets the focusIndicator.classNameFocusStyle with null', () => expect(frame.focusIndicator.classNameFocusStyle).to.be.null);
+        it('sets the focusIndicator.classNameBlurStyle with null', () => expect(frame.focusIndicator.classNameBlurStyle).to.be.null);
       }));
     });
 
-    describe('setting iframe style', () => {
-      it('sets the focus style on the frame', sinon.test(function () {
+    describe('setting iframe class name style', () => {
+      it('sets the focus class name style on the frame', sinon.test(function () {
         frame.init(container, source, { focusIndicator });
 
         const emit = sinon.stub();
@@ -239,10 +239,10 @@ xdescribe('Frame', () => {
         frame.mount();
 
         frame.JSONRPC.methods.setFocus(); // Calling setFocus() method
-        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('2px dashed #000');
+        expect(frame.iframe.getAttribute('class')).to.equal('iframe-focus-style');
       }));
 
-      it('sets the blur style on the iframe', sinon.test(function () {
+      it('sets the blur style class name on the iframe', sinon.test(function () {
         frame.init(container, source, { focusIndicator });
 
         const emit = sinon.stub();
@@ -250,10 +250,10 @@ xdescribe('Frame', () => {
         frame.mount();
 
         frame.JSONRPC.methods.setBlur(); // Calling setBlur() method
-        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('none');
+        expect(frame.iframe.getAttribute('class')).to.equal('iframe-blur-style');
       }));
 
-      it('does not set the focus style on the iframe', sinon.test(function () {
+      it('does not set the focus style class name on the iframe', sinon.test(function () {
         frame.init(container, source, {});
 
         const emit = sinon.stub();
@@ -261,10 +261,10 @@ xdescribe('Frame', () => {
         frame.mount();
 
         frame.JSONRPC.methods.setFocus(); // Calling setFocus() method
-        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('');
+        expect(frame.iframe.getAttribute('class')).to.be.null;
       }));
 
-      it('does not set the blur style on the iframe', sinon.test(function () {
+      it('does not set the blur style class name on the iframe', sinon.test(function () {
         frame.init(container, source, {});
 
         const emit = sinon.stub();
@@ -272,7 +272,7 @@ xdescribe('Frame', () => {
         frame.mount();
 
         frame.JSONRPC.methods.setBlur(); // Calling setBlur() method
-        expect(frame.iframe.style.getPropertyValue('outline')).to.equal('');
+        expect(frame.iframe.getAttribute('class')).to.be.null;
       }));
     });
   });
