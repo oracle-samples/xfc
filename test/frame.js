@@ -276,4 +276,50 @@ describe('Frame', () => {
       }));
     });
   });
+
+  describe('#isScrollingEnabled', () => {
+    const container = document.body;
+    const source = 'http://test.com:8080/test';
+
+    const frame = new Frame();
+
+    describe('when scrolling is not set', () => {
+      it('defaults scrolling to no', sinon.test(function () {
+        frame.init(container, source, {});
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.isScrollingEnabled();
+        expect(frame.iframe.getAttribute('scrolling')).to.equal('no');
+      }));
+    });
+
+    describe('when scrolling is sets to false', () => {
+      it('it sets scrolling to no', sinon.test(function () {
+        frame.init(container, source, { resizeConfig: { scrolling: false } });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.isScrollingEnabled();
+        expect(frame.iframe.getAttribute('scrolling')).to.equal('no');
+      }));
+    });
+
+    describe('when scrolling is sets to true', () => {
+      it('it sets scrolling to auto/yes', sinon.test(function () {
+        frame.init(container, source, { resizeConfig: { scrolling: true } });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.isScrollingEnabled();
+        expect(frame.iframe.getAttribute('scrolling')).to.be.null;
+      }));
+    });
+  });
 });
