@@ -109,3 +109,17 @@ export function getOffsetToBody(node, offset = 0) {
 export function getOffsetHeightToBody(node) {
   return !node ? 0 : getOffsetToBody(node) + node.scrollHeight;
 }
+
+/**
+ * This function returns boolean value representing whether scroll width or scroll height
+ * is larger than the client width or client height. It indicates that the content is larger
+ * than the viewable area and can be scrolled.
+ *
+ * @returns boolean true - when the content is scrollable, false - when the content is not scrollable
+ */
+export function isContentScrollable() {
+  return (document.documentElement.scrollHeight > document.documentElement.clientHeight
+    || document.body.scrollHeight > document.body.clientHeight
+    || document.documentElement.scrollWidth > document.documentElement.clientWidth
+    || document.body.scrollWidth > document.body.clientWidth);
+}
