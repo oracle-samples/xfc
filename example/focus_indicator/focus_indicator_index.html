@@ -30,14 +30,19 @@
   <p>Set focus indicator on the frame when it has focus, and unset the focus indicator when the frame no longer has
     focus when using keyboard to navigate the page. The content can be scrolled using keyboard when the frame has focus.
   </p>
-  <div>
-    <h2>Embedded Content:</h2>
-  </div>
+  <h2>Example frame without any interactable element</h2>
+  <div id="frame1"></div>
+  <br>
+  <h2>Example frame with some interactable elements</h2>
+  <div id="frame2"></div>
+  <br>
+  <h2>Example frame with no scrolling</h2>
+  <div id="frame3"></div>
   <script>
     XFC.Consumer.init()
-    let frame = XFC.Consumer.mount(
-      document.body,
-      'http://localprovider.com:8080/example/focus_indicator/focus_indicator_provider.html',
+    XFC.Consumer.mount(
+      document.getElementById('frame1'),
+      'http://localprovider.com:8080/example/focus_indicator/focus_indicator_provider_no_interactable_elements.html',
       {
         iframeAttrs: {
           id: "frame-focus-indicator-id",
@@ -47,6 +52,42 @@
           scrolling: true,
           fixedWidth: '100%',
           fixedHeight: '200px',
+        },
+        focusIndicator: {
+          classNameFocusStyle: "iframe-focus-style",
+          classNameBlurStyle: "iframe-blur-style",
+        },
+      }
+    );
+    XFC.Consumer.mount(
+      document.getElementById('frame2'),
+      'http://localprovider.com:8080/example/focus_indicator/focus_indicator_provider_with_interactable_elements.html',
+      {
+        iframeAttrs: {
+          id: "frame-focus-indicator-id",
+          title: "iframe with focus indicator",
+        },
+        resizeConfig: {
+          scrolling: true,
+          fixedWidth: '100%',
+          fixedHeight: '300px',
+        },
+        focusIndicator: {
+          classNameFocusStyle: "iframe-focus-style",
+          classNameBlurStyle: "iframe-blur-style",
+        },
+      }
+    );
+    XFC.Consumer.mount(
+      document.getElementById('frame3'),
+      'http://localprovider.com:8080/example/focus_indicator/focus_indicator_provider_no_scrolling.html',
+      {
+        iframeAttrs: {
+          id: "frame-focus-indicator-id",
+          title: "iframe with focus indicator",
+        },
+        resizeConfig: {
+          scrolling: false,
         },
         focusIndicator: {
           classNameFocusStyle: "iframe-focus-style",

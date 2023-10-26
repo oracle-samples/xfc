@@ -65,75 +65,6 @@ class Application extends EventEmitter {
     // Resize for slow loading images
     document.addEventListener('load', this.imageRequestResize.bind(this), true);
 
-    const interactableElementSelector = 'a[href]:not([tabindex=\'-1\']), area[href]:not([tabindex=\'-1\']), input:not([disabled]):not([tabindex=\'-1\']), '
-      + "select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']), "
-      + "[contentEditable=true]:not([tabindex='-1'])";
-
-    const isContentScrollable = () => (
-      document.documentElement.scrollHeight > document.documentElement.clientHeight
-      || document.body.scrollHeight > document.body.clientHeight
-      || document.documentElement.scrollWidth > document.documentElement.clientWidth
-      || document.body.scrollWidth > document.body.clientWidth
-    );
-
-    window.addEventListener('load', () => {
-      this.hasInteractableElement = [...document.body.querySelectorAll(`${interactableElementSelector}`)].some(
-        (element) => !element.hasAttribute('disabled')
-          && !element.getAttribute('aria-hidden')
-          && !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length)
-          && window.getComputedStyle(element).visibility !== 'hidden'
-          && element.closest('[inert]') === null,
-      );
-
-      this.JSONRPC.request('isScrollingEnabled', [])
-        .then((scrollingEnabled) => {
-          if (scrollingEnabled && isContentScrollable() && this.hasInteractableElement === false) {
-            // Set tabIndex="0" so focus can go into the document when
-            // using tab key when scrolling is enabled
-            document.body.tabIndex = 0;
-          }
-        });
-    }, true);
-
-    window.addEventListener('resize', () => {
-      this.JSONRPC.request('isScrollingEnabled', [])
-        .then((scrollingEnabled) => {
-          if (scrollingEnabled && isContentScrollable() && this.hasInteractableElement === false) {
-            // Set tabIndex="0" so focus can go into the document when
-            // using tab key when scrolling is enabled
-            document.body.tabIndex = 0;
-          } else if (document.body.getAttribute('tabIndex') === '0') {
-            document.body.removeAttribute('tabIndex');
-          }
-        });
-    }, true);
-
-    // Event listener, and handler for `focus` event
-    window.addEventListener('focus', () => {
-      if (this.hasInteractableElement || !isContentScrollable()) {
-        return;
-      }
-
-      // Check if the container frame is scrollable
-      this.JSONRPC.request('isScrollingEnabled', [])
-        .then((scrollingEnabled) => {
-          if (scrollingEnabled && isContentScrollable() && this.hasInteractableElement === false) {
-            // Send message to the consumer/frame.js to handle `setFocus` event
-            this.JSONRPC.notification('setFocus');
-          }
-        });
-    }, true);
-
-    // Event listener, and handler for `blur` event
-    window.addEventListener('blur', () => {
-      if (this.hasInteractableElement) {
-        return;
-      }
-
-      // Send message to the consumer/frame.js to handle `setBlur` event
-      this.JSONRPC.notification('setBlur');
-    }, true);
-
     const self = this;
     this.JSONRPC = new JSONRPC(
       self.send.bind(self),
@@ -177,6 +108,72 @@ class Application extends EventEmitter {
 
     window.addEventListener('message', this.handleConsumerMessage);
     window.addEventListener('beforeunload', this.unload);
+
+    const isContentScrollable = () => (
+      document.documentElement.scrollHeight > document.documentElement.clientHeight
+      || document.body.scrollHeight > document.body.clientHeight
+      || document.documentElement.scrollWidth > document.documentElement.clientWidth
+      || document.body.scrollWidth > document.body.clientWidth
+    );
+
+    const interactableElementSelector = 'a[href]:not([tabindex=\'-1\']), area[href]:not([tabindex=\'-1\']), input:not([disabled]):not([tabindex=\'-1\']), '
+      + "select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']), "
+      + "[contentEditable=true]:not([tabindex='-1'])";
+
+    const hasAnyInteractableElement = () => (
+      [...document.body.querySelectorAll(`${interactableElementSelector}`)].some(
+        (element) => !element.hasAttribute('disabled')
+          && !element.getAttribute('aria-hidden')
+          && !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length)
+          && window.getComputedStyle(element).visibility !== 'hidden'
+          && element.closest('[inert]') === null,
+      )
+    );
+
+    window.addEventListener('load', () => {
+      this.hasInteractableElement = hasAnyInteractableElement();
+
+      this.JSONRPC.request('isScrollingEnabled', [])
+        .then((scrolling) => { this.isScrollingEnabled = scrolling; });
+
+      if (this.isScrollingEnabled === true && isContentScrollable() && this.hasInteractableElement === false) {
+        // Set tabIndex="0" so focus can go into the document when
+        // using tab key when scrolling is enabled
+        document.body.tabIndex = 0;
+      }
+    }, true);
+
+    // Event listener, and handler for `resize` event
+    window.addEventListener('resize', () => {
+      if (this.isScrollingEnabled === true && isContentScrollable() && this.hasInteractableElement === false) {
+        // Set tabIndex="0" so focus can go into the document
+        document.body.tabIndex = 0;
+      } else if (document.body.getAttribute('tabIndex') === '0') {
+        document.body.removeAttribute('tabIndex');
+      }
+    }, true);
+
+    // Event listener, and handler for `focus` event
+    window.addEventListener('focus', () => {
+      if (this.hasInteractableElement || !isContentScrollable()) {
+        return;
+      }
+
+      if (this.isScrollingEnabled === true && isContentScrollable() && this.hasInteractableElement === false) {
+        // Send message to the consumer/frame.js to handle `setFocus` event
+        this.JSONRPC.notification('setFocus');
+      }
+    }, true);
+
+    // Event listener, and handler for `blur` event
+    window.addEventListener('blur', () => {
+      if (this.hasInteractableElement) {
+        return;
+      }
+
+      // Send message to the consumer/frame.js to handle `setBlur` event
+      this.JSONRPC.notification('setBlur');
+    }, true);
   }
 
   /**
