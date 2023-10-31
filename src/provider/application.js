@@ -7,7 +7,7 @@ import { fixedTimeCompare } from '../lib/string';
 import URI from '../lib/uri';
 import logger from '../lib/logger';
 import {
-  getOffsetHeightToBody, calculateHeight, calculateWidth, isContentScrollable,
+  getOffsetHeightToBody, calculateHeight, calculateWidth, isContentScrollable, hasInteractableElement
 } from '../lib/dimension';
 
 /** Application class which represents an embedded application. */
@@ -56,6 +56,7 @@ class Application extends EventEmitter {
     this.handleResizeEvent = this.handleResizeEvent.bind(this);
     this.handleFocusEvent = this.handleFocusEvent.bind(this);
     this.handleBlurEvent = this.handleBlurEvent.bind(this);
+    this.isIframeScrollable = this.isIframeScrollable.bind(this);
     this.hasInteractableElement = true;
     this.isScrollingEnabled = false;
 
@@ -353,25 +354,15 @@ class Application extends EventEmitter {
    * When page load is completed, we need to check if the document has
    * any interactable element or not. Additionally, we need to check
    * if the iframe has scrolling enabled or not. This determines if we need
-   * set focus in the document or not.
+   * set focus with `tabIndex = 0` in the document or not.
    */
   handleLoadEvent() {
-    this.hasInteractableElement = (() => {
-      const interactableElementSelector = 'a[href]:not([tabindex=\'-1\']), area[href]:not([tabindex=\'-1\']), input:not([disabled]):not([tabindex=\'-1\']), '
-        + "select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']), "
-        + "[contentEditable=true]:not([tabindex='-1'])";
+    this.hasInteractableElement = hasInteractableElement();
+    this.isScrollingEnabled = this.isIframeScrollable();
 
-      return [...document.body.querySelectorAll(`${interactableElementSelector}`)].some(
-        (element) => !element.hasAttribute('disabled')
-          && !element.getAttribute('aria-hidden')
-          && !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length)
-          && window.getComputedStyle(element).visibility !== 'hidden'
-          && element.closest('[inert]') === null,
-      );
-    })();
-
-    this.JSONRPC.request('isScrollingEnabled', [])
-      .then((scrolling) => { this.isScrollingEnabled = scrolling; });
+    console.log(`this.isScrollingEnabled: ${this.isScrollingEnabled}`);
+    console.log(`isContentScrollable(): ${isContentScrollable()}`);
+    console.log(`this.hasInteractableElement: ${this.hasInteractableElement}`);
 
     if (this.isScrollingEnabled === true && isContentScrollable() && this.hasInteractableElement === false) {
       // Set tabIndex="0" so focus can go into the document when
@@ -400,10 +391,6 @@ class Application extends EventEmitter {
    * if the document has interactable element or the content isn't scrollable.
    */
   handleFocusEvent() {
-    if (this.hasInteractableElement || !isContentScrollable()) {
-      return;
-    }
-
     if (this.isScrollingEnabled === true && isContentScrollable() && this.hasInteractableElement === false) {
       // Send message to the consumer/frame.js to handle `setFocus` event
       this.JSONRPC.notification('setFocus');
@@ -422,6 +409,16 @@ class Application extends EventEmitter {
 
     // Send message to the consumer/frame.js to handle `setBlur` event
     this.JSONRPC.notification('setBlur');
+  }
+
+  /**
+   * Check the iframe's `scrolling` attribute to see if scrolling is enabled or not.
+   * Return true if scrolling is default/auto. Re
+   * @returns boolean true - when the iframe is scrollable, false - when the iframe is not scrollable
+   */
+  isIframeScrollable() {
+    this.JSONRPC.request('isScrollingEnabled', [])
+      .then((scrolling) => scrolling);
   }
 }
 

@@ -123,3 +123,22 @@ export function isContentScrollable() {
     || document.documentElement.scrollWidth > document.documentElement.clientWidth
     || document.body.scrollWidth > document.body.clientWidth);
 }
+
+/**
+ * Determines if the document has interactable element in it.
+ *
+ * @returns boolean true - when there is interactable element in the document, false otherwise
+ */
+export function hasInteractableElement() {
+  const interactableElementSelector = 'a[href]:not([tabindex=\'-1\']), area[href]:not([tabindex=\'-1\']), input:not([disabled]):not([tabindex=\'-1\']), '
+    + "select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']), "
+    + "[contentEditable=true]:not([tabindex='-1'])";
+
+  return [...document.body.querySelectorAll(`${interactableElementSelector}`)].some(
+    (element) => !element.hasAttribute('disabled')
+      && !element.getAttribute('aria-hidden')
+      && !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length)
+      && window.getComputedStyle(element).visibility !== 'hidden'
+      && element.closest('[inert]') === null,
+  );
+}
