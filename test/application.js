@@ -474,9 +474,11 @@ describe('Application', () => {
       const application = new Application();
       application.init({ acls: ['*'] });
       const notification = this.stub(application.JSONRPC, 'notification');
-      application.isScrollingEnabled = true;
+
       application.hasInteractableElement = true;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true);
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(application, 'isIframeScrollable').returns(true);
+
       application.handleFocusEvent();
 
       sinon.assert.notCalled(notification);
@@ -487,8 +489,8 @@ describe('Application', () => {
       application.init({ acls: ['*'] });
       const notification = this.stub(application.JSONRPC, 'notification');
       application.hasInteractableElement = false;
-      application.isScrollingEnabled = false;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true);
+      this.stub(application, 'isIframeScrollable').returns(false);
+      this.stub(dimension, 'isContentScrollable').returns(true);
       application.handleFocusEvent();
 
       sinon.assert.notCalled(notification);
@@ -498,9 +500,10 @@ describe('Application', () => {
       const application = new Application();
       application.init({ acls: ['*'] });
       const notification = this.stub(application.JSONRPC, 'notification');
-      application.isScrollingEnabled = true;
       application.hasInteractableElement = false;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => false);
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(true);
+
       application.handleFocusEvent();
 
       sinon.assert.notCalled(notification);
@@ -510,9 +513,10 @@ describe('Application', () => {
       const application = new Application();
       application.init({ acls: ['*'] });
       const notification = this.stub(application.JSONRPC, 'notification');
-      application.isScrollingEnabled = true;
       application.hasInteractableElement = false;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true);
+      this.stub(application, 'isIframeScrollable').returns(true);
+      this.stub(dimension, 'isContentScrollable').returns(true);
+
       application.handleFocusEvent();
 
       sinon.assert.calledWith(notification, 'setFocus');
@@ -523,9 +527,9 @@ describe('Application', () => {
     it("does not set tabIndex=0 when there is interactable element in the document", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
-      application.isScrollingEnabled = true;
       application.hasInteractableElement = true;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true);
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(application, 'isIframeScrollable').returns(true);
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
@@ -535,8 +539,8 @@ describe('Application', () => {
       const application = new Application();
       application.init({ acls: ['*'] });
       application.hasInteractableElement = false;
-      application.isScrollingEnabled = false;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true);
+      this.stub(application, 'isIframeScrollable').returns(false);
+      this.stub(dimension, 'isContentScrollable').returns(true);
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
@@ -545,9 +549,9 @@ describe('Application', () => {
     it("does not set tabIndex=0 when the content is not scrollable", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
-      application.isScrollingEnabled = true;
       application.hasInteractableElement = false;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => false);
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(true);
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
@@ -556,9 +560,9 @@ describe('Application', () => {
     it("sets tabIndex=0", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
-      application.isScrollingEnabled = true;
       application.hasInteractableElement = false;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true);
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(application, 'isIframeScrollable').returns(true);
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.equal('0')
@@ -567,9 +571,9 @@ describe('Application', () => {
     it("removes tabIndex=0 when it already has it set", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
-      application.isScrollingEnabled = true;
       application.hasInteractableElement = false;
-      this.stub(dimension, 'isContentScrollable').callsFake(() => false);
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(true);
       document.body.tabIndex = 0;
       application.handleResizeEvent();
 
@@ -582,23 +586,24 @@ describe('Application', () => {
       let application = new Application();
       application.init({ acls: ['*'] });
 
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true);
-      this.stub(dimension, 'hasInteractableElement').callsFake(() => true);
-      this.stub(application, 'isIframeScrollable').callsFake(() => true);
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(dimension, 'hasInteractableElement').returns(true);
+      this.stub(application, 'isIframeScrollable').returns(true);
+      this.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
 
       application.handleLoadEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
-      expect(application.isScrollingEnabled).to.equal(true);
     }));
 
     it("does not set tabIndex=0 when scrolling is not enabled", sinon.test(function () {
       let application = new Application();
       application.init({ acls: ['*'] });
 
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true);
-      this.stub(dimension, 'hasInteractableElement').callsFake(() => false);
-      this.stub(application, 'isIframeScrollable').callsFake(() => false);
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(dimension, 'hasInteractableElement').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(false);
+      this.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
 
       application.handleLoadEvent();
 
@@ -609,11 +614,10 @@ describe('Application', () => {
       let application = new Application();
       application.init({ acls: ['*'] });
 
-      const request = sinon.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).returns(Promise.resolve(true));
-
-      this.stub(dimension, 'isContentScrollable').callsFake(() => false);
-      this.stub(dimension, 'hasInteractableElement').callsFake(() => false);
-      this.stub(application, 'isIframeScrollable').callsFake(() => true);
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(dimension, 'hasInteractableElement').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(true);
+      this.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
 
       application.handleLoadEvent();
 
@@ -624,25 +628,14 @@ describe('Application', () => {
       let application = new Application();
       application.init({ acls: ['*'] });
 
-      this.stub(dimension, 'isContentScrollable').callsFake(() => true)
-      this.stub(dimension, 'hasInteractableElement').callsFake(() => false);
-      this.stub(application, 'isIframeScrollable').callsFake(() => true);
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(dimension, 'hasInteractableElement').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(true);
+      sinon.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
 
       application.handleLoadEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.equal('0')
-    }));
-  });
-
-  describe('#isIframeScrollable', () => {
-    it('sends a request to isScrollingEnabled', sinon.test(function () {
-      let application = new Application();
-      application.init({ acls: ['*'] });
-
-      const request = this.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
-      application.isIframeScrollable();
-
-      sinon.assert.calledWith(request, 'isScrollingEnabled', []);
     }));
   });
 });
