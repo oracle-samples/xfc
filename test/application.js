@@ -582,16 +582,36 @@ describe('Application', () => {
   });
 
   describe('#handleLoadEvent()', () => {
+    it("calls isScrollingEnabled and returns true", sinon.test(function () {
+      let application = new Application();
+      application.init({ acls: ['*'] });
+
+      const isScrollingEnabled = sinon.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
+      application.handleLoadEvent();
+
+      sinon.assert.called(isScrollingEnabled);
+    }));
+
+    it("calls isScrollingEnabled and returns false", sinon.test(function () {
+      let application = new Application();
+      application.init({ acls: ['*'] });
+
+      const isScrollingEnabled = sinon.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(false);
+      application.handleLoadEvent();
+
+      sinon.assert.called(isScrollingEnabled);
+    }));
+  });
+
+  describe('#setFocusWhenRequired()', () => {
     it("does not set tabIndex=0 when there is interactable element in the document", sinon.test(function () {
       let application = new Application();
       application.init({ acls: ['*'] });
 
       this.stub(dimension, 'isContentScrollable').returns(true);
       this.stub(dimension, 'hasInteractableElement').returns(true);
-      this.stub(application, 'isIframeScrollable').returns(true);
-      this.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
 
-      application.handleLoadEvent();
+      application.setFocusWhenRequired(true);
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
     }));
@@ -602,10 +622,8 @@ describe('Application', () => {
 
       this.stub(dimension, 'isContentScrollable').returns(true);
       this.stub(dimension, 'hasInteractableElement').returns(false);
-      this.stub(application, 'isIframeScrollable').returns(false);
-      this.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
 
-      application.handleLoadEvent();
+      application.setFocusWhenRequired(false);
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
     }));
@@ -616,10 +634,8 @@ describe('Application', () => {
 
       this.stub(dimension, 'isContentScrollable').returns(false);
       this.stub(dimension, 'hasInteractableElement').returns(false);
-      this.stub(application, 'isIframeScrollable').returns(true);
-      this.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
 
-      application.handleLoadEvent();
+      application.setFocusWhenRequired(true);
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
     }));
@@ -630,10 +646,8 @@ describe('Application', () => {
 
       this.stub(dimension, 'isContentScrollable').returns(true);
       this.stub(dimension, 'hasInteractableElement').returns(false);
-      this.stub(application, 'isIframeScrollable').returns(true);
-      sinon.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
 
-      application.handleLoadEvent();
+      application.setFocusWhenRequired(true);
 
       expect(document.body.getAttribute('tabIndex')).to.equal('0')
     }));

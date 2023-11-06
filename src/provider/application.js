@@ -57,6 +57,7 @@ class Application extends EventEmitter {
     this.handleFocusEvent = this.handleFocusEvent.bind(this);
     this.handleBlurEvent = this.handleBlurEvent.bind(this);
     this.isIframeScrollable = this.isIframeScrollable.bind(this);
+    this.setFocusWhenRequired = this.setFocusWhenRequired.bind(this);
     this.hasInteractableElement = true;
     this.isScrollingEnabled = false;
 
@@ -351,22 +352,14 @@ class Application extends EventEmitter {
   }
 
   /**
-   * When page load is completed, we need to check if the document has
-   * any interactable element or not. Additionally, we need to check
-   * if the iframe has scrolling enabled or not. This determines if we need
-   * set focus with `tabIndex = 0` in the document or not.
+   * When page load is completed, get the
+   * iframe's scrolling config, and set the tabIndex
+   * on the document.body of the embedded page if
+   * necessary.
    */
   handleLoadEvent() {
-    this.hasInteractableElement = hasInteractableElement();
-
     this.JSONRPC.request('isScrollingEnabled', [])
-      .then((scrolling) => { this.isScrollingEnabled = scrolling; });
-
-    if (this.isIframeScrollable() === true && isContentScrollable() && this.hasInteractableElement === false) {
-      // Set tabIndex="0" so focus can go into the document when
-      // using tab key when scrolling is enabled
-      document.body.tabIndex = 0;
-    }
+      .then(this.setFocusWhenRequired);
   }
 
   /**
@@ -416,6 +409,24 @@ class Application extends EventEmitter {
    */
   isIframeScrollable() {
     return this.isScrollingEnabled;
+  }
+
+  /**
+   * Sets the `tabIndex=0` on the `document.body` if required
+   * so focus can get into the embedded document.
+   *
+   * @param {*} iframeScrollingEnabled - boolean true when iframe's scrolling is true,
+   *                                             false when iframe's scrolling is false
+   */
+  setFocusWhenRequired(iframeScrollingEnabled) {
+    this.isScrollingEnabled = iframeScrollingEnabled;
+    this.hasInteractableElement = hasInteractableElement();
+
+    if (iframeScrollingEnabled === true && isContentScrollable() === true && this.hasInteractableElement === false) {
+      // Set tabIndex="0" so focus can go into the document when
+      // using tab key when scrolling is enabled
+      document.body.tabIndex = 0;
+    }
   }
 }
 
