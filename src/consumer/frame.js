@@ -78,6 +78,7 @@ class Frame extends EventEmitter {
 
         setFocus() {
           if (self.focusIndicator && self.focusIndicator.classNameFocusStyle) {
+            console.log('set className on the iframe');
             self.iframe.className = self.focusIndicator.classNameFocusStyle;
           }
           return Promise.resolve();
@@ -90,6 +91,7 @@ class Frame extends EventEmitter {
         },
 
         isScrollingEnabled() {
+          console.log('inside isScrollingEnabled() in frame.js');
           return Promise.resolve(self.iframe.getAttribute('scrolling') !== 'no');
         },
 

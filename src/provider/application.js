@@ -358,6 +358,7 @@ class Application extends EventEmitter {
    * necessary.
    */
   handleLoadEvent() {
+    console.log('inside handleLoadEvent');
     this.JSONRPC.request('isScrollingEnabled', [])
       .then(this.setTabIndexWhenRequired);
   }
@@ -382,8 +383,14 @@ class Application extends EventEmitter {
    * if the document has interactable element or the content isn't scrollable.
    */
   handleFocusEvent() {
+    console.log('inside handleFocusEvent');
+    console.log(`this.isScrollingEnabled: ${this.isScrollingEnabled}`);
+    console.log(`this.hasInteractableElement: ${this.hasInteractableElement}`);
+    console.log(`isContentScrollable(): ${isContentScrollable()}`);
+
     if (this.isIframeScrollable() && isContentScrollable() && !this.hasInteractableElement) {
       // Send message to the consumer/frame.js to handle `setFocus` event
+      console.log('Calling setFocus() in frame.js');
       this.JSONRPC.notification('setFocus');
     }
   }
@@ -419,13 +426,20 @@ class Application extends EventEmitter {
    *                                             false when iframe's scrolling is false
    */
   setTabIndexWhenRequired(iframeScrollingEnabled) {
+    console.log('inside setTabIndexWhenRequired function');
+
     this.isScrollingEnabled = iframeScrollingEnabled;
     this.hasInteractableElement = hasInteractableElement();
+
+    console.log(`this.isScrollingEnabled: ${this.isScrollingEnabled}`);
+    console.log(`this.hasInteractableElement: ${this.hasInteractableElement}`);
+    console.log(`isContentScrollable(): ${isContentScrollable()}`);
 
     if (iframeScrollingEnabled && isContentScrollable() && !this.hasInteractableElement) {
       // Set tabIndex="0" so focus can go into the document when
       // using tab key when scrolling is enabled
       document.body.tabIndex = 0;
+      console.log('set tabIndex=0 in the body of the doc');
     }
   }
 }
