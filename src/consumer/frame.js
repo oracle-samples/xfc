@@ -84,17 +84,13 @@ class Frame extends EventEmitter {
         },
 
         setBlur() {
-          if (self.focusIndicator && self.focusIndicator.classNameBlurStyle) {
-            self.iframe.className = self.focusIndicator.classNameBlurStyle;
-          }
+          // Removing the focus style className
+          self.iframe.removeAttribute('class');
           return Promise.resolve();
         },
 
         isScrollingEnabled() {
-          if (self.iframe.getAttribute('scrolling') === 'no') {
-            return Promise.resolve(false);
-          }
-          return Promise.resolve(true);
+          return Promise.resolve(self.iframe.getAttribute('scrolling') !== 'no');
         },
 
         event(event, detail) {

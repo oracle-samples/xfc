@@ -92,15 +92,11 @@ Here `iframeAttrs` is an object that contains entries, each of them being an ent
 ### Applying Visual Focus Indicator on Iframe
 Certain configuration within this library such as `fixedWidth` or `fixedHeight` may prevent the content to be fully displayed within the viewport, and thereby needing `scrolling` to be enabled. For keyboard only users, it is important to display a visual focus indicator to indicate where the focus currently is at to help guide them with page navigation.
 
-To allow the styles to be applied for `focus` and `blur` events, please provide the CSS styles for each in the `focusIndicator` object.
+Example CSS and JS Code:
 
 ```css
   .iframe-focus-style {
     outline: 2px dashed #000;
-  }
-
-  .iframe-blur-style {
-    outline: none;
   }
 ```
 
@@ -110,13 +106,12 @@ XFC.Consumer.mount(document.body,
   {
     focusIndicator: {
       classNameFocusStyle: "iframe-focus-style",
-      classNameBlurStyle: "iframe-blur-style",
     }
   }
 );
 ```
 
-Please note that the styles associated with `classNameFocusStyle` will be applied when there is a focus event. Likewise, the styles associated with `classNameBlurStyle` will be applied when there is a blur event. Multiple CSS style attributes can be applied. However, the CSS style attributes need to match up for focus, and blur events so that those styles can be unset/removed properly in the blur event.
+Please note that the style associated with `classNameFocusStyle` will be applied to the iframe by setting the `classNameFocusStyle` to `className` attribute on the iframe when there is a focus event. During a blur event, the `class` attribute, and the `classNameFocusStyle` name will be removed.
 
 ### Monitoring Embedded App Lifecycles
 

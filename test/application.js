@@ -603,7 +603,7 @@ describe('Application', () => {
     }));
   });
 
-  describe('#setFocusWhenRequired()', () => {
+  describe('#setTabIndexWhenRequired()', () => {
     it("does not set tabIndex=0 when there is interactable element in the document", sinon.test(function () {
       let application = new Application();
       application.init({ acls: ['*'] });
@@ -611,7 +611,7 @@ describe('Application', () => {
       this.stub(dimension, 'isContentScrollable').returns(true);
       this.stub(dimension, 'hasInteractableElement').returns(true);
 
-      application.setFocusWhenRequired(true);
+      application.setTabIndexWhenRequired(true);
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
     }));
@@ -623,7 +623,7 @@ describe('Application', () => {
       this.stub(dimension, 'isContentScrollable').returns(true);
       this.stub(dimension, 'hasInteractableElement').returns(false);
 
-      application.setFocusWhenRequired(false);
+      application.setTabIndexWhenRequired(false);
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
     }));
@@ -635,7 +635,7 @@ describe('Application', () => {
       this.stub(dimension, 'isContentScrollable').returns(false);
       this.stub(dimension, 'hasInteractableElement').returns(false);
 
-      application.setFocusWhenRequired(true);
+      application.setTabIndexWhenRequired(true);
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
     }));
@@ -647,7 +647,7 @@ describe('Application', () => {
       this.stub(dimension, 'isContentScrollable').returns(true);
       this.stub(dimension, 'hasInteractableElement').returns(false);
 
-      application.setFocusWhenRequired(true);
+      application.setTabIndexWhenRequired(true);
 
       expect(document.body.getAttribute('tabIndex')).to.equal('0')
     }));
