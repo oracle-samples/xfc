@@ -60,6 +60,7 @@ class Application extends EventEmitter {
     this.setTabIndexWhenRequired = this.setTabIndexWhenRequired.bind(this);
     this.hasInteractableElement = true;
     this.isScrollingEnabled = false;
+    this.originalTabIndexValue = null;
 
     this.dispatchFunction = dispatchFunction || ((message, targetOrigin) => {
       // Don't send messages if not embedded
@@ -371,8 +372,10 @@ class Application extends EventEmitter {
     if (this.isIframeScrollable() && isContentScrollable() && !this.hasInteractableElement) {
       // Set tabIndex="0" so focus can go into the document
       document.body.tabIndex = 0;
-    } else if (document.body.getAttribute('tabIndex') === '0') {
+    } else if (this.originalTabIndexValue === null) {
       document.body.removeAttribute('tabIndex');
+    } else {
+      document.body.tabIndex = this.originalTabIndexValue;
     }
   }
 
@@ -421,6 +424,7 @@ class Application extends EventEmitter {
   setTabIndexWhenRequired(iframeScrollingEnabled) {
     this.isScrollingEnabled = iframeScrollingEnabled;
     this.hasInteractableElement = hasInteractableElement();
+    this.originalTabIndexValue = document.body.getAttribute('tabIndex');
 
     if (iframeScrollingEnabled && isContentScrollable() && !this.hasInteractableElement) {
       // Set tabIndex="0" so focus can go into the document when

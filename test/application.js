@@ -524,12 +524,17 @@ describe('Application', () => {
   });
 
   describe('#handleResizeEvent()', () => {
+    afterEach(() => {
+      document.body.removeAttribute('tabIndex');
+    });
+
     it("does not set tabIndex=0 when there is interactable element in the document", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
       application.hasInteractableElement = true;
       this.stub(dimension, 'isContentScrollable').returns(true);
       this.stub(application, 'isIframeScrollable').returns(true);
+
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
@@ -541,6 +546,7 @@ describe('Application', () => {
       application.hasInteractableElement = false;
       this.stub(application, 'isIframeScrollable').returns(false);
       this.stub(dimension, 'isContentScrollable').returns(true);
+
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
@@ -552,6 +558,7 @@ describe('Application', () => {
       application.hasInteractableElement = false;
       this.stub(dimension, 'isContentScrollable').returns(false);
       this.stub(application, 'isIframeScrollable').returns(true);
+
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
@@ -563,21 +570,48 @@ describe('Application', () => {
       application.hasInteractableElement = false;
       this.stub(dimension, 'isContentScrollable').returns(true);
       this.stub(application, 'isIframeScrollable').returns(true);
+
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.equal('0')
     }));
 
-    it("removes tabIndex=0 when it already has it set", sinon.test(function () {
+    it("removes tabIndex when the initial tabIndex value was not set", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
       application.hasInteractableElement = false;
+      application.originalTabIndexValue = null;
       this.stub(dimension, 'isContentScrollable').returns(false);
-      this.stub(application, 'isIframeScrollable').returns(true);
-      document.body.tabIndex = 0;
+      this.stub(application, 'isIframeScrollable').returns(false);
+
       application.handleResizeEvent();
 
       expect(document.body.getAttribute('tabIndex')).to.be.null;
+    }));
+
+    it("reverts tabIndex value (1) when the condition is no longer met", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      application.originalTabIndexValue = 1;
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(false);
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.equal('1');
+    }));
+
+    it("reverts tabIndex value (-1) when the condition is no longer met", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      application.originalTabIndexValue = -1;
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(false);
+
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.equal('-1');
     }));
   });
 
@@ -604,6 +638,10 @@ describe('Application', () => {
   });
 
   describe('#setTabIndexWhenRequired()', () => {
+    afterEach(() => {
+      document.body.removeAttribute('tabIndex');
+    });
+
     it("does not set tabIndex=0 when there is interactable element in the document", sinon.test(function () {
       let application = new Application();
       application.init({ acls: ['*'] });
