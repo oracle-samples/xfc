@@ -296,7 +296,7 @@ describe('Frame', () => {
     });
 
     describe('when scrolling is sets to true', () => {
-      it('it sets scrolling to auto/yes', sinon.test(function () {
+      it('it defaults to auto for scrolling, no scrolling attribute is set', sinon.test(function () {
         frame.init(container, source, { resizeConfig: { scrolling: true } });
 
         const emit = sinon.stub();
@@ -305,6 +305,17 @@ describe('Frame', () => {
 
         frame.JSONRPC.methods.isScrollingEnabled();
         expect(frame.iframe.getAttribute('scrolling')).to.be.null;
+      }));
+
+      it('it sets scrolling attribute to yes', sinon.test(function () {
+        frame.init(container, source, { resizeConfig: { scrolling: true }, iframeAttrs: { scrolling: 'yes' } });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.isScrollingEnabled();
+        expect(frame.iframe.getAttribute('scrolling')).to.equal('yes')
       }));
     });
   });
