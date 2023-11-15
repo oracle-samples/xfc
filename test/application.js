@@ -448,21 +448,11 @@ describe('Application', () => {
   });
 
   describe('#handleBlurEvent()', () => {
-    it("does not call `setBlur` notification when there is interactable element in the document", sinon.test(function () {
-      const application = new Application();
-      application.init({ acls: ['*'] });
-      const notification = this.stub(application.JSONRPC, 'notification');
-      application.hasInteractableElement = true;
-      application.handleBlurEvent();
-
-      sinon.assert.notCalled(notification);
-    }));
-
     it("calls `setBlur` notification when there is no interactable element in the document", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
       const notification = this.stub(application.JSONRPC, 'notification');
-      application.hasInteractableElement = false;
+
       application.handleBlurEvent();
 
       sinon.assert.calledWith(notification, 'setBlur');
@@ -470,52 +460,10 @@ describe('Application', () => {
   });
 
   describe('#handleFocusEvent()', () => {
-    it("does not call `setFocus` notification when there is interactable element in the document", sinon.test(function () {
-      const application = new Application();
-      application.init({ acls: ['*'] });
-      const notification = this.stub(application.JSONRPC, 'notification');
-
-      application.hasInteractableElement = true;
-      this.stub(dimension, 'isContentScrollable').returns(true);
-      this.stub(application, 'isIframeScrollable').returns(true);
-
-      application.handleFocusEvent();
-
-      sinon.assert.notCalled(notification);
-    }));
-
-    it("does not call `setFocus` notification when scrolling is not enabled", sinon.test(function () {
-      const application = new Application();
-      application.init({ acls: ['*'] });
-      const notification = this.stub(application.JSONRPC, 'notification');
-      application.hasInteractableElement = false;
-      this.stub(application, 'isIframeScrollable').returns(false);
-      this.stub(dimension, 'isContentScrollable').returns(true);
-      application.handleFocusEvent();
-
-      sinon.assert.notCalled(notification);
-    }));
-
-    it("does not call `setFocus` notification when the content is not scrollable", sinon.test(function () {
-      const application = new Application();
-      application.init({ acls: ['*'] });
-      const notification = this.stub(application.JSONRPC, 'notification');
-      application.hasInteractableElement = false;
-      this.stub(dimension, 'isContentScrollable').returns(false);
-      this.stub(application, 'isIframeScrollable').returns(true);
-
-      application.handleFocusEvent();
-
-      sinon.assert.notCalled(notification);
-    }));
-
     it("calls `setFocus` notification", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
       const notification = this.stub(application.JSONRPC, 'notification');
-      application.hasInteractableElement = false;
-      this.stub(application, 'isIframeScrollable').returns(true);
-      this.stub(dimension, 'isContentScrollable').returns(true);
 
       application.handleFocusEvent();
 

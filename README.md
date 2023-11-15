@@ -97,6 +97,9 @@ Example CSS and JS Code:
 ```css
   .iframe-focus-style {
     outline: 2px dashed #000;
+    outline-offset: 1px;
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
 ```
 
@@ -104,6 +107,10 @@ Example CSS and JS Code:
 XFC.Consumer.mount(document.body,
   'http://localprovider.com:8080/example/provider.html',
   {
+    iframeAttrs: {
+      id: "frame-id",
+      style: "margin-top: 4px; margin-bottom: 4px;",
+    },
     focusIndicator: {
       classNameFocusStyle: "iframe-focus-style",
     }

@@ -381,26 +381,16 @@ class Application extends EventEmitter {
 
   /**
    * Handle the focus event by sending a message to the frame.
-   * We don't need to set the custom outline style for focus
-   * if the document has interactable element or the content isn't scrollable.
    */
   handleFocusEvent() {
-    if (this.isIframeScrollable() && isContentScrollable() && !this.hasInteractableElement) {
-      // Send message to the consumer/frame.js to handle `setFocus` event
-      this.JSONRPC.notification('setFocus');
-    }
+    // Send message to the consumer/frame.js to handle `setFocus` event
+    this.JSONRPC.notification('setFocus');
   }
 
   /**
    * Handle the blur event by sending a message to the frame.
-   * If the page has any interactable element, no need to set blur
-   * since the custom outline style focus wasn't set by us.
    */
   handleBlurEvent() {
-    if (this.hasInteractableElement) {
-      return;
-    }
-
     // Send message to the consumer/frame.js to handle `setBlur` event
     this.JSONRPC.notification('setBlur');
   }
