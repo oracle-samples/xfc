@@ -384,6 +384,10 @@ class Application extends EventEmitter {
    */
   handleFocusEvent() {
     // Send message to the consumer/frame.js to handle `setFocus` event
+    if (this.hasInteractableElement) {
+      return;
+    }
+
     this.JSONRPC.notification('setFocus');
   }
 

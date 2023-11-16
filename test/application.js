@@ -460,9 +460,21 @@ describe('Application', () => {
   });
 
   describe('#handleFocusEvent()', () => {
+    it("does not call `setFocus` notification", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = true;
+      const notification = this.stub(application.JSONRPC, 'notification');
+
+      application.handleFocusEvent();
+
+      sinon.assert.notCalled(notification);
+    }));
+
     it("calls `setFocus` notification", sinon.test(function () {
       const application = new Application();
       application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
       const notification = this.stub(application.JSONRPC, 'notification');
 
       application.handleFocusEvent();
