@@ -98,8 +98,6 @@ Example CSS and JS Code:
   .iframe-focus-style {
     outline: 2px dashed #000;
     outline-offset: 1px;
-    margin-top: 4px;
-    margin-bottom: 4px;
   }
 ```
 
