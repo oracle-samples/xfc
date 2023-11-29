@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <title>Embedded Content Consuming Site - Focus Indicator</title>
+  <meta charset="utf-8" />
+  <script src="http://localhost:8080/xfc.js"></script>
+  <style>
+    iframe {
+      width: 100%;
+      border: 0;
+    }
+
+    html[hidden] {
+      display: none;
+    }
+
+    .iframe-focus-style {
+      outline: 2px dashed #000;
+      outline-offset: 1px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <h1>Focus Indicator</h1>
+  <p>Set focus indicator on the frame when it has focus, and unset the focus indicator when the frame no longer has
+    focus when using keyboard to navigate the page. The content can be scrolled using keyboard when the frame has focus.
+  </p>
+  <h2>Example frame without any interactable element</h2>
+  <div id="frame1"></div>
+  <br>
+  <h2>Example frame with some interactable elements</h2>
+  <div id="frame2"></div>
+  <br>
+  <h2>Example frame with no scrolling</h2>
+  <div id="frame3"></div>
+  <script>
+    XFC.Consumer.init()
+    XFC.Consumer.mount(
+      document.getElementById('frame1'),
+      'http://localprovider.com:8080/example/focus_indicator/focus_indicator_provider_no_interactable_elements.html',
+      {
+        iframeAttrs: {
+          id: "frame-focus-indicator-id",
+          title: "iframe with focus indicator",
+          style: "margin-top: 4px; margin-bottom: 4px;",
+        },
+        resizeConfig: {
+          scrolling: true,
+          fixedWidth: '100%',
+          fixedHeight: '200px',
+        },
+        focusIndicator: {
+          classNameFocusStyle: "iframe-focus-style",
+        },
+      }
+    );
+    XFC.Consumer.mount(
+      document.getElementById('frame2'),
+      'http://localprovider.com:8080/example/focus_indicator/focus_indicator_provider_with_interactable_elements.html',
+      {
+        iframeAttrs: {
+          id: "frame-focus-indicator-id",
+          title: "iframe with focus indicator",
+          style: "margin-top: 4px; margin-bottom: 4px;",
+        },
+        resizeConfig: {
+          scrolling: true,
+          fixedWidth: '100%',
+          fixedHeight: '300px',
+        },
+        focusIndicator: {
+          classNameFocusStyle: "iframe-focus-style",
+        },
+      }
+    );
+    XFC.Consumer.mount(
+      document.getElementById('frame3'),
+      'http://localprovider.com:8080/example/focus_indicator/focus_indicator_provider_no_scrolling.html',
+      {
+        iframeAttrs: {
+          id: "frame-focus-indicator-id",
+          title: "iframe with focus indicator",
+          style: "margin-top: 4px; margin-bottom: 4px;",
+        },
+        resizeConfig: {
+          scrolling: true,
+        },
+        focusIndicator: {
+          classNameFocusStyle: "iframe-focus-style",
+        },
+      }
+    );
+</script>
+</body>
+
+</html>

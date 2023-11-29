@@ -6,6 +6,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import Application from '../src/provider/application';
+import * as dimension from '../src/lib/dimension';
 import signonTest from 'sinon-test'
 
 sinon.test = signonTest(sinon);
@@ -157,7 +158,7 @@ describe('Application', () => {
         };
 
         application.handleConsumerMessage(event);
-        
+
         sinon.assert.calledWith(handle, event.data);
         expect(application.activeACL).to.equal(undefined);
       });
@@ -434,9 +435,219 @@ describe('Application', () => {
         global.document = oldDocument;
 
         application.launch();
-        sinon.assert.calledTwice(window.addEventListener);
+        sinon.assert.callCount(window.addEventListener, 6);
+
+        sinon.assert.calledWith(window.addEventListener, 'load');
+        sinon.assert.calledWith(window.addEventListener, 'resize');
+        sinon.assert.calledWith(window.addEventListener, 'focus');
+        sinon.assert.calledWith(window.addEventListener, 'blur');
+        sinon.assert.calledWith(window.addEventListener, 'message');
         sinon.assert.calledWith(window.addEventListener, 'beforeunload');
       }));
     });
+  });
+
+  describe('#handleBlurEvent()', () => {
+    it("calls `setBlur` notification when there is no interactable element in the document", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      const notification = this.stub(application.JSONRPC, 'notification');
+
+      application.handleBlurEvent();
+
+      sinon.assert.calledWith(notification, 'setBlur');
+    }));
+  });
+
+  describe('#handleFocusEvent()', () => {
+    it("does not call `setFocus` notification", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = true;
+      const notification = this.stub(application.JSONRPC, 'notification');
+
+      application.handleFocusEvent();
+
+      sinon.assert.notCalled(notification);
+    }));
+
+    it("calls `setFocus` notification", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      const notification = this.stub(application.JSONRPC, 'notification');
+
+      application.handleFocusEvent();
+
+      sinon.assert.calledWith(notification, 'setFocus');
+    }));
+  });
+
+  describe('#handleResizeEvent()', () => {
+    afterEach(() => {
+      document.body.removeAttribute('tabIndex');
+    });
+
+    it("does not set tabIndex=0 when there is interactable element in the document", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = true;
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(application, 'isIframeScrollable').returns(true);
+
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.be.null;
+    }));
+
+    it("does not set tabIndex=0 when scrolling is not enabled", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      this.stub(application, 'isIframeScrollable').returns(false);
+      this.stub(dimension, 'isContentScrollable').returns(true);
+
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.be.null;
+    }));
+
+    it("does not set tabIndex=0 when the content is not scrollable", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(true);
+
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.be.null;
+    }));
+
+    it("sets tabIndex=0", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(application, 'isIframeScrollable').returns(true);
+
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.equal('0')
+    }));
+
+    it("removes tabIndex when the initial tabIndex value was not set", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      application.originalTabIndexValue = null;
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(false);
+
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.be.null;
+    }));
+
+    it("reverts tabIndex value (1) when the condition is no longer met", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      application.originalTabIndexValue = 1;
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(false);
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.equal('1');
+    }));
+
+    it("reverts tabIndex value (-1) when the condition is no longer met", sinon.test(function () {
+      const application = new Application();
+      application.init({ acls: ['*'] });
+      application.hasInteractableElement = false;
+      application.originalTabIndexValue = -1;
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(application, 'isIframeScrollable').returns(false);
+
+      application.handleResizeEvent();
+
+      expect(document.body.getAttribute('tabIndex')).to.equal('-1');
+    }));
+  });
+
+  describe('#handleLoadEvent()', () => {
+    it("calls isScrollingEnabled and returns true", sinon.test(function () {
+      let application = new Application();
+      application.init({ acls: ['*'] });
+
+      const isScrollingEnabled = sinon.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(true);
+      application.handleLoadEvent();
+
+      sinon.assert.called(isScrollingEnabled);
+    }));
+
+    it("calls isScrollingEnabled and returns false", sinon.test(function () {
+      let application = new Application();
+      application.init({ acls: ['*'] });
+
+      const isScrollingEnabled = sinon.stub(application.JSONRPC, 'request').withArgs('isScrollingEnabled', []).resolves(false);
+      application.handleLoadEvent();
+
+      sinon.assert.called(isScrollingEnabled);
+    }));
+  });
+
+  describe('#setTabIndexWhenRequired()', () => {
+    afterEach(() => {
+      document.body.removeAttribute('tabIndex');
+    });
+
+    it("does not set tabIndex=0 when there is interactable element in the document", sinon.test(function () {
+      let application = new Application();
+      application.init({ acls: ['*'] });
+
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(dimension, 'hasInteractableElement').returns(true);
+
+      application.setTabIndexWhenRequired(true);
+
+      expect(document.body.getAttribute('tabIndex')).to.be.null;
+    }));
+
+    it("does not set tabIndex=0 when scrolling is not enabled", sinon.test(function () {
+      let application = new Application();
+      application.init({ acls: ['*'] });
+
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(dimension, 'hasInteractableElement').returns(false);
+
+      application.setTabIndexWhenRequired(false);
+
+      expect(document.body.getAttribute('tabIndex')).to.be.null;
+    }));
+
+    it("does not set tabIndex=0 when the content is not scrollable", sinon.test(function () {
+      let application = new Application();
+      application.init({ acls: ['*'] });
+
+      this.stub(dimension, 'isContentScrollable').returns(false);
+      this.stub(dimension, 'hasInteractableElement').returns(false);
+
+      application.setTabIndexWhenRequired(true);
+
+      expect(document.body.getAttribute('tabIndex')).to.be.null;
+    }));
+
+    it("sets tabIndex=0", sinon.test(function () {
+      let application = new Application();
+      application.init({ acls: ['*'] });
+
+      this.stub(dimension, 'isContentScrollable').returns(true);
+      this.stub(dimension, 'hasInteractableElement').returns(false);
+
+      application.setTabIndexWhenRequired(true);
+
+      expect(document.body.getAttribute('tabIndex')).to.equal('0')
+    }));
   });
 });

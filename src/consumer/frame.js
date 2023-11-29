@@ -25,7 +25,7 @@ class Frame extends EventEmitter {
   * @param {object} options - An optional parameter that contains a set of optional configs
   */
   init(container, source, {
-    secret = null, resizeConfig = {}, iframeAttrs = {}, customMethods = {},
+    secret = null, resizeConfig = {}, iframeAttrs = {}, customMethods = {}, focusIndicator,
   } = {}) {
     this.source = source;
     this.container = container;
@@ -35,6 +35,7 @@ class Frame extends EventEmitter {
     this.origin = new URI(this.source).origin;
     this.secret = secret;
     this.resizeConfig = resizeConfig;
+    this.focusIndicator = focusIndicator || null;
 
     const self = this;
     this.JSONRPC = new JSONRPC(
@@ -73,6 +74,23 @@ class Frame extends EventEmitter {
             self.iframe.style.width = width;
           }
           return Promise.resolve();
+        },
+
+        setFocus() {
+          if (self.focusIndicator && self.focusIndicator.classNameFocusStyle) {
+            self.iframe.classList.add(self.focusIndicator.classNameFocusStyle);
+          }
+          return Promise.resolve();
+        },
+
+        setBlur() {
+          // Removing the focus style className
+          self.iframe.classList.remove(self.focusIndicator.classNameFocusStyle);
+          return Promise.resolve();
+        },
+
+        isScrollingEnabled() {
+          return Promise.resolve(self.iframe.getAttribute('scrolling') !== 'no');
         },
 
         event(event, detail) {

@@ -6,7 +6,9 @@ import MutationObserver from 'mutation-observer';
 import { fixedTimeCompare } from '../lib/string';
 import URI from '../lib/uri';
 import logger from '../lib/logger';
-import { getOffsetHeightToBody, calculateHeight, calculateWidth } from '../lib/dimension';
+import {
+  getOffsetHeightToBody, calculateHeight, calculateWidth, isContentScrollable, hasInteractableElement,
+} from '../lib/dimension';
 
 /** Application class which represents an embedded application. */
 class Application extends EventEmitter {
@@ -50,6 +52,15 @@ class Application extends EventEmitter {
     this.verifyChallenge = this.verifyChallenge.bind(this);
     this.emitError = this.emitError.bind(this);
     this.unload = this.unload.bind(this);
+    this.handleLoadEvent = this.handleLoadEvent.bind(this);
+    this.handleResizeEvent = this.handleResizeEvent.bind(this);
+    this.handleFocusEvent = this.handleFocusEvent.bind(this);
+    this.handleBlurEvent = this.handleBlurEvent.bind(this);
+    this.isIframeScrollable = this.isIframeScrollable.bind(this);
+    this.setTabIndexWhenRequired = this.setTabIndexWhenRequired.bind(this);
+    this.hasInteractableElement = true;
+    this.isScrollingEnabled = false;
+    this.originalTabIndexValue = null;
 
     this.dispatchFunction = dispatchFunction || ((message, targetOrigin) => {
       // Don't send messages if not embedded
@@ -81,6 +92,7 @@ class Application extends EventEmitter {
           const observer = new MutationObserver(
             (mutations) => self.requestResize(),
           );
+
           observer.observe(
             document.body,
             {
@@ -105,6 +117,10 @@ class Application extends EventEmitter {
 
     window.addEventListener('message', this.handleConsumerMessage);
     window.addEventListener('beforeunload', this.unload);
+    window.addEventListener('load', this.handleLoadEvent, true);
+    window.addEventListener('resize', this.handleResizeEvent, true);
+    window.addEventListener('focus', this.handleFocusEvent, true);
+    window.addEventListener('blur', this.handleBlurEvent, true);
   }
 
   /**
@@ -120,6 +136,7 @@ class Application extends EventEmitter {
 
   requestResize() {
     if (!this.resizeConfig) return;
+
     if (this.resizeConfig.customCal) {
       this.JSONRPC.notification('resize');
     } else if (this.resizeConfig.autoResizeWidth) {
@@ -332,6 +349,81 @@ class Application extends EventEmitter {
     if (!element || !(element.hasAttribute && element.hasAttribute('download') || protocols.test(element.href))) {
       this.JSONRPC.notification('unload');
       this.trigger('xfc.unload');
+    }
+  }
+
+  /**
+   * When page load is completed, get the
+   * iframe's scrolling config, and set the tabIndex
+   * on the document.body of the embedded page if
+   * necessary.
+   */
+  handleLoadEvent() {
+    this.JSONRPC.request('isScrollingEnabled', [])
+      .then(this.setTabIndexWhenRequired);
+  }
+
+  /**
+   * Handle the resize event and check if tabIndex is needed to be set or removed.
+   * Depending on the content is scrollable or not, we need to update the tabIndex
+   * accordingly so focus isn't getting in the document when not needed.
+   */
+  handleResizeEvent() {
+    if (this.isIframeScrollable() && isContentScrollable() && !this.hasInteractableElement) {
+      // Set tabIndex="0" so focus can go into the document
+      document.body.tabIndex = 0;
+    } else if (this.originalTabIndexValue === null) {
+      document.body.removeAttribute('tabIndex');
+    } else {
+      document.body.tabIndex = this.originalTabIndexValue;
+    }
+  }
+
+  /**
+   * Handle the focus event by sending a message to the frame.
+   */
+  handleFocusEvent() {
+    // Send message to the consumer/frame.js to handle `setFocus` event
+    if (this.hasInteractableElement) {
+      return;
+    }
+
+    this.JSONRPC.notification('setFocus');
+  }
+
+  /**
+   * Handle the blur event by sending a message to the frame.
+   */
+  handleBlurEvent() {
+    // Send message to the consumer/frame.js to handle `setBlur` event
+    this.JSONRPC.notification('setBlur');
+  }
+
+  /**
+   * Return the value of iframe's scroll config stored in `isScrollingEnabled`.
+   *
+   * @returns boolean true - when the iframe is scrollable, false - when the iframe is not scrollable
+   */
+  isIframeScrollable() {
+    return this.isScrollingEnabled;
+  }
+
+  /**
+   * Sets the `tabIndex=0` on the `document.body` if required
+   * so focus can get into the embedded document.
+   *
+   * @param {*} iframeScrollingEnabled - boolean true when iframe's scrolling is true,
+   *                                             false when iframe's scrolling is false
+   */
+  setTabIndexWhenRequired(iframeScrollingEnabled) {
+    this.isScrollingEnabled = iframeScrollingEnabled;
+    this.hasInteractableElement = hasInteractableElement();
+    this.originalTabIndexValue = document.body.getAttribute('tabIndex');
+
+    if (iframeScrollingEnabled && isContentScrollable() && !this.hasInteractableElement) {
+      // Set tabIndex="0" so focus can go into the document when
+      // using tab key when scrolling is enabled
+      document.body.tabIndex = 0;
     }
   }
 }

@@ -200,4 +200,123 @@ describe('Frame', () => {
       });
     });
   });
+
+  describe('Focus Indicator', () => {
+    const container = document.body;
+    const source = 'http://test.com:8080/test';
+
+    const focusIndicator = {
+      classNameFocusStyle: "iframe-focus-style",
+    };
+
+    const frame = new Frame();
+
+    describe('#init() with style in focus indicator object', () => {
+      it('sets focus indicator object when provided', sinon.test(function () {
+        frame.init(container, source, { focusIndicator });
+
+        expect(frame.focusIndicator.classNameFocusStyle).to.equal('iframe-focus-style');
+      }));
+
+      it('does not set focus indicator object when not provided/null', sinon.test(function () {
+        const focusIndicator = null;
+        frame.init(container, source, { focusIndicator });
+
+        it('sets the focusIdicator object with null', () => expect(frame.focusIndicator).to.be.null);
+        it('sets the focusIndicator.classNameFocusStyle with null', () => expect(frame.focusIndicator.classNameFocusStyle).to.be.null);
+      }));
+    });
+
+    describe('setting iframe class name style', () => {
+      it('sets the focus class name style on the frame', sinon.test(function () {
+        frame.init(container, source, { focusIndicator });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.setFocus(); // Calling setFocus() method
+        expect(frame.iframe.getAttribute('class')).to.equal('iframe-focus-style');
+      }));
+
+      it('removes the class name on the iframe', sinon.test(function () {
+        frame.init(container, source, { focusIndicator });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.setBlur(); // Calling setBlur() method
+        expect(frame.iframe.getAttribute('class')).to.be.null;
+      }));
+
+      it('does not set the focus style class name on the iframe', sinon.test(function () {
+        frame.init(container, source, {});
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.setFocus(); // Calling setFocus() method
+        expect(frame.iframe.getAttribute('class')).to.be.null;
+      }));
+    });
+  });
+
+  describe('#isScrollingEnabled', () => {
+    const container = document.body;
+    const source = 'http://test.com:8080/test';
+
+    const frame = new Frame();
+
+    describe('when scrolling is not set', () => {
+      it('defaults scrolling to no', sinon.test(function () {
+        frame.init(container, source, {});
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.isScrollingEnabled();
+        expect(frame.iframe.getAttribute('scrolling')).to.equal('no');
+      }));
+    });
+
+    describe('when scrolling is sets to false', () => {
+      it('it sets scrolling to no', sinon.test(function () {
+        frame.init(container, source, { resizeConfig: { scrolling: false } });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.isScrollingEnabled();
+        expect(frame.iframe.getAttribute('scrolling')).to.equal('no');
+      }));
+    });
+
+    describe('when scrolling is sets to true', () => {
+      it('it defaults to auto for scrolling, no scrolling attribute is set', sinon.test(function () {
+        frame.init(container, source, { resizeConfig: { scrolling: true } });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.isScrollingEnabled();
+        expect(frame.iframe.getAttribute('scrolling')).to.be.null;
+      }));
+
+      it('it sets scrolling attribute to yes', sinon.test(function () {
+        frame.init(container, source, { resizeConfig: { scrolling: true }, iframeAttrs: { scrolling: 'yes' } });
+
+        const emit = sinon.stub();
+        frame.on('xfc.mounted', () => emit());
+        frame.mount();
+
+        frame.JSONRPC.methods.isScrollingEnabled();
+        expect(frame.iframe.getAttribute('scrolling')).to.equal('yes')
+      }));
+    });
+  });
 });

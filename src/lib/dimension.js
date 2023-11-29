@@ -109,3 +109,36 @@ export function getOffsetToBody(node, offset = 0) {
 export function getOffsetHeightToBody(node) {
   return !node ? 0 : getOffsetToBody(node) + node.scrollHeight;
 }
+
+/**
+ * This function returns boolean value representing whether scroll width or scroll height
+ * is larger than the client width or client height. It indicates that the content is larger
+ * than the viewable area and can be scrolled.
+ *
+ * @returns boolean true - when the content is scrollable, false - when the content is not scrollable
+ */
+export function isContentScrollable() {
+  return (document.documentElement.scrollHeight > document.documentElement.clientHeight
+    || document.body.scrollHeight > document.body.clientHeight
+    || document.documentElement.scrollWidth > document.documentElement.clientWidth
+    || document.body.scrollWidth > document.body.clientWidth);
+}
+
+/**
+ * Determines if the document has interactable element in it.
+ *
+ * @returns boolean true - when there is interactable element in the document, false otherwise
+ */
+export function hasInteractableElement() {
+  const interactableElementSelector = 'a[href]:not([tabindex=\'-1\']), area[href]:not([tabindex=\'-1\']), input:not([disabled]):not([tabindex=\'-1\']), '
+    + "select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']), "
+    + "[contentEditable=true]:not([tabindex='-1'])";
+
+  return [...document.body.querySelectorAll(`${interactableElementSelector}`)].some(
+    (element) => !element.hasAttribute('disabled')
+      && !element.getAttribute('aria-hidden')
+      && !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length)
+      && window.getComputedStyle(element).visibility !== 'hidden'
+      && element.closest('[inert]') === null,
+  );
+}
