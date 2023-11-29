@@ -1,8 +1,12 @@
 Next Release
 -------------
+1.12.0
+------
+* Add support for different styles during iframe focus/blur events.
+
 1.11.0
 ------
-* Create a custom dispatch to override parent.postMessage 
+* Create a custom dispatch to override parent.postMessage
 
 1.10.1
 ------
